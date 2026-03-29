@@ -1,0 +1,56 @@
+<%= content_for :page_title, t("notification_rules.index.title") %>
+
+<%= content_for :page_actions do %>
+  <%= render DS::Menu.new do |menu| %>
+    <% menu.with_item(
+      variant: "link",
+      text: t("notification_rules.index.new_transaction_rule"),
+      href: new_notification_rule_path(target: "transaction"),
+      icon: "credit-card",
+      data: { turbo_frame: :modal }
+    ) %>
+    <% menu.with_item(
+      variant: "link",
+      text: t("notification_rules.index.new_balance_rule"),
+      href: new_notification_rule_path(target: "balance"),
+      icon: "landmark",
+      data: { turbo_frame: :modal }
+    ) %>
+  <% end %>
+<% end %>
+
+<div class="space-y-6 max-w-4xl">
+  <p class="text-secondary text-sm">
+    <%= t("notification_rules.index.intro_before_link") %>
+    <%= link_to "Apprise", "https://github.com/caronc/apprise", class: "text-primary underline", target: "_blank", rel: "noopener noreferrer" %>.
+    <%= t("notification_rules.index.intro_after_link") %>
+  </p>
+
+  <% if Current.user.admin? %>
+    <div class="bg-container rounded-xl shadow-border-xs p-4 space-y-3">
+      <h2 class="text-sm font-medium text-primary"><%= t("notification_rules.index.default_url_heading") %></h2>
+      <p class="text-xs text-secondary"><%= t("notification_rules.index.default_url_hint") %></p>
+      <%= styled_form_with model: Current.family, url: update_default_apprise_url_notification_rules_path, method: :patch, class: "flex flex-col md:flex-row gap-3 md:items-end" do |f| %>
+        <%= f.text_field :apprise_notify_url, label: t("notification_rules.index.default_url_label"), value: Current.family.apprise_notify_url, container_class: "grow" %>
+        <%= f.submit t("notification_rules.index.default_url_save"), variant: "primary" %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="bg-container rounded-xl shadow-border-xs p-4">
+    <% if @notification_rules.any? %>
+      <div class="bg-container-inset rounded-xl">
+        <div class="flex justify-between px-4 py-2 text-xs uppercase font-medium text-secondary">
+          <span><%= t("notification_rules.index.list_heading") %> · <%= @notification_rules.size %></span>
+        </div>
+        <div class="p-1">
+          <div class="flex flex-col bg-container rounded-lg shadow-border-xs">
+            <%= render partial: "notification_rule", collection: @notification_rules, spacer_template: "shared/ruler" %>
+          </div>
+        </div>
+      </div>
+    <% else %>
+      <p class="text-secondary text-sm py-8 text-center"><%= t("notification_rules.index.empty") %></p>
+    <% end %>
+  </div>
+</div>

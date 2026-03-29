@@ -29,8 +29,10 @@ export default class extends Controller {
     e.preventDefault();
     e.stopPropagation();
     
-    // Find the parent rules controller before removing the condition
     const rulesEl = this.element.closest('[data-controller~="rules"]');
+    const notificationRulesEl = this.element.closest(
+      '[data-controller~="notification-rules"]',
+    );
 
     if (e.params.destroy) {
       this.destroyFieldTarget.value = true;
@@ -39,11 +41,23 @@ export default class extends Controller {
       this.element.remove();
     }
 
-    // Update the prefixes of all conditions from the parent rules controller
     if (rulesEl) {
-      const rulesController = this.application.getControllerForElementAndIdentifier(rulesEl, "rules");
+      const rulesController = this.application.getControllerForElementAndIdentifier(
+        rulesEl,
+        "rules",
+      );
       if (rulesController && typeof rulesController.updateConditionPrefixes === "function") {
         rulesController.updateConditionPrefixes();
+      }
+    }
+
+    if (notificationRulesEl) {
+      const nrController = this.application.getControllerForElementAndIdentifier(
+        notificationRulesEl,
+        "notification-rules",
+      );
+      if (nrController && typeof nrController.updateConditionPrefixes === "function") {
+        nrController.updateConditionPrefixes();
       }
     }
   }

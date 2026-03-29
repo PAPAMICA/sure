@@ -1,0 +1,70 @@
+---
+en:
+  notification_rules:
+    back: Back to notification rules
+    edit: Edit
+    unnamed: Untitled rule
+    inactive: inactive
+    confirm_destroy: Delete this notification rule?
+    create:
+      success: Notification rule created.
+    update:
+      success: Notification rule updated.
+    destroy:
+      success: Notification rule deleted.
+    default_url_updated: Default Apprise URL saved.
+    errors:
+      transaction_on_sync: Transaction rules cannot use “after account sync” delivery. Use immediate or scheduled.
+      balance_immediate: Balance rules cannot use immediate delivery. Use after sync or scheduled.
+    badges:
+      target_transaction: Transactions
+      target_balance: Balances
+      delivery_immediate: Immediate
+      delivery_scheduled: Scheduled
+      delivery_on_sync: After account sync
+    frequencies:
+      hourly: Every hour
+      every_4_hours: Every 4 hours
+      daily: Daily
+      weekly: Weekly
+    filters:
+      balance_account: Account
+    index:
+      title: Notification rules
+      new_transaction_rule: New transaction rule
+      new_balance_rule: New balance rule
+      intro_before_link: Send alerts through
+      intro_after_link: Create rules with IF conditions (like auto-categorization), optional minimum amount, and how often to check.
+      default_url_heading: Default Apprise URL
+      default_url_hint: Used when a rule leaves the URL empty. Only family admins can change this.
+      default_url_label: Apprise URL
+      default_url_save: Save default URL
+      list_heading: Rules
+      empty: No notification rules yet.
+    new:
+      title_transaction: New transaction notification rule
+      title_balance: New balance notification rule
+    edit:
+      title: Edit notification rule
+    form:
+      name_label: Name
+      name_placeholder: e.g. Large expenses on checking
+      delivery_heading: When to notify
+      delivery_immediate_tx: Immediately when a matching transaction is created
+      delivery_on_sync: After each account sync (balance snapshot)
+      delivery_scheduled: On a schedule (scan matching items)
+      frequency_prompt: Select frequency
+      frequency_hint: The scheduler runs hourly; your rule runs when it is due based on this frequency.
+      active_label: Rule active
+      apprise_heading: Apprise
+      apprise_url_label: Apprise URL (optional)
+      apprise_url_hint: Overrides the family default for this rule only.
+      amount_heading: Amount filter
+      minimum_amount_label: Minimum absolute amount
+      minimum_amount_hint: Only applies to transaction rules. Leave blank to include all amounts.
+      all_dates: All %{resource} dates
+      starting_from: Only from date
+      add_condition: Add condition
+      add_condition_group: Add condition group
+      submit: Save rule
+      add_sub_condition: Add condition

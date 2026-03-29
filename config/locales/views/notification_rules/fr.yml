@@ -1,0 +1,70 @@
+---
+fr:
+  notification_rules:
+    back: Retour aux règles de notification
+    edit: Modifier
+    unnamed: Règle sans titre
+    inactive: inactive
+    confirm_destroy: Supprimer cette règle de notification ?
+    create:
+      success: Règle de notification créée.
+    update:
+      success: Règle de notification mise à jour.
+    destroy:
+      success: Règle de notification supprimée.
+    default_url_updated: URL Apprise par défaut enregistrée.
+    errors:
+      transaction_on_sync: Les règles sur les transactions ne peuvent pas utiliser la livraison « après synchronisation du compte ». Utilisez immédiat ou planifié.
+      balance_immediate: Les règles sur les soldes ne peuvent pas utiliser la livraison immédiate. Utilisez après synchronisation ou planifié.
+    badges:
+      target_transaction: Transactions
+      target_balance: Soldes
+      delivery_immediate: Immédiat
+      delivery_scheduled: Planifié
+      delivery_on_sync: Après sync du compte
+    frequencies:
+      hourly: Toutes les heures
+      every_4_hours: Toutes les 4 heures
+      daily: Quotidien
+      weekly: Hebdomadaire
+    filters:
+      balance_account: Compte
+    index:
+      title: Règles de notification
+      new_transaction_rule: Nouvelle règle (transactions)
+      new_balance_rule: Nouvelle règle (soldes)
+      intro_before_link: Envoyez des alertes via
+      intro_after_link: Créez des règles avec des conditions SI (comme la catégorisation automatique), un montant minimum optionnel et une fréquence de vérification.
+      default_url_heading: URL Apprise par défaut
+      default_url_hint: Utilisée lorsqu’une règle ne définit pas d’URL. Seuls les administrateurs de la famille peuvent la modifier.
+      default_url_label: URL Apprise
+      default_url_save: Enregistrer l’URL par défaut
+      list_heading: Règles
+      empty: Aucune règle de notification pour l’instant.
+    new:
+      title_transaction: Nouvelle règle — transactions
+      title_balance: Nouvelle règle — soldes
+    edit:
+      title: Modifier la règle de notification
+    form:
+      name_label: Nom
+      name_placeholder: ex. Grosses dépenses sur le compte courant
+      delivery_heading: Quand notifier
+      delivery_immediate_tx: Dès qu’une transaction correspondante est créée
+      delivery_on_sync: Après chaque synchronisation du compte (solde)
+      delivery_scheduled: Selon un planning (analyse des éléments correspondants)
+      frequency_prompt: Choisir la fréquence
+      frequency_hint: Le planificateur tourne chaque heure ; la règle s’exécute lorsqu’elle est due selon cette fréquence.
+      active_label: Règle active
+      apprise_heading: Apprise
+      apprise_url_label: URL Apprise (facultatif)
+      apprise_url_hint: Remplace l’URL par défaut de la famille pour cette règle uniquement.
+      amount_heading: Filtre sur le montant
+      minimum_amount_label: Montant minimum (valeur absolue)
+      minimum_amount_hint: S’applique uniquement aux règles sur les transactions. Laisser vide pour tous les montants.
+      all_dates: Toutes les dates (%{resource})
+      starting_from: À partir du
+      add_condition: Ajouter une condition
+      add_condition_group: Ajouter un groupe de conditions
+      submit: Enregistrer la règle
+      add_sub_condition: Ajouter une condition

@@ -1,5 +1,5 @@
 class Family < ApplicationRecord
-  include Syncable, AutoTransferMatchable, Subscribeable, VectorSearchable, Family::AppriseNotifications
+  include Syncable, AutoTransferMatchable, Subscribeable, VectorSearchable
   include PlaidConnectable, SimplefinConnectable, LunchflowConnectable, EnableBankingConnectable
   include CoinbaseConnectable, CoinstatsConnectable, SnaptradeConnectable, MercuryConnectable
   include IndexaCapitalConnectable
@@ -32,6 +32,7 @@ class Family < ApplicationRecord
   has_many :entries, through: :accounts
   has_many :transactions, through: :accounts
   has_many :rules, dependent: :destroy
+  has_many :notification_rules, dependent: :destroy
   has_many :trades, through: :accounts
   has_many :holdings, through: :accounts
 

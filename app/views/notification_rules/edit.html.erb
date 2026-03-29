@@ -1,0 +1,8 @@
+<%= link_to t("notification_rules.back"), notification_rules_path, class: "text-sm text-primary underline mb-4 inline-block" %>
+
+<%= render DS::Dialog.new do |dialog| %>
+  <% dialog.with_header(title: t("notification_rules.edit.title")) %>
+  <% dialog.with_body do %>
+    <%= render "form", notification_rule: @notification_rule %>
+  <% end %>
+<% end %>

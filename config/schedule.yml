@@ -25,6 +25,12 @@ sync_hourly:
   queue: "scheduled"
   description: "Syncs provider items that opt-in to hourly syncing"
 
+notification_rules_scheduler:
+  cron: "5 * * * *" # every hour at :05 (after hourly sync)
+  class: "NotificationRules::SchedulerJob"
+  queue: "scheduled"
+  description: "Runs scheduled notification rules (Apprise)"
+
 clean_data:
   cron: "0 3 * * *" # daily at 3:00 AM
   class: "DataCleanerJob"

@@ -1,0 +1,23 @@
+<%# locals: (notification_rule:) %>
+<div class="flex items-center justify-between gap-4 px-4 py-3">
+  <div class="min-w-0 space-y-1">
+    <p class="text-primary font-medium truncate"><%= notification_rule.name.presence || t("notification_rules.unnamed") %></p>
+    <p class="text-xs text-secondary">
+      <%= t("notification_rules.badges.target_#{notification_rule.target}") %>
+      ·
+      <%= t("notification_rules.badges.delivery_#{notification_rule.delivery}") %>
+      <% if notification_rule.scheduled? && notification_rule.frequency.present? %>
+        · <%= t("notification_rules.frequencies.#{notification_rule.frequency}") %>
+      <% end %>
+      <% unless notification_rule.active? %>
+        · <span class="text-warning"><%= t("notification_rules.inactive") %></span>
+      <% end %>
+    </p>
+  </div>
+  <div class="flex items-center gap-2 shrink-0">
+    <%= render DS::Link.new(text: t("notification_rules.edit"), href: edit_notification_rule_path(notification_rule), variant: "ghost", size: :sm, icon: "pencil", frame: :modal) %>
+    <%= button_to notification_rule_path(notification_rule), method: :delete, class: "inline-flex items-center gap-1 text-sm text-destructive hover:opacity-80", data: { turbo_confirm: t("notification_rules.confirm_destroy") } do %>
+      <%= icon("trash-2", size: "sm") %>
+    <% end %>
+  </div>
+</div>

@@ -6,7 +6,9 @@
         <%= render DS::Menu.new do |menu| %>
           <% menu.with_item(variant: "link", text: "New rule", href: new_rule_path(resource_type: "transaction"), icon: "plus", data: { turbo_frame: :modal }) %>
           <% menu.with_item(variant: "link", text: "Edit rules", href: rules_path, icon: "git-branch", data: { turbo_frame: :_top }) %>
-          <% menu.with_item(variant: "link", text: t("transactions.index.quick_categorize"), href: quick_categorize_transactions_path, icon: "layout-grid", data: { turbo_frame: :_top }) %>
+          <% if @quick_categorize_available %>
+            <% menu.with_item(variant: "link", text: t("transactions.index.quick_categorize"), href: quick_categorize_transactions_path, icon: "layout-grid", data: { turbo_frame: :_top }) %>
+          <% end %>
           <% menu.with_item(variant: "link", text: "Edit categories", href: categories_path, icon: "shapes", data: { turbo_frame: :_top }) %>
           <% menu.with_item(variant: "link", text: "Edit tags", href: tags_path, icon: "tags", data: { turbo_frame: :_top }) %>
           <% menu.with_item(variant: "link", text: "Edit merchants", href: family_merchants_path, icon: "store", data: { turbo_frame: :_top }) %>
@@ -23,6 +25,17 @@
             frame: :modal,
           ) %>
         </div>
+
+        <% if @quick_categorize_available %>
+          <%= render DS::Link.new(
+            text: t("transactions.index.quick_categorize"),
+            icon: "layout-grid",
+            variant: "secondary",
+            href: quick_categorize_transactions_path,
+            data: { turbo_frame: "_top" },
+            class: "hidden md:inline-flex"
+          ) %>
+        <% end %>
 
         <%= render DS::Link.new(
             text: "New transaction",

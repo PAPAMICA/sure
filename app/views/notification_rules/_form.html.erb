@@ -1,0 +1,125 @@
+<%# locals: (notification_rule:) %>
+
+<%= styled_form_with model: notification_rule, class: "space-y-6",
+                     data: { controller: "notification-rules" } do |f| %>
+
+  <%= f.hidden_field :target %>
+
+  <% if notification_rule.errors.any? %>
+    <%= render "shared/form_errors", model: notification_rule %>
+  <% end %>
+
+  <section class="space-y-4">
+    <div class="flex items-center gap-1 text-secondary">
+      <%= icon "tag", size: "sm" %>
+      <h3 class="text-sm font-medium text-primary"><%= t("notification_rules.form.name_label") %></h3>
+    </div>
+    <div class="ml-6">
+      <%= f.text_field :name, placeholder: t("notification_rules.form.name_placeholder"), class: "form-field__input" %>
+    </div>
+  </section>
+
+  <section class="space-y-4">
+    <div class="flex items-center gap-1 text-secondary">
+      <h3 class="text-sm font-medium text-primary"><%= t("notification_rules.form.delivery_heading") %></h3>
+    </div>
+    <div class="ml-6 space-y-3">
+      <%= f.select :delivery,
+            notification_rule.transaction? ?
+              [ [ t("notification_rules.form.delivery_immediate_tx"), "immediate" ], [ t("notification_rules.form.delivery_scheduled"), "scheduled" ] ] :
+              [ [ t("notification_rules.form.delivery_on_sync"), "on_sync" ], [ t("notification_rules.form.delivery_scheduled"), "scheduled" ] ],
+            {},
+            data: { action: "change->notification-rules#deliveryChanged" } %>
+
+      <div data-notification-rules-target="frequencyWrap" class="<%= "hidden" unless notification_rule.scheduled? %>">
+        <%= f.select :frequency,
+              NotificationRule::FREQUENCIES.map { |fr| [ t("notification_rules.frequencies.#{fr}"), fr ] },
+              { include_blank: t("notification_rules.form.frequency_prompt") } %>
+        <p class="text-xs text-secondary mt-1"><%= t("notification_rules.form.frequency_hint") %></p>
+      </div>
+
+      <%= f.check_box :active, { label: t("notification_rules.form.active_label") }, "1", "0" %>
+    </div>
+  </section>
+
+  <section class="space-y-4">
+    <div class="flex items-center gap-1 text-secondary">
+      <h3 class="text-sm font-medium text-primary"><%= t("notification_rules.form.apprise_heading") %></h3>
+    </div>
+    <div class="ml-6 space-y-3">
+      <%= f.text_field :apprise_notify_url,
+            label: t("notification_rules.form.apprise_url_label"),
+            hint: t("notification_rules.form.apprise_url_hint") %>
+    </div>
+  </section>
+
+  <% if notification_rule.transaction? %>
+    <section class="space-y-4" data-notification-rules-target="minimumAmountWrap">
+      <div class="flex items-center gap-1 text-secondary">
+        <h3 class="text-sm font-medium text-primary"><%= t("notification_rules.form.amount_heading") %></h3>
+      </div>
+      <div class="ml-6">
+        <%= f.number_field :minimum_amount, step: 0.01, label: t("notification_rules.form.minimum_amount_label"), hint: t("notification_rules.form.minimum_amount_hint") %>
+      </div>
+    </section>
+  <% end %>
+
+  <section class="space-y-4">
+    <div class="flex items-center gap-1 text-secondary">
+      <h3 class="text-sm font-medium text-primary">IF</h3>
+    </div>
+
+    <template data-notification-rules-target="conditionGroupTemplate">
+      <%= f.fields_for :conditions, NotificationRule::Condition.new(notification_rule: notification_rule, condition_type: "compound", operator: "and"), child_index: "IDX_PLACEHOLDER" do |cf| %>
+        <%= render "notification_rule/conditions/condition_group", form: cf %>
+      <% end %>
+    </template>
+
+    <template data-notification-rules-target="conditionTemplate">
+      <%= f.fields_for :conditions, NotificationRule::Condition.new(notification_rule: notification_rule, condition_type: notification_rule.condition_filters.first.key), child_index: "IDX_PLACEHOLDER" do |cf| %>
+        <%= render "notification_rule/conditions/condition", form: cf %>
+      <% end %>
+    </template>
+
+    <div class="ml-6 space-y-4">
+      <ul data-notification-rules-target="conditionsList" class="space-y-3">
+        <%= f.fields_for :conditions do |cf| %>
+          <% if cf.object.compound? %>
+            <%= render "notification_rule/conditions/condition_group", form: cf %>
+          <% else %>
+            <%= render "notification_rule/conditions/condition", form: cf %>
+          <% end %>
+        <% end %>
+      </ul>
+
+      <div class="flex items-center gap-2">
+        <%= render DS::Button.new(text: t("notification_rules.form.add_condition"), icon: "plus", variant: "ghost", type: "button", data: { action: "notification-rules#addCondition" }) %>
+        <%= render DS::Button.new(text: t("notification_rules.form.add_condition_group"), icon: "copy-plus", variant: "ghost", type: "button", data: { action: "notification-rules#addConditionGroup" }) %>
+      </div>
+    </div>
+  </section>
+
+  <section class="space-y-4">
+    <div class="flex items-center gap-1 text-secondary">
+      <h3 class="text-sm font-medium text-primary">FOR</h3>
+    </div>
+
+    <div class="ml-6 space-y-3">
+      <div class="flex items-center gap-2">
+        <%= f.radio_button :effective_date_enabled, false, checked: notification_rule.effective_date.nil?, data: { action: "notification-rules#clearEffectiveDate" } %>
+        <%= f.label :effective_date_enabled_false, t("notification_rules.form.all_dates", resource: t("notification_rules.badges.target_#{notification_rule.target}")), class: "text-sm text-primary" %>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2">
+          <%= f.radio_button :effective_date_enabled, true, checked: notification_rule.effective_date.present? %>
+          <%= f.label :effective_date_enabled_true, t("notification_rules.form.starting_from"), class: "text-sm text-primary" %>
+        </div>
+
+        <%= f.date_field :effective_date, container_class: "w-fit", data: { notification_rules_target: "effectiveDateInput" } %>
+      </div>
+    </div>
+  </section>
+
+  <%= f.submit t("notification_rules.form.submit") %>
+<% end %>

@@ -42,6 +42,8 @@ class TransactionsController < ApplicationController
 
     @pagy, @transactions = pagy(base_scope, limit: safe_per_page)
 
+    @quick_categorize_available = Transaction.next_uncategorized_for(Current.user, Current.family).present?
+
     # Preload split parent data
     entry_ids = @transactions.map { |t| t.entry.id }
 

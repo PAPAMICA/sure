@@ -185,7 +185,6 @@ Rails.application.routes.draw do
     resource :llm_usage, only: :show
     resource :guides, only: :show
     resource :bank_sync, only: :show, controller: "bank_sync"
-    resource :notification, only: %i[show update], controller: "notifications"
     resource :providers, only: %i[show update]
   end
 
@@ -318,6 +317,12 @@ Rails.application.routes.draw do
       route_for entry.entryable_name.pluralize, options
     else
       route_for entry.entryable_name, entry, options
+    end
+  end
+
+  resources :notification_rules, except: :show do
+    collection do
+      patch :update_default_apprise_url
     end
   end
 

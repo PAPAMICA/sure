@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_28_120000) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_29_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -949,6 +949,46 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_28_120000) do
     t.index ["user_id"], name: "index_mobile_devices_on_user_id"
   end
 
+  create_table "notification_rule_conditions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "notification_rule_id"
+    t.uuid "parent_id"
+    t.string "condition_type", null: false
+    t.string "operator", null: false
+    t.string "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["notification_rule_id"], name: "index_notification_rule_conditions_on_notification_rule_id"
+    t.index ["parent_id"], name: "index_notification_rule_conditions_on_parent_id"
+  end
+
+  create_table "notification_rule_deliveries", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "notification_rule_id", null: false
+    t.string "reference_type", null: false
+    t.uuid "reference_id", null: false
+    t.string "period_key", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["notification_rule_id", "reference_type", "reference_id", "period_key"], name: "idx_notification_deliveries_dedupe", unique: true
+    t.index ["notification_rule_id"], name: "index_notification_rule_deliveries_on_notification_rule_id"
+  end
+
+  create_table "notification_rules", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "family_id", null: false
+    t.string "name"
+    t.boolean "active", default: true, null: false
+    t.string "target", null: false
+    t.string "delivery", null: false
+    t.string "frequency"
+    t.text "apprise_notify_url"
+    t.decimal "minimum_amount", precision: 19, scale: 4
+    t.date "effective_date"
+    t.datetime "last_scheduled_run_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["family_id", "active"], name: "index_notification_rules_on_family_id_and_active"
+    t.index ["family_id"], name: "index_notification_rules_on_family_id"
+  end
+
   create_table "oauth_access_grants", force: :cascade do |t|
     t.string "resource_owner_id", null: false
     t.bigint "application_id", null: false
@@ -1584,6 +1624,10 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_28_120000) do
   add_foreign_key "mercury_items", "families"
   add_foreign_key "messages", "chats"
   add_foreign_key "mobile_devices", "users"
+  add_foreign_key "notification_rule_conditions", "notification_rule_conditions", column: "parent_id"
+  add_foreign_key "notification_rule_conditions", "notification_rules", on_delete: :cascade
+  add_foreign_key "notification_rule_deliveries", "notification_rules"
+  add_foreign_key "notification_rules", "families"
   add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
   add_foreign_key "oidc_identities", "users"
