@@ -1,13 +1,21 @@
 <% content_for :page_header do %>
   <div class="space-y-4 mb-6">
-    <header class="flex justify-between items-center text-primary font-medium gap-4">
-      <div class="space-y-1">
-        <h1 class="text-xl lg:text-3xl font-medium text-primary">
-          <%= t("reports.index.title") %>
-        </h1>
-        <p class="text-sm lg:text-base text-secondary">
-          <%= t("reports.index.subtitle") %>
-        </p>
+    <header class="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-start text-primary font-medium lg:gap-4">
+      <div class="space-y-3 flex-1 min-w-0">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 flex-wrap">
+          <div class="space-y-1">
+            <h1 class="text-xl lg:text-3xl font-medium text-primary">
+              <%= t("reports.index.title") %>
+            </h1>
+            <p class="text-sm lg:text-base text-secondary">
+              <%= t("reports.index.subtitle") %>
+            </p>
+          </div>
+          <%= render "shared/ledger_usage_switch",
+                personal_url: reports_path(request.query_parameters.symbolize_keys.merge(usage: "personal")),
+                professional_url: reports_path(request.query_parameters.symbolize_keys.merge(usage: "professional")),
+                current_usage: @ledger_usage %>
+        </div>
       </div>
 
       <%# Flash messages %>
@@ -18,7 +26,7 @@
       <% end %>
 
       <%# Print Report Button %>
-        <%= link_to print_reports_path(period_type: @period_type, start_date: @start_date, end_date: @end_date),
+        <%= link_to print_reports_path(period_type: @period_type, start_date: @start_date, end_date: @end_date, **with_ledger_usage_url_options),
                   target: "_blank",
                   rel: "noopener",
                   aria: { label: t("reports.index.print_report") },
@@ -34,31 +42,31 @@
         <%= render DS::Link.new(
           text: t("reports.index.periods.monthly"),
           variant: @period_type == :monthly ? "secondary" : "ghost",
-          href: reports_path(period_type: :monthly),
+          href: reports_path({ period_type: :monthly }.merge(with_ledger_usage_url_options)),
           size: :sm
         ) %>
         <%= render DS::Link.new(
           text: t("reports.index.periods.quarterly"),
           variant: @period_type == :quarterly ? "secondary" : "ghost",
-          href: reports_path(period_type: :quarterly),
+          href: reports_path({ period_type: :quarterly }.merge(with_ledger_usage_url_options)),
           size: :sm
         ) %>
         <%= render DS::Link.new(
           text: t("reports.index.periods.ytd"),
           variant: @period_type == :ytd ? "secondary" : "ghost",
-          href: reports_path(period_type: :ytd),
+          href: reports_path({ period_type: :ytd }.merge(with_ledger_usage_url_options)),
           size: :sm
         ) %>
         <%= render DS::Link.new(
           text: t("reports.index.periods.last_6_months"),
           variant: @period_type == :last_6_months ? "secondary" : "ghost",
-          href: reports_path(period_type: :last_6_months),
+          href: reports_path({ period_type: :last_6_months }.merge(with_ledger_usage_url_options)),
           size: :sm
         ) %>
         <%= render DS::Link.new(
           text: t("reports.index.periods.custom"),
           variant: @period_type == :custom ? "secondary" : "ghost",
-          href: reports_path(period_type: :custom),
+          href: reports_path({ period_type: :custom }.merge(with_ledger_usage_url_options)),
           size: :sm
         ) %>
       </div>
@@ -68,6 +76,7 @@
     <% if @period_type == :custom %>
       <%= form_with url: reports_path, method: :get, data: { controller: "auto-submit-form" }, class: "flex items-center gap-3 bg-surface-inset p-3 rounded-lg" do |f| %>
         <%= f.hidden_field :period_type, value: :custom %>
+        <%= hidden_field_tag :usage, @ledger_usage %>
 
         <div class="flex items-center gap-2">
           <label class="text-sm font-medium text-secondary"><%= t("reports.index.date_range.from") %></label>

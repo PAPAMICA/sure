@@ -1,11 +1,12 @@
 class InvestmentFlowStatement
   include Monetizable
 
-  attr_reader :family, :user
+  attr_reader :family, :user, :ledger_usage
 
-  def initialize(family, user: nil)
+  def initialize(family, user: nil, ledger_usage: nil)
     @family = family
     @user = user
+    @ledger_usage = ledger_usage
   end
 
   # Get contribution/withdrawal totals for a period
@@ -18,7 +19,9 @@ class InvestmentFlowStatement
       .where(investment_activity_label: %w[Contribution Withdrawal])
 
     if user
-      scope = scope.joins(entry: :account).merge(Account.included_in_finances_for(user))
+      account_scope = Account.included_in_finances_for(user)
+      account_scope = account_scope.merge(Account.with_ledger_usage(ledger_usage)) if ledger_usage.present?
+      scope = scope.joins(entry: :account).merge(account_scope)
     end
 
     transactions = scope

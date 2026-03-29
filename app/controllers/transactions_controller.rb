@@ -1,16 +1,18 @@
 class TransactionsController < ApplicationController
   include EntryableResource
+  include LedgerUsageFromParams
 
   before_action :set_entry_for_unlock, only: :unlock
-  before_action :store_params!, only: :index
+  before_action :set_ledger_usage_from_params, only: %i[index clear_filter quick_categorize update]
+  before_action :store_params!, only: :index # runs after set_ledger_usage on index
 
   def quick_categorize
-    transaction = Transaction.next_uncategorized_for(Current.user, Current.family)
+    transaction = Transaction.next_uncategorized_for(Current.user, Current.family, ledger_usage: @ledger_usage)
     @entry = transaction&.entry
     @transaction = transaction
 
     if @entry && !@entry.account.permission_for(Current.user).in?(%i[owner full_control read_write])
-      redirect_to transactions_path, alert: t("transactions.quick_categorize.no_access")
+      redirect_to transactions_path(**ledger_usage_url_options), alert: t("transactions.quick_categorize.no_access")
       return
     end
 
@@ -28,7 +30,7 @@ class TransactionsController < ApplicationController
 
   def index
     @q = search_params
-    accessible_account_ids = Current.user.accessible_accounts.pluck(:id)
+    accessible_account_ids = Current.user.accessible_accounts.merge(Account.with_ledger_usage(@ledger_usage)).pluck(:id)
     @search = Transaction::Search.new(Current.family, filters: @q, accessible_account_ids: accessible_account_ids)
 
     base_scope = @search.transactions_scope
@@ -41,7 +43,7 @@ class TransactionsController < ApplicationController
 
     @pagy, @transactions = pagy(base_scope, limit: safe_per_page)
 
-    @quick_categorize_available = Transaction.next_uncategorized_for(Current.user, Current.family).present?
+    @quick_categorize_available = Transaction.next_uncategorized_for(Current.user, Current.family, ledger_usage: @ledger_usage).present?
 
     # Preload split parent data
     entry_ids = @transactions.map { |t| t.entry.id }
@@ -67,14 +69,20 @@ class TransactionsController < ApplicationController
       Set.new
     end
 
-    # Load projected recurring transactions for next 10 days
-    @projected_recurring = Current.family.recurring_transactions
-                                  .accessible_by(Current.user)
-                                  .active
-                                  .where("next_expected_date <= ? AND next_expected_date >= ?",
-                                         10.days.from_now.to_date,
-                                         Date.current)
-                                  .includes(:merchant)
+    # Load projected recurring transactions for next 10 days (match Perso/Pro account filter)
+    ledger_account_ids = Current.user.accessible_accounts.merge(Account.with_ledger_usage(@ledger_usage)).pluck(:id)
+    recurring_base = Current.family.recurring_transactions
+      .accessible_by(Current.user)
+      .active
+      .where("next_expected_date <= ? AND next_expected_date >= ?",
+             10.days.from_now.to_date,
+             Date.current)
+      .includes(:merchant)
+    @projected_recurring = if ledger_account_ids.any?
+      recurring_base.where(account_id: nil).or(recurring_base.where(account_id: ledger_account_ids))
+    else
+      recurring_base.where(account_id: nil)
+    end
   end
 
   def clear_filter
@@ -100,6 +108,8 @@ class TransactionsController < ApplicationController
 
     # Add flag to indicate filters were explicitly cleared
     updated_params["filter_cleared"] = "1" if updated_params["q"].blank?
+
+    updated_params["usage"] = params[:usage].presence_in(Account.ledger_usages.values) || @ledger_usage
 
     Current.session.update!(prev_transaction_page_params: updated_params)
 
@@ -157,8 +167,8 @@ class TransactionsController < ApplicationController
             format.json { head :no_content }
             format.turbo_stream { head :no_content }
           else
-            format.html { redirect_to quick_categorize_transactions_path, notice: t("transactions.quick_categorize.details_saved") }
-            format.turbo_stream { stream_redirect_to quick_categorize_transactions_path, notice: t("transactions.quick_categorize.details_saved") }
+            format.html { redirect_to quick_categorize_transactions_path(**ledger_usage_url_options), notice: t("transactions.quick_categorize.details_saved") }
+            format.turbo_stream { stream_redirect_to quick_categorize_transactions_path(**ledger_usage_url_options), notice: t("transactions.quick_categorize.details_saved") }
           end
         else
           format.html { redirect_back_or_to account_path(@entry.account), notice: "Transaction updated" }
@@ -491,6 +501,8 @@ class TransactionsController < ApplicationController
         params_to_restore[:q] = stored_params["q"].presence || {}
         params_to_restore[:page] = stored_params["page"].presence || 1
         params_to_restore[:per_page] = stored_params["per_page"].presence || 50
+        u = stored_params["usage"].presence_in(Account.ledger_usages.values)
+        params_to_restore[:usage] = u if u
 
         redirect_to transactions_path(params_to_restore)
       else
@@ -498,14 +510,20 @@ class TransactionsController < ApplicationController
           prev_transaction_page_params: {
             q: search_params,
             page: params[:page],
-            per_page: params[:per_page]
+            per_page: params[:per_page],
+            usage: @ledger_usage
           }
         )
       end
     end
 
     def should_restore_params?
-      request.query_parameters.blank? && (stored_params["q"].present? || stored_params["page"].present? || stored_params["per_page"].present?)
+      request.query_parameters.blank? && (
+        stored_params["q"].present? ||
+        stored_params["page"].present? ||
+        stored_params["per_page"].present? ||
+        stored_params["usage"].present?
+      )
     end
 
     def stored_params

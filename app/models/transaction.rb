@@ -76,8 +76,10 @@ class Transaction < ApplicationRecord
   end
 
   # Next transaction matching "uncategorized" filters (quick-categorize flow)
-  def self.next_uncategorized_for(user, family)
-    accessible_account_ids = user.accessible_accounts.pluck(:id)
+  def self.next_uncategorized_for(user, family, ledger_usage: nil)
+    accessible_scope = user.accessible_accounts
+    accessible_scope = accessible_scope.merge(Account.with_ledger_usage(ledger_usage)) if ledger_usage.present?
+    accessible_account_ids = accessible_scope.pluck(:id)
     return nil if accessible_account_ids.empty?
 
     filters = {

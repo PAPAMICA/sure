@@ -1,4 +1,5 @@
-<%# locals: (entry:, transaction:, categories:) %>
+<%# locals: (entry:, transaction:, categories:, ledger_usage: "personal") %>
+<% lu = local_assigns.fetch(:ledger_usage, "personal") %>
 <% perm = entry && entry.account.permission_for(Current.user) %>
 <% full_edit = perm && perm.in?(%i[owner full_control]) %>
 <% can_note = perm && perm.in?(%i[owner full_control read_write]) %>
@@ -11,15 +12,16 @@
     <p class="text-secondary text-sm max-w-sm mx-auto"><%= t("transactions.quick_categorize.all_done_body") %></p>
     <%= render DS::Link.new(
       text: t("transactions.quick_categorize.back_to_list"),
-      href: transactions_path,
+      href: transactions_path(usage: lu),
       variant: "primary"
     ) %>
   </div>
 <% else %>
   <div class="space-y-6"
        data-controller="quick-categorize"
-       data-quick-categorize-autosave-url-value="<%= transaction_path(entry) %>"
+       data-quick-categorize-autosave-url-value="<%= transaction_path(transaction, usage: lu) %>"
        data-quick-categorize-transaction-id-value="<%= transaction.id %>"
+       data-quick-categorize-usage-value="<%= lu %>"
        data-quick-categorize-all-categories-text-value="<%= t("transactions.quick_categorize.all_categories_meta", count: categories.size) %>"
        data-quick-categorize-results-count-text-value="<%= t("transactions.quick_categorize.search_results_meta") %>">
     <%# Résumé transaction %>
@@ -127,6 +129,7 @@
               <%= button_to transaction_category_path(
                     entry,
                     quick_categorize: "1",
+                    usage: lu,
                     entry: {
                       entryable_type: "Transaction",
                       entryable_attributes: { id: transaction.id, category_id: category.id }

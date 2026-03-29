@@ -4,6 +4,7 @@
               method: :get,
               data: { controller: "auto-submit-form" } do |form| %>
   <%= hidden_field_tag :per_page, params[:per_page] %>
+  <%= hidden_field_tag :usage, @ledger_usage if defined?(@ledger_usage) && @ledger_usage.present? %>
 
   <div class="flex gap-2 mb-4">
     <div class="grow">

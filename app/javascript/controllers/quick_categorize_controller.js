@@ -6,6 +6,7 @@ export default class extends Controller {
   static values = {
     autosaveUrl: String,
     transactionId: String,
+    usage: String,
     allCategoriesText: String,
     resultsCountText: String,
   };
@@ -143,6 +144,9 @@ export default class extends Controller {
     body.append("quick_categorize_autosave", "1");
     body.append("entry[entryable_type]", "Transaction");
     body.append("entry[entryable_attributes][id]", this.transactionIdValue);
+    if (this.hasUsageValue && this.usageValue) {
+      body.append("usage", this.usageValue);
+    }
     if (this.hasNameTarget) body.append("entry[name]", this.nameTarget.value);
     if (this.hasNotesTarget) body.append("entry[notes]", this.notesTarget.value);
 

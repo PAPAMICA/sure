@@ -6,7 +6,7 @@
       <%= render DS::Link.new(
         variant: "icon",
         icon: "chevron-left",
-        href: budget_path(budget.previous_budget_param),
+        href: budget_path(budget.previous_budget_param, **with_ledger_usage_url_options),
       ) %>
     <% else %>
       <span class="text-subdued">
@@ -18,7 +18,7 @@
       <%= render DS::Link.new(
         variant: "icon",
         icon: "chevron-right",
-        href: budget_path(budget.next_budget_param),
+        href: budget_path(budget.next_budget_param, **with_ledger_usage_url_options),
       ) %>
     <% else %>
       <span class="text-subdued">
@@ -38,11 +38,15 @@
     <% end %>
   <% end %>
 
-  <div class="ml-auto">
+  <div class="ml-auto flex items-center gap-2 flex-wrap justify-end">
+    <%= render "shared/ledger_usage_switch",
+          personal_url: budget_path(budget.to_param, usage: "personal"),
+          professional_url: budget_path(budget.to_param, usage: "professional"),
+          current_usage: @ledger_usage %>
     <%= render DS::Link.new(
         text: "Today",
         variant: "outline",
-        href: budget_path(Budget.date_to_param(Date.current)),
+        href: budget_path(Budget.date_to_param(Date.current), **with_ledger_usage_url_options),
     ) %>
   </div>
 </div>

@@ -1,4 +1,7 @@
 class BudgetsController < ApplicationController
+  include LedgerUsageFromParams
+
+  before_action :set_ledger_usage_from_params, only: %i[index show edit update copy_previous picker]
   before_action :set_budget, only: %i[show edit update copy_previous]
 
   def index
@@ -15,12 +18,12 @@ class BudgetsController < ApplicationController
 
   def update
     @budget.update!(budget_params)
-    redirect_to budget_budget_categories_path(@budget)
+    redirect_to budget_budget_categories_path(@budget, **ledger_usage_url_options)
   end
 
   def copy_previous
     if @budget.initialized?
-      redirect_to budget_path(@budget), alert: t("budgets.copy_previous.already_initialized")
+      redirect_to budget_path(@budget, **ledger_usage_url_options), alert: t("budgets.copy_previous.already_initialized")
       return
     end
 
@@ -28,9 +31,9 @@ class BudgetsController < ApplicationController
 
     if source_budget
       @budget.copy_from!(source_budget)
-      redirect_to budget_budget_categories_path(@budget), notice: t("budgets.copy_previous.success", source_name: source_budget.name)
+      redirect_to budget_budget_categories_path(@budget, **ledger_usage_url_options), notice: t("budgets.copy_previous.success", source_name: source_budget.name)
     else
-      redirect_to budget_path(@budget), alert: t("budgets.copy_previous.no_source")
+      redirect_to budget_path(@budget, **ledger_usage_url_options), alert: t("budgets.copy_previous.no_source")
     end
   end
 
@@ -55,10 +58,13 @@ class BudgetsController < ApplicationController
       start_date = Budget.param_to_date(params[:month_year], family: Current.family)
       @budget = Budget.find_or_bootstrap(Current.family, start_date: start_date, user: Current.user)
       raise ActiveRecord::RecordNotFound unless @budget
+
+      @budget.ledger_usage = @ledger_usage
     end
 
     def redirect_to_current_month_budget
       current_budget = Budget.find_or_bootstrap(Current.family, start_date: Date.current, user: Current.user)
-      redirect_to budget_path(current_budget)
+      current_budget&.ledger_usage = @ledger_usage
+      redirect_to budget_path(current_budget, **ledger_usage_url_options)
     end
 end

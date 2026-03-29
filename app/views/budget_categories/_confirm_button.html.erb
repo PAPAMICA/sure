@@ -3,7 +3,7 @@
     text: "Confirm",
     variant: "primary",
     full_width: true,
-    href: budget_path(budget),
+    href: budget_path(budget, **with_ledger_usage_url_options),
     method: :get,
     disabled: !budget.allocations_valid?
   ) %>

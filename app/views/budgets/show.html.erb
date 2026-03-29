@@ -56,7 +56,7 @@
             text: "Edit",
             variant: "secondary",
             icon: "settings-2",
-            href: budget_budget_categories_path(@budget)
+            href: budget_budget_categories_path(@budget, **with_ledger_usage_url_options)
           ) %>
         <% end %>
       </div>

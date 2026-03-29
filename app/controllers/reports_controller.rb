@@ -1,5 +1,8 @@
 class ReportsController < ApplicationController
   include Periodable
+  include LedgerUsageFromParams
+
+  before_action :set_ledger_usage_from_params, only: %i[index print export_transactions google_sheets_instructions]
 
   # Allow API key authentication for exports (for Google Sheets integration)
   # Note: We run authentication_for_export which handles both session and API key auth
@@ -77,7 +80,8 @@ class ReportsController < ApplicationController
       start_date: params[:start_date],
       end_date: params[:end_date],
       sort_by: params[:sort_by],
-      sort_direction: params[:sort_direction]
+      sort_direction: params[:sort_direction],
+      usage: params[:usage].presence_in(Account.ledger_usages.values)
     }.compact
 
     # Build the full URL with the API key, if present
@@ -102,11 +106,12 @@ class ReportsController < ApplicationController
       @previous_period = build_previous_period
 
       # Get aggregated data
-      @current_income_totals = Current.family.income_statement.income_totals(period: @period)
-      @current_expense_totals = Current.family.income_statement.expense_totals(period: @period)
+      income = Current.family.income_statement(user: Current.user, ledger_usage: @ledger_usage)
+      @current_income_totals = income.income_totals(period: @period)
+      @current_expense_totals = income.expense_totals(period: @period)
 
-      @previous_income_totals = Current.family.income_statement.income_totals(period: @previous_period)
-      @previous_expense_totals = Current.family.income_statement.expense_totals(period: @previous_period)
+      @previous_income_totals = income.income_totals(period: @previous_period)
+      @previous_expense_totals = income.expense_totals(period: @previous_period)
 
       # Calculate summary metrics
       @summary_metrics = build_summary_metrics
@@ -124,10 +129,10 @@ class ReportsController < ApplicationController
       @investment_metrics = build_investment_metrics
 
       # Investment flows (contributions/withdrawals)
-      @investment_flows = InvestmentFlowStatement.new(Current.family, user: Current.user).period_totals(period: @period)
+      @investment_flows = InvestmentFlowStatement.new(Current.family, user: Current.user, ledger_usage: @ledger_usage).period_totals(period: @period)
 
       # Flags for view rendering
-      @has_accounts = accessible_accounts.any?
+      @has_accounts = Current.user.accessible_accounts.visible.merge(Account.with_ledger_usage(@ledger_usage)).any?
     end
 
     def preferences_params
@@ -145,7 +150,7 @@ class ReportsController < ApplicationController
           title: "reports.net_worth.title",
           partial: "reports/net_worth",
           locals: { net_worth_metrics: @net_worth_metrics },
-          visible: accessible_accounts.any?,
+          visible: @has_accounts,
           collapsible: true
         },
         {
@@ -303,6 +308,7 @@ class ReportsController < ApplicationController
       budget = Budget.find_or_bootstrap(Current.family, start_date: @start_date.beginning_of_month.to_date, user: Current.user)
       return 0 if budget.nil? || budget.allocated_spending.zero?
 
+      budget.ledger_usage = @ledger_usage
       (budget.actual_spending / budget.allocated_spending * 100).round(1)
     rescue StandardError
       nil
@@ -325,8 +331,9 @@ class ReportsController < ApplicationController
 
         period = Period.custom(start_date: month_start, end_date: month_end)
 
-        income = Current.family.income_statement.income_totals(period: period).total
-        expenses = Current.family.income_statement.expense_totals(period: period).total
+        inc = Current.family.income_statement(user: Current.user, ledger_usage: @ledger_usage)
+        income = inc.income_totals(period: period).total
+        expenses = inc.expense_totals(period: period).total
 
         trends << {
           month: month_start.strftime("%b %Y"),
@@ -444,7 +451,7 @@ class ReportsController < ApplicationController
     end
 
     def build_investment_metrics
-      investment_statement = Current.family.investment_statement
+      investment_statement = Current.family.investment_statement(user: Current.user, ledger_usage: @ledger_usage)
       investment_accounts = investment_statement.investment_accounts
 
       return { has_investments: false } unless investment_accounts.any?
@@ -473,14 +480,20 @@ class ReportsController < ApplicationController
       # Group holdings by tax treatment (from account)
       holdings_by_treatment = current_holdings.group_by { |h| h.account.tax_treatment || :taxable }
 
+      inv_account_ids = investment_statement.investment_accounts.pluck(:id)
+
       # Get sell trades in period with realized gains
       # Eager-load security, account, and accountable to avoid N+1
-      sell_trades = Current.family.trades
-        .joins(:entry)
-        .where(entries: { date: @period.date_range })
-        .where("trades.qty < 0")
-        .includes(:security, entry: { account: :accountable })
-        .to_a
+      sell_trades = if inv_account_ids.empty?
+        []
+      else
+        Current.family.trades
+          .joins(:entry)
+          .where(entries: { account_id: inv_account_ids, date: @period.date_range })
+          .where("trades.qty < 0")
+          .includes(:security, entry: { account: :accountable })
+          .to_a
+      end
 
       # Preload holdings for all accounts that have sell trades to avoid N+1 in realized_gain_loss
       account_ids = sell_trades.map { |t| t.entry.account_id }.uniq
@@ -528,7 +541,7 @@ class ReportsController < ApplicationController
     end
 
     def build_net_worth_metrics
-      balance_sheet = Current.family.balance_sheet
+      balance_sheet = Current.family.balance_sheet(user: Current.user, ledger_usage: @ledger_usage)
       currency = Current.family.currency
 
       # Current net worth
@@ -574,7 +587,7 @@ class ReportsController < ApplicationController
     # Filters applicable to both transactions and trades (entry-level + category)
     def apply_entry_filters(scope)
       # Scope to user's finance accounts
-      finance_account_ids = Current.user&.finance_accounts&.pluck(:id) || []
+      finance_account_ids = Current.user&.finance_accounts(ledger_usage: @ledger_usage)&.pluck(:id) || []
       scope = scope.where(entries: { account_id: finance_account_ids })
 
       # Filter by category (including subcategories)

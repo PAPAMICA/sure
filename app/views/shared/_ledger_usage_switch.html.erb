@@ -1,0 +1,19 @@
+<%# locals: (personal_url:, professional_url:, current_usage:) %>
+<div class="inline-flex rounded-lg border border-primary p-0.5 bg-container-inset shrink-0" role="group" aria-label="<%= t("pages.dashboard.ledger_usage.aria_label") %>">
+  <% personal_active = current_usage.to_s == "personal" %>
+  <% pro_active = current_usage.to_s == "professional" %>
+  <%= link_to personal_url,
+        class: [
+          "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
+          personal_active ? "bg-container text-primary shadow-border-xs" : "text-secondary hover:text-primary"
+        ].join(" ") do %>
+    <%= t("pages.dashboard.ledger_usage.personal") %>
+  <% end %>
+  <%= link_to professional_url,
+        class: [
+          "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
+          pro_active ? "bg-container text-primary shadow-border-xs" : "text-secondary hover:text-primary"
+        ].join(" ") do %>
+    <%= t("pages.dashboard.ledger_usage.professional") %>
+  <% end %>
+</div>

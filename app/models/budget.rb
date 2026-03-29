@@ -3,7 +3,7 @@ class Budget < ApplicationRecord
 
   PARAM_DATE_FORMAT = "%b-%Y"
 
-  attr_accessor :current_user
+  attr_accessor :current_user, :ledger_usage
 
   belongs_to :family
 
@@ -112,7 +112,9 @@ class Budget < ApplicationRecord
   def transactions
     scope = family.transactions.visible.in_period(period)
     if current_user
-      scope = scope.joins(:entry).where(entries: { account_id: family.accounts.accessible_by(current_user).select(:id) })
+      acc_scope = family.accounts.accessible_by(current_user)
+      acc_scope = acc_scope.merge(Account.with_ledger_usage(ledger_usage)) if ledger_usage.present?
+      scope = scope.joins(:entry).where(entries: { account_id: acc_scope.select(:id) })
     end
     scope
   end
@@ -280,11 +282,11 @@ class Budget < ApplicationRecord
   # Income: How much user earned relative to what they expected to earn
   # =============================================================================
   def estimated_income
-    family.income_statement.median_income(interval: "month")
+    income_statement.median_income(interval: "month")
   end
 
   def actual_income
-    family.income_statement.income_totals(period: self.period).total
+    income_statement.income_totals(period: self.period).total
   end
 
   def actual_income_percent
@@ -305,7 +307,7 @@ class Budget < ApplicationRecord
 
   private
     def income_statement
-      @income_statement ||= family.income_statement(user: current_user)
+      @income_statement ||= family.income_statement(user: current_user, ledger_usage: ledger_usage)
     end
 
     def net_totals

@@ -1,13 +1,19 @@
 <div class="space-y-4 pb-6 lg:pb-12 flex flex-col">
-  <header class="flex justify-between items-center text-primary font-medium">
-    <h1 class="text-xl">Transactions</h1>
+  <header class="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center text-primary font-medium">
+    <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 min-w-0">
+      <h1 class="text-xl shrink-0">Transactions</h1>
+      <%= render "shared/ledger_usage_switch",
+            personal_url: transactions_path(request.query_parameters.merge(usage: "personal")),
+            professional_url: transactions_path(request.query_parameters.merge(usage: "professional")),
+            current_usage: @ledger_usage %>
+    </div>
     <div class="flex items-center gap-5">
       <div class="flex items-center gap-2">
         <%= render DS::Menu.new do |menu| %>
           <% menu.with_item(variant: "link", text: "New rule", href: new_rule_path(resource_type: "transaction"), icon: "plus", data: { turbo_frame: :modal }) %>
           <% menu.with_item(variant: "link", text: "Edit rules", href: rules_path, icon: "git-branch", data: { turbo_frame: :_top }) %>
           <% if @quick_categorize_available %>
-            <% menu.with_item(variant: "link", text: t("transactions.index.quick_categorize"), href: quick_categorize_transactions_path, icon: "layout-grid", data: { turbo_frame: :_top }) %>
+            <% menu.with_item(variant: "link", text: t("transactions.index.quick_categorize"), href: quick_categorize_transactions_path(**with_ledger_usage_url_options), icon: "layout-grid", data: { turbo_frame: :_top }) %>
           <% end %>
           <% menu.with_item(variant: "link", text: "Edit categories", href: categories_path, icon: "shapes", data: { turbo_frame: :_top }) %>
           <% menu.with_item(variant: "link", text: "Edit tags", href: tags_path, icon: "tags", data: { turbo_frame: :_top }) %>
@@ -31,7 +37,7 @@
             text: t("transactions.index.quick_categorize"),
             icon: "layout-grid",
             variant: "secondary",
-            href: quick_categorize_transactions_path,
+            href: quick_categorize_transactions_path(**with_ledger_usage_url_options),
             data: { turbo_frame: "_top" },
             class: "hidden md:inline-flex"
           ) %>

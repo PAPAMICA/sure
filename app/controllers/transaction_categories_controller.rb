@@ -23,9 +23,10 @@ class TransactionCategoriesController < ApplicationController
 
     respond_to do |format|
       if params[:quick_categorize].present?
-        format.html { redirect_to quick_categorize_transactions_path }
+        qc_ledger = params[:usage].presence_in(Account.ledger_usages.values) || "personal"
+        format.html { redirect_to quick_categorize_transactions_path(usage: qc_ledger) }
         format.turbo_stream do
-          next_transaction = Transaction.next_uncategorized_for(Current.user, Current.family)
+          next_transaction = Transaction.next_uncategorized_for(Current.user, Current.family, ledger_usage: qc_ledger)
           # Use +update+ so the <turbo-frame id="quick_categorize_card"> wrapper stays in the DOM.
           # +replace+ would remove the frame; later category picks would not target the frame and break the flow.
           render turbo_stream: turbo_stream.update(
@@ -34,7 +35,8 @@ class TransactionCategoriesController < ApplicationController
             locals: {
               entry: next_transaction&.entry,
               transaction: next_transaction,
-              categories: Current.family.categories.alphabetically
+              categories: Current.family.categories.alphabetically,
+              ledger_usage: qc_ledger
             }
           )
         end

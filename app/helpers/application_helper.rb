@@ -178,6 +178,13 @@ module ApplicationHelper
     number_with_precision(qty, precision: precision, strip_insignificant_zeros: true)
   end
 
+  # For Perso/Pro links: omit param when @ledger_usage is unset (defaults to personal server-side).
+  def with_ledger_usage_url_options
+    return {} unless defined?(@ledger_usage) && @ledger_usage.present?
+
+    { usage: @ledger_usage }
+  end
+
   private
     def calculate_total(item, money_method, negate)
       # Filter out transfer-type transactions from entries

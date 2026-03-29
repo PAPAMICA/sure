@@ -1,4 +1,7 @@
 class BudgetCategoriesController < ApplicationController
+  include LedgerUsageFromParams
+
+  before_action :set_ledger_usage_from_params, only: %i[index show update]
   before_action :set_budget
 
   def index
@@ -27,7 +30,7 @@ class BudgetCategoriesController < ApplicationController
     if @budget_category.update(budget_category_params)
       respond_to do |format|
         format.turbo_stream
-        format.html { redirect_to budget_budget_categories_path(@budget) }
+        format.html { redirect_to budget_budget_categories_path(@budget, **ledger_usage_url_options) }
       end
     else
       render :index, status: :unprocessable_entity
@@ -42,7 +45,9 @@ class BudgetCategoriesController < ApplicationController
     end
 
     def set_budget
-      start_date = Budget.param_to_date(params[:budget_month_year], family: Current.family)
+      month_key = params[:month_year].presence || params[:budget_month_year]
+      start_date = Budget.param_to_date(month_key, family: Current.family)
       @budget = Current.family.budgets.find_by(start_date: start_date)
+      @budget&.ledger_usage = @ledger_usage
     end
 end

@@ -5,7 +5,7 @@
     <%= render DS::Link.new(
       text: t(".back_to_list"),
       icon: "chevron-left",
-      href: transactions_path,
+      href: transactions_path(**with_ledger_usage_url_options),
       variant: "ghost",
       size: :sm
     ) %>
@@ -17,6 +17,7 @@
     <%= render "transactions/quick_categorize_card",
           entry: @entry,
           transaction: @transaction,
-          categories: @categories %>
+          categories: @categories,
+          ledger_usage: @ledger_usage %>
   <% end %>
 </div>
