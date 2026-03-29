@@ -6,17 +6,17 @@ class CategoriesTest < ApplicationSystemTestCase
   end
 
   test "can create category" do
-    visit categories_url
+    visit categories_url(usage: "personal")
     click_link I18n.t("categories.new.new_category")
     fill_in "Name", with: "My Shiny New Category"
     click_button "Create Category"
 
-    visit categories_url
+    visit categories_url(usage: "personal")
     assert_text "My Shiny New Category"
   end
 
   test "trying to create a duplicate category fails" do
-    visit categories_url
+    visit categories_url(usage: "personal")
     click_link I18n.t("categories.new.new_category")
     fill_in "Name", with: categories(:food_and_drink).name
     click_button "Create Category"

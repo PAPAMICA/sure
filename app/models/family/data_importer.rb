@@ -403,9 +403,10 @@ class Family::DataImporter
 
       # Map category names to IDs
       if condition_type == "transaction_category"
-        category = @family.categories.find_by(name: value)
+        category = @family.categories.find_by(name: value, ledger_usage: "personal")
         category ||= @family.categories.create!(
           name: value,
+          ledger_usage: "personal",
           color: Category::UNCATEGORIZED_COLOR,
           classification_unused: "expense",
           lucide_icon: "shapes"
@@ -431,9 +432,10 @@ class Family::DataImporter
 
       # Map category names to IDs
       if action_type == "set_transaction_category"
-        category = @family.categories.find_by(name: value)
+        category = @family.categories.find_by(name: value, ledger_usage: "personal")
         category ||= @family.categories.create!(
           name: value,
+          ledger_usage: "personal",
           color: Category::UNCATEGORIZED_COLOR,
           classification_unused: "expense",
           lucide_icon: "shapes"

@@ -5,7 +5,10 @@ class BudgetCategoriesController < ApplicationController
   before_action :set_budget
 
   def index
-    @budget_categories = @budget.budget_categories.includes(:category)
+    @budget_categories = @budget.budget_categories
+      .joins(:category)
+      .where(categories: { ledger_usage: @ledger_usage })
+      .includes(:category)
     render layout: "wizard"
   end
 

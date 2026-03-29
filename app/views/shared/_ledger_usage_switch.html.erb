@@ -1,19 +1,25 @@
 <%# locals: (personal_url:, professional_url:, current_usage:) %>
+<% personal_label = t("pages.dashboard.ledger_usage.personal") %>
+<% professional_label = t("pages.dashboard.ledger_usage.professional") %>
 <div class="inline-flex rounded-lg border border-primary p-0.5 bg-container-inset shrink-0" role="group" aria-label="<%= t("pages.dashboard.ledger_usage.aria_label") %>">
   <% personal_active = current_usage.to_s == "personal" %>
   <% pro_active = current_usage.to_s == "professional" %>
   <%= link_to personal_url,
-        class: [
-          "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
+        class: class_names(
+          "inline-flex items-center justify-center w-9 h-9 rounded-md transition-colors",
           personal_active ? "bg-container text-primary shadow-border-xs" : "text-secondary hover:text-primary"
-        ].join(" ") do %>
-    <%= t("pages.dashboard.ledger_usage.personal") %>
+        ),
+        title: personal_label,
+        aria: { label: personal_label } do %>
+    <%= icon "user", size: "sm", color: "current" %>
   <% end %>
   <%= link_to professional_url,
-        class: [
-          "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
+        class: class_names(
+          "inline-flex items-center justify-center w-9 h-9 rounded-md transition-colors",
           pro_active ? "bg-container text-primary shadow-border-xs" : "text-secondary hover:text-primary"
-        ].join(" ") do %>
-    <%= t("pages.dashboard.ledger_usage.professional") %>
+        ),
+        title: professional_label,
+        aria: { label: professional_label } do %>
+    <%= icon "briefcase", size: "sm", color: "current" %>
   <% end %>
 </div>

@@ -1,30 +1,36 @@
 class CategoriesController < ApplicationController
+  include LedgerUsageFromParams
+
+  before_action :set_ledger_usage_from_params, only: %i[index new create edit update destroy destroy_all bootstrap]
   before_action :set_category, only: %i[edit update destroy]
   before_action :set_categories, only: %i[update edit]
   before_action :set_transaction, only: :create
 
   def index
-    @categories = Current.family.categories.alphabetically
+    @categories = Current.family.categories.with_ledger_usage(@ledger_usage).alphabetically
 
     render layout: "settings"
   end
 
   def new
-    @category = Current.family.categories.new color: Category::COLORS.sample
+    @category = Current.family.categories.with_ledger_usage(@ledger_usage).new(
+      color: Category::COLORS.sample,
+      ledger_usage: @ledger_usage
+    )
     set_categories
   end
 
   def create
-    @category = Current.family.categories.new(category_params)
+    @category = Current.family.categories.new(category_params.merge(ledger_usage: @ledger_usage))
 
     if @category.save
       @transaction.update(category_id: @category.id) if @transaction
 
       flash[:notice] = t(".success")
 
-      redirect_target_url = request.referer || categories_path
+      redirect_target_url = request.referer || categories_path(**ledger_usage_url_options)
       respond_to do |format|
-        format.html { redirect_back_or_to categories_path, notice: t(".success") }
+        format.html { redirect_back_or_to categories_path(**ledger_usage_url_options), notice: t(".success") }
         format.turbo_stream { render turbo_stream: turbo_stream.action(:redirect, redirect_target_url) }
       end
     else
@@ -40,9 +46,9 @@ class CategoriesController < ApplicationController
     if @category.update(category_params)
       flash[:notice] = t(".success")
 
-      redirect_target_url = request.referer || categories_path
+      redirect_target_url = request.referer || categories_path(**ledger_usage_url_options)
       respond_to do |format|
-        format.html { redirect_back_or_to categories_path, notice: t(".success") }
+        format.html { redirect_back_or_to categories_path(**ledger_usage_url_options), notice: t(".success") }
         format.turbo_stream { render turbo_stream: turbo_stream.action(:redirect, redirect_target_url) }
       end
     else
@@ -53,28 +59,28 @@ class CategoriesController < ApplicationController
   def destroy
     @category.destroy
 
-    redirect_back_or_to categories_path, notice: t(".success")
+    redirect_back_or_to categories_path(**ledger_usage_url_options), notice: t(".success")
   end
 
   def destroy_all
-    Current.family.categories.destroy_all
-    redirect_back_or_to categories_path, notice: "All categories deleted"
+    Current.family.categories.with_ledger_usage(@ledger_usage).destroy_all
+    redirect_back_or_to categories_path(**ledger_usage_url_options), notice: "All categories deleted"
   end
 
   def bootstrap
-    Current.family.categories.bootstrap!
+    Category.bootstrap_default_set!(Current.family, ledger_usage: @ledger_usage)
 
-    redirect_back_or_to categories_path, notice: t(".success")
+    redirect_back_or_to categories_path(**ledger_usage_url_options), notice: t(".success")
   end
 
   private
     def set_category
-      @category = Current.family.categories.find(params[:id])
+      @category = Current.family.categories.with_ledger_usage(@ledger_usage).find(params[:id])
     end
 
     def set_categories
       @categories = unless @category.parent?
-        Current.family.categories.alphabetically.roots.where.not(id: @category.id)
+        Current.family.categories.with_ledger_usage(@ledger_usage).alphabetically.roots.where.not(id: @category.id)
       else
         []
       end

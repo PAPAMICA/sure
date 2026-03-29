@@ -81,7 +81,8 @@ module Family::AutoTransferMatchable
         if Transfer.kind_for_account(destination_account) == "investment_contribution"
           outflow_txn = Transaction.find(match.outflow_transaction_id)
           if outflow_txn.category_id.blank?
-            category = destination_account.family.investment_contributions_category
+            source_account = outflow_txn.entry.account
+            category = source_account.family.investment_contributions_category(ledger_usage: source_account.ledger_usage)
             outflow_txn.update!(category: category) if category.present?
           end
         end

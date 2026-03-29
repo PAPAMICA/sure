@@ -72,6 +72,10 @@ class Api::V1::CategoriesController < Api::V1::BaseController
         query = query.where(parent_id: params[:parent_id])
       end
 
+      if (u = params[:usage].presence_in(Account.ledger_usages.values))
+        query = query.where(ledger_usage: u)
+      end
+
       query
     end
 

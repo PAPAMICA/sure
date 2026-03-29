@@ -11,10 +11,6 @@
               <%= t("reports.index.subtitle") %>
             </p>
           </div>
-          <%= render "shared/ledger_usage_switch",
-                personal_url: reports_path(request.query_parameters.symbolize_keys.merge(usage: "personal")),
-                professional_url: reports_path(request.query_parameters.symbolize_keys.merge(usage: "professional")),
-                current_usage: @ledger_usage %>
         </div>
       </div>
 

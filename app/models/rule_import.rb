@@ -207,10 +207,11 @@ class RuleImport < Import
 
       # Map category names to UUIDs
       if condition_type == "transaction_category"
-        category = family.categories.find_by(name: value)
+        category = family.categories.find_by(name: value, ledger_usage: "personal")
         unless category
           category = family.categories.create!(
             name: value,
+            ledger_usage: "personal",
             color: Category::UNCATEGORIZED_COLOR,
             lucide_icon: "shapes"
           )
@@ -238,11 +239,12 @@ class RuleImport < Import
 
       # Map category names to UUIDs
       if action_type == "set_transaction_category"
-        category = family.categories.find_by(name: value)
+        category = family.categories.find_by(name: value, ledger_usage: "personal")
         # Create category if it doesn't exist
         unless category
           category = family.categories.create!(
             name: value,
+            ledger_usage: "personal",
             color: Category::UNCATEGORIZED_COLOR,
             lucide_icon: "shapes"
           )

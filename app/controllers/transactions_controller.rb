@@ -16,16 +16,17 @@ class TransactionsController < ApplicationController
       return
     end
 
-    @categories = Current.family.categories.alphabetically
+    @categories = Current.family.categories.with_ledger_usage(@ledger_usage).alphabetically
   end
 
   def new
     prefill_params_from_duplicate!
     super
     apply_duplicate_attributes!
-    @income_categories = Current.family.categories.incomes.alphabetically
-    @expense_categories = Current.family.categories.expenses.alphabetically
-    @categories = Current.family.categories.alphabetically
+    lu = transaction_form_ledger_usage
+    @income_categories = Current.family.categories.with_ledger_usage(lu).incomes.alphabetically
+    @expense_categories = Current.family.categories.with_ledger_usage(lu).expenses.alphabetically
+    @categories = Current.family.categories.with_ledger_usage(lu).alphabetically
   end
 
   def index
@@ -136,6 +137,10 @@ class TransactionsController < ApplicationController
         format.turbo_stream { stream_redirect_back_or_to(account_path(@entry.account)) }
       end
     else
+      lu = transaction_form_ledger_usage
+      @income_categories = Current.family.categories.with_ledger_usage(lu).incomes.alphabetically
+      @expense_categories = Current.family.categories.with_ledger_usage(lu).expenses.alphabetically
+      @categories = Current.family.categories.with_ledger_usage(lu).alphabetically
       render :new, status: :unprocessable_entity
     end
   end
@@ -614,5 +619,13 @@ class TransactionsController < ApplicationController
       end
 
       [ qty, price ]
+    end
+
+    def transaction_form_ledger_usage
+      account_id = params.dig(:entry, :account_id).presence || params[:account_id].presence
+      account = Current.user.accessible_accounts.find_by(id: account_id) if account_id.present?
+      account ||= Current.user.default_account_for_transactions
+      lu = (account&.ledger_usage || "personal").to_s
+      lu.presence_in(Account.ledger_usages.values) || "personal"
     end
 end

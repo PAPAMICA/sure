@@ -84,7 +84,7 @@ module ActiveSupport
     # Uses family locale to ensure consistent naming
     def ensure_investment_contributions_category(family)
       I18n.with_locale(family.locale) do
-        family.categories.find_or_create_by!(name: Category.investment_contributions_name) do |c|
+        family.categories.find_or_create_by!(name: Category.investment_contributions_name, ledger_usage: "personal") do |c|
           c.color = "#0d9488"
           c.lucide_icon = "trending-up"
         end

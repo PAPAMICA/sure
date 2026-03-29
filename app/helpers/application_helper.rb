@@ -180,9 +180,29 @@ module ApplicationHelper
 
   # For Perso/Pro links: omit param when @ledger_usage is unset (defaults to personal server-side).
   def with_ledger_usage_url_options
-    return {} unless defined?(@ledger_usage) && @ledger_usage.present?
+    u = ledger_usage_switch_current
+    return {} unless u.present?
 
-    { usage: @ledger_usage }
+    { usage: u }
+  end
+
+  # Perso/Pro toggle: shown in the main chrome when @ledger_usage or @dashboard_ledger_usage is set.
+  def show_ledger_usage_switch?
+    ledger_usage_switch_current.to_s.in?(Account.ledger_usages.values)
+  end
+
+  def ledger_usage_switch_current
+    if defined?(@ledger_usage) && @ledger_usage.present?
+      @ledger_usage
+    elsif defined?(@dashboard_ledger_usage) && @dashboard_ledger_usage.present?
+      @dashboard_ledger_usage
+    end
+  end
+
+  def ledger_path_with_usage(usage)
+    qp = request.query_parameters.deep_dup
+    qp["usage"] = usage
+    "#{request.path}?#{qp.to_query}"
   end
 
   # Query params for root_path / account_path when linking to the same chart period (Perso/Pro toggle, etc.).

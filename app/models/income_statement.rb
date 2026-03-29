@@ -132,7 +132,11 @@ class IncomeStatement
     NetCategoryTotals = Data.define(:net_expense_categories, :net_income_categories, :total_net_expense, :total_net_income, :currency)
 
     def categories
-      @categories ||= family.categories.all.to_a
+      @categories ||= begin
+        scope = family.categories
+        scope = scope.with_ledger_usage(ledger_usage) if ledger_usage.present?
+        scope.to_a
+      end
     end
 
     def build_period_total(classification:, period:)

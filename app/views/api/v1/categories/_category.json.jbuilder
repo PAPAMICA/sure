@@ -2,6 +2,7 @@
 
 json.id category.id
 json.name category.name
+json.ledger_usage category.ledger_usage
 json.color category.color
 json.icon category.lucide_icon
 

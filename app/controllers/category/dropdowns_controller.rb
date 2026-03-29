@@ -17,6 +17,8 @@ class Category::DropdownsController < ApplicationController
     end
 
     def categories_scope
-      Current.family.categories.alphabetically
+      scope = Current.family.categories.alphabetically
+      scope = scope.with_ledger_usage(@transaction.entry.account.ledger_usage) if @transaction
+      scope
     end
 end

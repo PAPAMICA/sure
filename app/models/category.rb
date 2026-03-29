@@ -8,11 +8,15 @@ class Category < ApplicationRecord
   has_many :subcategories, class_name: "Category", foreign_key: :parent_id, dependent: :nullify
   belongs_to :parent, class_name: "Category", optional: true
 
+  enum :ledger_usage, { personal: "personal", professional: "professional" }, validate: true
+
   validates :name, :color, :lucide_icon, :family, presence: true
-  validates :name, uniqueness: { scope: :family_id }
+  validates :name, uniqueness: { scope: [ :family_id, :ledger_usage ] }
 
   validate :category_level_limit
+  validate :parent_matches_ledger_usage
 
+  before_validation :sync_ledger_usage_from_parent
   before_save :inherit_color_from_parent
 
   scope :alphabetically, -> { order(:name) }
@@ -26,6 +30,14 @@ class Category < ApplicationRecord
   # Legacy scopes - classification removed; these now return all categories
   scope :incomes, -> { all }
   scope :expenses, -> { all }
+  scope :with_ledger_usage, ->(usage) {
+    u = usage.to_s
+    if u.in?(Account.ledger_usages.values)
+      where(ledger_usage: u)
+    else
+      all
+    end
+  }
 
   COLORS = %w[#e99537 #4da568 #6471eb #db5a54 #df4e92 #c44fe9 #eb5429 #61c9ea #805dee #6ad28a]
 
@@ -137,9 +149,11 @@ class Category < ApplicationRecord
       ]
     end
 
-    def bootstrap!
+    # Seeds default categories for one ledger (personal or professional) on +family+.
+    def bootstrap_default_set!(family, ledger_usage: "personal")
+      lu = ledger_usage.to_s.in?(Account.ledger_usages.values) ? ledger_usage.to_s : "personal"
       default_categories.each do |name, color, icon|
-        find_or_create_by!(name: name) do |category|
+        family.categories.find_or_create_by!(name: name, ledger_usage: lu) do |category|
           category.color = color
           category.lucide_icon = icon
         end
@@ -247,6 +261,15 @@ class Category < ApplicationRecord
     subcategory? ? "#{parent.name} > #{name}" : name
   end
 
+  # For selects when personal and professional can share the same name
+  def name_for_select
+    if professional?
+      "#{name} (#{I18n.t("pages.dashboard.ledger_usage.professional")})"
+    else
+      name
+    end
+  end
+
   # Predicate: is this the synthetic "Uncategorized" category?
   def uncategorized?
     !persisted? && name == I18n.t(UNCATEGORIZED_NAME_KEY)
@@ -263,6 +286,16 @@ class Category < ApplicationRecord
   end
 
   private
+    def sync_ledger_usage_from_parent
+      self.ledger_usage = parent.ledger_usage if parent.present?
+    end
+
+    def parent_matches_ledger_usage
+      return unless parent_id.present? && parent
+
+      errors.add(:parent_id, :ledger_mismatch) unless parent.ledger_usage == ledger_usage
+    end
+
     def category_level_limit
       if (subcategory? && parent.subcategory?) || (parent? && subcategory?)
         errors.add(:parent, "can't have more than 2 levels of subcategories")

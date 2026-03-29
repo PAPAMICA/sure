@@ -204,10 +204,11 @@ RSpec.configure do |config|
           },
           Category: {
             type: :object,
-            required: %w[id name color icon],
+            required: %w[id name ledger_usage color icon],
             properties: {
               id: { type: :string, format: :uuid },
               name: { type: :string },
+              ledger_usage: { type: :string, enum: %w[personal professional] },
               color: { type: :string },
               icon: { type: :string }
             }
@@ -222,10 +223,11 @@ RSpec.configure do |config|
           },
           CategoryDetail: {
             type: :object,
-            required: %w[id name color icon subcategories_count created_at updated_at],
+            required: %w[id name ledger_usage color icon subcategories_count created_at updated_at],
             properties: {
               id: { type: :string, format: :uuid },
               name: { type: :string },
+              ledger_usage: { type: :string, enum: %w[personal professional] },
               color: { type: :string },
               icon: { type: :string },
               parent: { '$ref' => '#/components/schemas/CategoryParent', nullable: true },

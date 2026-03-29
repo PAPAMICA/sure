@@ -8,7 +8,7 @@ class Category::DeletionsController < ApplicationController
   def create
     @category.replace_and_destroy! @replacement_category
 
-    redirect_back_or_to transactions_path, notice: t(".success")
+    redirect_back_or_to categories_path(usage: @category.ledger_usage), notice: t(".success")
   end
 
   private

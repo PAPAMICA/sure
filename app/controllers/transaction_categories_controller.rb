@@ -35,7 +35,7 @@ class TransactionCategoriesController < ApplicationController
             locals: {
               entry: next_transaction&.entry,
               transaction: next_transaction,
-              categories: Current.family.categories.alphabetically,
+              categories: Current.family.categories.with_ledger_usage(qc_ledger).alphabetically,
               ledger_usage: qc_ledger
             }
           )

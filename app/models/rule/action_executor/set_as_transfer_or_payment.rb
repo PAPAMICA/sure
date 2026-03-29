@@ -25,7 +25,8 @@ class Rule::ActionExecutor::SetAsTransferOrPayment < Rule::ActionExecutor
           outflow_attrs = { kind: outflow_kind }
 
           if outflow_kind == "investment_contribution"
-            category = destination_account.family.investment_contributions_category
+            source_account = transfer.outflow_transaction.entry.account
+            category = source_account.family.investment_contributions_category(ledger_usage: source_account.ledger_usage)
             outflow_attrs[:category] = category if category.present? && transfer.outflow_transaction.category_id.blank?
           end
 

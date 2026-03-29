@@ -23,6 +23,7 @@ class Transaction < ApplicationRecord
   ].freeze
 
   validate :validate_attachments, if: -> { attachments.attached? }
+  validate :category_matches_account_ledger_usage
 
   accepts_nested_attributes_for :taggings, allow_destroy: true
 
@@ -101,7 +102,8 @@ class Transaction < ApplicationRecord
   def set_category!(category)
     if category.is_a?(String)
       category = entry.account.family.categories.find_or_create_by!(
-        name: category
+        name: category,
+        ledger_usage: entry.account.ledger_usage
       )
     end
 
@@ -212,6 +214,15 @@ class Transaction < ApplicationRecord
   end
 
   private
+
+    def category_matches_account_ledger_usage
+      return if category_id.blank?
+      return unless category && entry&.account
+
+      unless category.ledger_usage == entry.account.ledger_usage
+        errors.add(:category_id, :ledger_mismatch)
+      end
+    end
 
     def validate_attachments
       # Check attachment count limit

@@ -2,10 +2,6 @@
   <header class="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center text-primary font-medium">
     <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 min-w-0">
       <h1 class="text-xl shrink-0">Transactions</h1>
-      <%= render "shared/ledger_usage_switch",
-            personal_url: transactions_path(request.query_parameters.merge(usage: "personal")),
-            professional_url: transactions_path(request.query_parameters.merge(usage: "professional")),
-            current_usage: @ledger_usage %>
     </div>
     <div class="flex items-center gap-5">
       <div class="flex items-center gap-2">
@@ -15,7 +11,7 @@
           <% if @quick_categorize_available %>
             <% menu.with_item(variant: "link", text: t("transactions.index.quick_categorize"), href: quick_categorize_transactions_path(**with_ledger_usage_url_options), icon: "layout-grid", data: { turbo_frame: :_top }) %>
           <% end %>
-          <% menu.with_item(variant: "link", text: "Edit categories", href: categories_path, icon: "shapes", data: { turbo_frame: :_top }) %>
+          <% menu.with_item(variant: "link", text: "Edit categories", href: categories_path(**with_ledger_usage_url_options), icon: "shapes", data: { turbo_frame: :_top }) %>
           <% menu.with_item(variant: "link", text: "Edit tags", href: tags_path, icon: "tags", data: { turbo_frame: :_top }) %>
           <% menu.with_item(variant: "link", text: "Edit merchants", href: family_merchants_path, icon: "store", data: { turbo_frame: :_top }) %>
           <% menu.with_item(variant: "link", text: "Edit imports", href: imports_path, icon: "hard-drive-upload", data: { turbo_frame: :_top }) %>

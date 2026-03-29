@@ -156,12 +156,13 @@ class Family < ApplicationRecord
     IncomeStatement.new(self, user: user, ledger_usage: ledger_usage)
   end
 
-  # Returns the Investment Contributions category for this family, creating it if it doesn't exist.
-  # This is used for auto-categorizing transfers to investment accounts.
-  # Always uses the family's locale to ensure consistent category naming across all users.
-  def investment_contributions_category
-    # Find ALL legacy categories (created under old request-locale behavior)
-    legacy = categories.where(name: Category.all_investment_contributions_names).order(:created_at).to_a
+  # Returns the Investment Contributions category for this ledger (+ledger_usage+), creating it if needed.
+  # Used for auto-categorizing transfers to investment accounts on that ledger.
+  def investment_contributions_category(ledger_usage: "personal")
+    lu = ledger_usage.to_s.in?(Account.ledger_usages.values) ? ledger_usage.to_s : "personal"
+
+    # Find ALL legacy categories for this ledger (created under old request-locale behavior)
+    legacy = categories.where(name: Category.all_investment_contributions_names, ledger_usage: lu).order(:created_at).to_a
 
     if legacy.any?
       keeper = legacy.first
@@ -186,7 +187,7 @@ class Family < ApplicationRecord
 
     # Create new category using family's locale
     I18n.with_locale(locale) do
-      categories.find_or_create_by!(name: Category.investment_contributions_name) do |cat|
+      categories.find_or_create_by!(name: Category.investment_contributions_name, ledger_usage: lu) do |cat|
         cat.color = "#0d9488"
         cat.lucide_icon = "trending-up"
       end
@@ -194,7 +195,7 @@ class Family < ApplicationRecord
   rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid
     # Handle race condition: another process created the category
     I18n.with_locale(locale) do
-      categories.find_by!(name: Category.investment_contributions_name)
+      categories.find_by!(name: Category.investment_contributions_name, ledger_usage: lu)
     end
   end
 

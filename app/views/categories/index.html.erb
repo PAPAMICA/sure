@@ -1,28 +1,30 @@
 <%= content_for :page_title, t(".categories") %>
 <%= content_for :page_actions do %>
-  <%= render DS::Menu.new do |menu| %>
-    <% menu.with_item(
-        variant: "button",
-        text: "Delete all",
-        href: destroy_all_categories_path,
-        method: :delete,
-        icon: "trash-2",
-        confirm: CustomConfirm.for_resource_deletion("all categories", high_severity: true)) %>
-  <% end %>
+  <div class="flex flex-wrap items-center gap-2">
+    <%= render DS::Menu.new do |menu| %>
+      <% menu.with_item(
+          variant: "button",
+          text: "Delete all",
+          href: destroy_all_categories_path(**with_ledger_usage_url_options),
+          method: :delete,
+          icon: "trash-2",
+          confirm: CustomConfirm.for_resource_deletion("all categories", high_severity: true)) %>
+    <% end %>
 
-  <%= render DS::Link.new(
-    text: t(".new"),
-    variant: "primary",
-    icon: "plus",
-    href: new_category_path,
-    frame: :modal
-  ) %>
+    <%= render DS::Link.new(
+      text: t(".new"),
+      variant: "primary",
+      icon: "plus",
+      href: new_category_path(**with_ledger_usage_url_options),
+      frame: :modal
+    ) %>
+  </div>
 <% end %>
 
 <div class="bg-container rounded-xl shadow-border-xs p-4">
   <% if @categories.any? %>
     <div class="space-y-4">
-      <%= render "categories/category_list_group", title: t(".categories"), categories: @categories %>
+      <%= render "categories/category_list_group", title: t(".categories"), categories: @categories, ledger_usage: @ledger_usage %>
     </div>
   <% else %>
     <div class="flex justify-center items-center py-20">
@@ -31,14 +33,14 @@
         <div class="flex items-center gap-2">
           <%= render DS::Button.new(
             text: t(".bootstrap"),
-            href: bootstrap_categories_path,
+            href: bootstrap_categories_path(**with_ledger_usage_url_options),
           ) %>
 
           <%= render DS::Link.new(
             text: t(".new"),
             variant: "outline",
             icon: "plus",
-            href: new_category_path,
+            href: new_category_path(**with_ledger_usage_url_options),
             frame: :modal
           ) %>
         </div>

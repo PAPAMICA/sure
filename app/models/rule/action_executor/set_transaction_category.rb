@@ -4,7 +4,7 @@ class Rule::ActionExecutor::SetTransactionCategory < Rule::ActionExecutor
   end
 
   def options
-    family.categories.alphabetically.pluck(:name, :id)
+    family.categories.alphabetically.map { |c| [ c.name_for_select, c.id ] }
   end
 
   def execute(transaction_scope, value: nil, ignore_attribute_locks: false, rule_run: nil)
@@ -18,6 +18,8 @@ class Rule::ActionExecutor::SetTransactionCategory < Rule::ActionExecutor
     end
 
     count_modified_resources(scope) do |txn|
+      next false unless txn.entry.account.ledger_usage == category.ledger_usage
+
       # enrich_attribute returns true if the transaction was actually modified, false otherwise
       txn.enrich_attribute(
         :category_id,

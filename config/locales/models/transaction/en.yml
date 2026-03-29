@@ -5,6 +5,8 @@ en:
       models:
         transaction:
           attributes:
+            category_id:
+              ledger_mismatch: "must belong to the same ledger as the account (personal or professional)"
             attachments:
               too_many: "cannot exceed %{max} files per transaction"
               too_large: "file %{index} is too large (maximum %{max_mb}MB)"

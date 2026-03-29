@@ -20,6 +20,16 @@ module CategoriesHelper
   end
 
   def family_categories
-    [ Category.uncategorized ].concat(Current.family.categories.alphabetically)
+    scope = Current.family.categories.alphabetically
+    if defined?(@ledger_usage) && @ledger_usage.present?
+      scope = scope.with_ledger_usage(@ledger_usage)
+    end
+    [ Category.uncategorized ].concat(scope)
+  end
+
+  def categories_for_transaction_select(account)
+    scope = Current.family.categories.alphabetically
+    scope = scope.with_ledger_usage(account.ledger_usage) if account
+    scope
   end
 end

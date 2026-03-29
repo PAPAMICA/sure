@@ -9,9 +9,9 @@ class FamilyTest < ActiveSupport::TestCase
 
   test "investment_contributions_category creates category when missing" do
     family = families(:dylan_family)
-    family.categories.where(name: Category.investment_contributions_name).destroy_all
+    family.categories.where(name: Category.investment_contributions_name, ledger_usage: "personal").destroy_all
 
-    assert_nil family.categories.find_by(name: Category.investment_contributions_name)
+    assert_nil family.categories.find_by(name: Category.investment_contributions_name, ledger_usage: "personal")
 
     category = family.investment_contributions_category
 
@@ -23,7 +23,7 @@ class FamilyTest < ActiveSupport::TestCase
 
   test "investment_contributions_category returns existing category" do
     family = families(:dylan_family)
-    existing = family.categories.find_or_create_by!(name: Category.investment_contributions_name) do |c|
+    existing = family.categories.find_or_create_by!(name: Category.investment_contributions_name, ledger_usage: "personal") do |c|
       c.color = "#0d9488"
       c.lucide_icon = "trending-up"
     end
@@ -37,7 +37,7 @@ class FamilyTest < ActiveSupport::TestCase
   test "investment_contributions_category uses family locale consistently" do
     family = families(:dylan_family)
     family.update!(locale: "fr")
-    family.categories.where(name: [ "Investment Contributions", "Contributions aux investissements" ]).destroy_all
+    family.categories.where(name: [ "Investment Contributions", "Contributions aux investissements" ], ledger_usage: "personal").destroy_all
 
     # Simulate different request locales (e.g., from Accept-Language header)
     # The category should always be created with the family's locale (French)
@@ -61,7 +61,7 @@ class FamilyTest < ActiveSupport::TestCase
   test "investment_contributions_category prevents duplicate categories across locales" do
     family = families(:dylan_family)
     family.update!(locale: "en")
-    family.categories.where(name: [ "Investment Contributions", "Contributions aux investissements" ]).destroy_all
+    family.categories.where(name: [ "Investment Contributions", "Contributions aux investissements" ], ledger_usage: "personal").destroy_all
 
     # Create category under English family locale
     english_category = family.investment_contributions_category
@@ -81,7 +81,7 @@ class FamilyTest < ActiveSupport::TestCase
   test "investment_contributions_category reuses legacy category with wrong locale" do
     family = families(:dylan_family)
     family.update!(locale: "fr")
-    family.categories.where(name: [ "Investment Contributions", "Contributions aux investissements" ]).destroy_all
+    family.categories.where(name: [ "Investment Contributions", "Contributions aux investissements" ], ledger_usage: "personal").destroy_all
 
     # Simulate legacy: category was created with English name (old bug behavior)
     legacy_category = family.categories.create!(
@@ -101,17 +101,19 @@ class FamilyTest < ActiveSupport::TestCase
   test "investment_contributions_category merges multiple locale variants" do
     family = families(:dylan_family)
     family.update!(locale: "en")
-    family.categories.where(name: [ "Investment Contributions", "Contributions aux investissements" ]).destroy_all
+    family.categories.where(name: [ "Investment Contributions", "Contributions aux investissements" ], ledger_usage: "personal").destroy_all
 
     # Simulate legacy: multiple categories created under different locales
     english_category = family.categories.create!(
       name: "Investment Contributions",
+      ledger_usage: "personal",
       color: "#0d9488",
       lucide_icon: "trending-up"
     )
 
     french_category = family.categories.create!(
       name: "Contributions aux investissements",
+      ledger_usage: "personal",
       color: "#0d9488",
       lucide_icon: "trending-up"
     )

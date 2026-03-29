@@ -16,7 +16,8 @@ class TransfersController < ApplicationController
   end
 
   def show
-    @categories = Current.family.categories.alphabetically
+    lu = @transfer.outflow_transaction.entry.account.ledger_usage
+    @categories = Current.family.categories.with_ledger_usage(lu).alphabetically
   end
 
   def create

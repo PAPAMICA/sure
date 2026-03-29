@@ -1,4 +1,4 @@
-<%# locals: (title:, categories:) %>
+<%# locals: (title:, categories:, ledger_usage: "personal") %>
 
 <div class="rounded-xl bg-container-inset space-y-1 p-1">
   <div class="flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-secondary uppercase">
@@ -10,10 +10,10 @@
   <div class="shadow-border-xs rounded-lg bg-container">
     <div class="overflow-hidden rounded-lg">
       <% Category::Group.for(categories).each_with_index do |group, idx| %>
-        <%= render group.category %>
+        <%= render partial: "categories/category", object: group.category, locals: { ledger_usage: ledger_usage } %>
 
         <% group.subcategories.each do |subcategory| %>
-          <%= render subcategory %>
+          <%= render partial: "categories/category", object: subcategory, locals: { ledger_usage: ledger_usage } %>
         <% end %>
 
         <% unless idx == Category::Group.for(categories).count - 1 %>

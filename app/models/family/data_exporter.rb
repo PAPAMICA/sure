@@ -325,7 +325,7 @@ class Family::DataExporter
 
       # Map category UUIDs to names for portability
       if action.action_type == "set_transaction_category" && action.value.present?
-        category = @family.categories.find_by(id: action.value) || @family.categories.find_by(name: action.value)
+        category = @family.categories.find_by(id: action.value) || @family.categories.find_by(name: action.value, ledger_usage: "personal")
         return category&.name || action.value
       end
 

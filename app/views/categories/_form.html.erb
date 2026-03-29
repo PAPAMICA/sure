@@ -1,7 +1,10 @@
 <%# locals: (category:, categories:) %>
 
 <div data-controller="category" data-category-preset-colors-value="<%= Category::COLORS %>">
-  <%= styled_form_with model: category, class: "space-y-4" do |f| %>
+  <%= styled_form_with model: category,
+        url: (category.new_record? ? categories_path(usage: @ledger_usage) : category_path(category, usage: @ledger_usage)),
+        class: "space-y-4" do |f| %>
+    <%= hidden_field_tag :usage, @ledger_usage %>
     <section class="space-y-4">
       <div class="w-fit mx-auto relative">
         <%= render partial: "color_avatar", locals: { category: category } %>

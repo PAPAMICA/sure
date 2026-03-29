@@ -1,5 +1,12 @@
 ---
 fr:
+  activerecord:
+    errors:
+      models:
+        category:
+          attributes:
+            parent_id:
+              ledger_mismatch: "doit appartenir au même livre (perso ou pro) que la catégorie parente"
   models:
     category:
       uncategorized: Non catégorisé

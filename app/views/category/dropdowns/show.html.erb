@@ -32,7 +32,7 @@
               <%= render DS::Button.new(
               text: t(".bootstrap"),
               variant: "outline",
-              href: bootstrap_categories_path,
+              href: bootstrap_categories_path(usage: @transaction.entry.account.ledger_usage),
               method: :post,
               data: { turbo_frame: :_top }) %>
             </div>

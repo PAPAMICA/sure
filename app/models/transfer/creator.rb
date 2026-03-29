@@ -43,7 +43,7 @@ class Transfer::Creator
     end
 
     def investment_contributions_category
-      source_account.family.investment_contributions_category
+      source_account.family.investment_contributions_category(ledger_usage: source_account.ledger_usage)
     end
 
     def inflow_transaction

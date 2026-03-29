@@ -84,7 +84,7 @@ class Api::V1::CategoriesControllerTest < ActionDispatch::IntegrationTest
     category = response_body["categories"].find { |c| c["name"] == @category.name }
     assert category.present?, "Should find the food_and_drink category"
 
-    required_fields = %w[id name color icon subcategories_count created_at updated_at]
+    required_fields = %w[id name ledger_usage color icon subcategories_count created_at updated_at]
     required_fields.each do |field|
       assert category.key?(field), "Category should have #{field} field"
     end

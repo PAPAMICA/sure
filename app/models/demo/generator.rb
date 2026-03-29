@@ -213,36 +213,36 @@ class Demo::Generator
 
     def create_realistic_categories!(family)
       # Income categories (3 total)
-      @salary_cat = family.categories.create!(name: "Salary", color: "#10b981")
-      @freelance_cat = family.categories.create!(name: "Freelance", color: "#059669")
-      @investment_income_cat = family.categories.create!(name: "Investment Income", color: "#047857")
+      @salary_cat = family.categories.create!(ledger_usage: "personal", name: "Salary", color: "#10b981")
+      @freelance_cat = family.categories.create!(ledger_usage: "personal", name: "Freelance", color: "#059669")
+      @investment_income_cat = family.categories.create!(ledger_usage: "personal", name: "Investment Income", color: "#047857")
 
       # Expense categories with subcategories (12 total)
-      @housing_cat = family.categories.create!(name: "Housing", color: "#dc2626")
-      @rent_cat = family.categories.create!(name: "Rent/Mortgage", parent: @housing_cat, color: "#b91c1c")
-      @utilities_cat = family.categories.create!(name: "Utilities", parent: @housing_cat, color: "#991b1b")
+      @housing_cat = family.categories.create!(ledger_usage: "personal", name: "Housing", color: "#dc2626")
+      @rent_cat = family.categories.create!(ledger_usage: "personal", name: "Rent/Mortgage", parent: @housing_cat, color: "#b91c1c")
+      @utilities_cat = family.categories.create!(ledger_usage: "personal", name: "Utilities", parent: @housing_cat, color: "#991b1b")
 
-      @food_cat = family.categories.create!(name: "Food & Dining", color: "#ea580c")
-      @groceries_cat = family.categories.create!(name: "Groceries", parent: @food_cat, color: "#c2410c")
-      @restaurants_cat = family.categories.create!(name: "Restaurants", parent: @food_cat, color: "#9a3412")
-      @coffee_cat = family.categories.create!(name: "Coffee & Takeout", parent: @food_cat, color: "#7c2d12")
+      @food_cat = family.categories.create!(ledger_usage: "personal", name: "Food & Dining", color: "#ea580c")
+      @groceries_cat = family.categories.create!(ledger_usage: "personal", name: "Groceries", parent: @food_cat, color: "#c2410c")
+      @restaurants_cat = family.categories.create!(ledger_usage: "personal", name: "Restaurants", parent: @food_cat, color: "#9a3412")
+      @coffee_cat = family.categories.create!(ledger_usage: "personal", name: "Coffee & Takeout", parent: @food_cat, color: "#7c2d12")
 
-      @transportation_cat = family.categories.create!(name: "Transportation", color: "#2563eb")
-      @gas_cat = family.categories.create!(name: "Gas", parent: @transportation_cat, color: "#1d4ed8")
-      @car_payment_cat = family.categories.create!(name: "Car Payment", parent: @transportation_cat, color: "#1e40af")
+      @transportation_cat = family.categories.create!(ledger_usage: "personal", name: "Transportation", color: "#2563eb")
+      @gas_cat = family.categories.create!(ledger_usage: "personal", name: "Gas", parent: @transportation_cat, color: "#1d4ed8")
+      @car_payment_cat = family.categories.create!(ledger_usage: "personal", name: "Car Payment", parent: @transportation_cat, color: "#1e40af")
 
-      @entertainment_cat = family.categories.create!(name: "Entertainment", color: "#7c3aed")
-      @healthcare_cat = family.categories.create!(name: "Healthcare", color: "#db2777")
-      @shopping_cat = family.categories.create!(name: "Shopping", color: "#059669")
-      @travel_cat = family.categories.create!(name: "Travel", color: "#0891b2")
-      @personal_care_cat = family.categories.create!(name: "Personal Care", color: "#be185d")
+      @entertainment_cat = family.categories.create!(ledger_usage: "personal", name: "Entertainment", color: "#7c3aed")
+      @healthcare_cat = family.categories.create!(ledger_usage: "personal", name: "Healthcare", color: "#db2777")
+      @shopping_cat = family.categories.create!(ledger_usage: "personal", name: "Shopping", color: "#059669")
+      @travel_cat = family.categories.create!(ledger_usage: "personal", name: "Travel", color: "#0891b2")
+      @personal_care_cat = family.categories.create!(ledger_usage: "personal", name: "Personal Care", color: "#be185d")
 
       # Additional high-level expense categories to reach 13 top-level items
-      @insurance_cat = family.categories.create!(name: "Insurance", color: "#6366f1")
-      @misc_cat      = family.categories.create!(name: "Miscellaneous", color: "#6b7280")
+      @insurance_cat = family.categories.create!(ledger_usage: "personal", name: "Insurance", color: "#6366f1")
+      @misc_cat      = family.categories.create!(ledger_usage: "personal", name: "Miscellaneous", color: "#6b7280")
 
       # Interest expense bucket
-      @interest_cat = family.categories.create!(name: "Loan Interest", color: "#475569")
+      @interest_cat = family.categories.create!(ledger_usage: "personal", name: "Loan Interest", color: "#475569")
     end
 
     def create_realistic_accounts!(family)

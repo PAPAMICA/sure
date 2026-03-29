@@ -4,9 +4,10 @@ class Import::CategoryMapping < Import::Mapping
       unique_values = import.rows.map(&:category).uniq
 
       # For hierarchical QIF keys like "Home:Home Improvement", look up the child
-      # name ("Home Improvement") since category names are unique per family.
+      # name ("Home Improvement") since category names are unique per family per ledger.
       lookup_names = unique_values.map { |v| leaf_category_name(v) }
-      categories = import.family.categories.where(name: lookup_names).index_by(&:name)
+      lu = import.account&.ledger_usage.presence_in(Account.ledger_usages.values) || "personal"
+      categories = import.family.categories.with_ledger_usage(lu).where(name: lookup_names).index_by(&:name)
 
       unique_values.index_with { |value| categories[leaf_category_name(value)] }
     end
@@ -25,7 +26,8 @@ class Import::CategoryMapping < Import::Mapping
   end
 
   def selectable_values
-    family_categories = import.family.categories.alphabetically.map { |category| [ category.name, category.id ] }
+    lu = import.account&.ledger_usage.presence_in(Account.ledger_usages.values) || "personal"
+    family_categories = import.family.categories.with_ledger_usage(lu).alphabetically.map { |category| [ category.name, category.id ] }
 
     unless key.blank?
       family_categories.unshift [ "Add as new category", CREATE_NEW_KEY ]
@@ -55,19 +57,22 @@ class Import::CategoryMapping < Import::Mapping
       parent_name = parts[0].strip
       child_name  = parts[1].strip
 
+      lu = import.account&.ledger_usage.presence_in(Account.ledger_usages.values) || "personal"
+
       # Ensure the parent category exists before creating the child.
-      parent = import.family.categories.find_or_create_by!(name: parent_name) do |cat|
+      parent = import.family.categories.find_or_create_by!(name: parent_name, ledger_usage: lu) do |cat|
         cat.color = Category::COLORS.sample
         cat.lucide_icon = Category.suggested_icon(parent_name)
       end
 
-      self.mappable = import.family.categories.find_or_create_by!(name: child_name) do |cat|
+      self.mappable = import.family.categories.find_or_create_by!(name: child_name, ledger_usage: lu) do |cat|
         cat.parent = parent
         cat.color = parent.color
         cat.lucide_icon = Category.suggested_icon(child_name)
       end
     else
-      self.mappable = import.family.categories.find_or_create_by!(name: key) do |cat|
+      lu = import.account&.ledger_usage.presence_in(Account.ledger_usages.values) || "personal"
+      self.mappable = import.family.categories.find_or_create_by!(name: key, ledger_usage: lu) do |cat|
         cat.color = Category::COLORS.sample
         cat.lucide_icon = Category.suggested_icon(key)
       end

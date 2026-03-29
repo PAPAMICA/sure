@@ -39,10 +39,6 @@
   <% end %>
 
   <div class="ml-auto flex items-center gap-2 flex-wrap justify-end">
-    <%= render "shared/ledger_usage_switch",
-          personal_url: budget_path(budget.to_param, usage: "personal"),
-          professional_url: budget_path(budget.to_param, usage: "professional"),
-          current_usage: @ledger_usage %>
     <%= render DS::Link.new(
         text: "Today",
         variant: "outline",

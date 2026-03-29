@@ -1,5 +1,12 @@
 ---
 en:
+  activerecord:
+    errors:
+      models:
+        category:
+          attributes:
+            parent_id:
+              ledger_mismatch: "must belong to the same ledger as the parent category"
   models:
     category:
       uncategorized: Uncategorized

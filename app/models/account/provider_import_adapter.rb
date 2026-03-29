@@ -159,7 +159,7 @@ class Account::ProviderImportAdapter
         auto_kind = "funds_movement"
       elsif detected_label == "Contribution"
         auto_kind = "investment_contribution"
-        auto_category = account.family.investment_contributions_category
+        auto_category = account.family.investment_contributions_category(ledger_usage: account.ledger_usage)
       end
 
       # Set investment activity label, kind, and category if detected

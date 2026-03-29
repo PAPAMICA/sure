@@ -9,46 +9,50 @@ class Family::AutoCategorizer
   def auto_categorize
     raise Error, "No LLM provider for auto-categorization" unless llm_provider
 
-    if scope.none?
+    records = scope.to_a
+
+    if records.empty?
       Rails.logger.info("No transactions to auto-categorize for family #{family.id}")
       return 0
     else
-      Rails.logger.info("Auto-categorizing #{scope.count} transactions for family #{family.id}")
-    end
-
-    categories_input = user_categories_input
-
-    if categories_input.empty?
-      Rails.logger.error("Cannot auto-categorize transactions for family #{family.id}: no categories available")
-      return 0
-    end
-
-    result = llm_provider.auto_categorize(
-      transactions: transactions_input,
-      user_categories: categories_input,
-      family: family
-    )
-
-    unless result.success?
-      Rails.logger.error("Failed to auto-categorize transactions for family #{family.id}: #{result.error.message}")
-      return 0
+      Rails.logger.info("Auto-categorizing #{records.count} transactions for family #{family.id}")
     end
 
     modified_count = 0
-    scope.each do |transaction|
-      auto_categorization = result.data.find { |c| c.transaction_id == transaction.id }
 
-      category_id = categories_input.find { |c| c[:name] == auto_categorization&.category_name }&.dig(:id)
+    records.group_by { |t| t.entry.account.ledger_usage }.each do |ledger_usage, txs|
+      categories_input = user_categories_input_for(ledger_usage)
 
-      if category_id.present?
-        was_modified = transaction.enrich_attribute(
-          :category_id,
-          category_id,
-          source: "ai"
-        )
-        transaction.lock_attr!(:category_id)
-        # enrich_attribute returns true if the transaction was actually modified
-        modified_count += 1 if was_modified
+      if categories_input.empty?
+        Rails.logger.error("Cannot auto-categorize transactions for family #{family.id}: no categories for ledger #{ledger_usage}")
+        next
+      end
+
+      result = llm_provider.auto_categorize(
+        transactions: transactions_input_for(txs),
+        user_categories: categories_input,
+        family: family
+      )
+
+      unless result.success?
+        Rails.logger.error("Failed to auto-categorize transactions for family #{family.id}: #{result.error.message}")
+        next
+      end
+
+      txs.each do |transaction|
+        auto_categorization = result.data.find { |c| c.transaction_id == transaction.id }
+
+        category_id = categories_input.find { |c| c[:name] == auto_categorization&.category_name }&.dig(:id)
+
+        if category_id.present?
+          was_modified = transaction.enrich_attribute(
+            :category_id,
+            category_id,
+            source: "ai"
+          )
+          transaction.lock_attr!(:category_id)
+          modified_count += 1 if was_modified
+        end
       end
     end
 
@@ -63,8 +67,8 @@ class Family::AutoCategorizer
       Provider::Registry.get_provider(:openai)
     end
 
-    def user_categories_input
-      family.categories.map do |category|
+    def user_categories_input_for(ledger_usage)
+      family.categories.with_ledger_usage(ledger_usage).map do |category|
         {
           id: category.id,
           name: category.name,
@@ -74,8 +78,8 @@ class Family::AutoCategorizer
       end
     end
 
-    def transactions_input
-      scope.map do |transaction|
+    def transactions_input_for(transactions)
+      transactions.map do |transaction|
         {
           id: transaction.id,
           amount: transaction.entry.amount.abs,
@@ -89,6 +93,6 @@ class Family::AutoCategorizer
     def scope
       family.transactions.where(id: transaction_ids, category_id: nil)
                          .enrichable(:category_id)
-                         .includes(:category, :merchant, :entry)
+                         .includes(:category, :merchant, entry: :account)
     end
 end

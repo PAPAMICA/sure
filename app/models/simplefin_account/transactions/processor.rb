@@ -58,11 +58,13 @@ class SimplefinAccount::Transactions::Processor
 
     def family_categories
       @family_categories ||= begin
-        if account.family.categories.none?
-          account.family.categories.bootstrap!
+        lu = account.ledger_usage
+        scoped = account.family.categories.with_ledger_usage(lu)
+        if scoped.none?
+          Category.bootstrap_default_set!(account.family, ledger_usage: lu)
+          scoped = account.family.categories.with_ledger_usage(lu)
         end
-
-        account.family.categories
+        scoped
       end
     end
 

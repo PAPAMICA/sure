@@ -36,6 +36,7 @@ RSpec.describe 'API V1 Categories', type: :request do
   let!(:parent_category) do
     family.categories.create!(
       name: 'Food & Drink',
+      ledger_usage: 'personal',
       color: '#f97316',
       lucide_icon: 'utensils'
     )
@@ -44,6 +45,7 @@ RSpec.describe 'API V1 Categories', type: :request do
   let!(:subcategory) do
     family.categories.create!(
       name: 'Restaurants',
+      ledger_usage: 'personal',
       color: '#f97316',
       lucide_icon: 'utensils',
       parent: parent_category
@@ -53,6 +55,7 @@ RSpec.describe 'API V1 Categories', type: :request do
   let!(:income_category) do
     family.categories.create!(
       name: 'Salary',
+      ledger_usage: 'personal',
       color: '#22c55e',
       lucide_icon: 'circle-dollar-sign'
     )
@@ -73,6 +76,9 @@ RSpec.describe 'API V1 Categories', type: :request do
       parameter name: :parent_id, in: :query, required: false,
                 description: 'Filter by parent category ID',
                 schema: { type: :string, format: :uuid }
+      parameter name: :usage, in: :query, required: false,
+                description: 'Filter by ledger (personal or professional)',
+                schema: { type: :string, enum: %w[personal professional] }
 
       response '200', 'categories listed' do
         schema '$ref' => '#/components/schemas/CategoryCollection'

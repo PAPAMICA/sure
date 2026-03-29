@@ -10,6 +10,7 @@ class PagesController < ApplicationController
     end
 
     @dashboard_ledger_usage = params[:usage].presence_in(Account.ledger_usages.values) || "personal"
+    @ledger_usage = @dashboard_ledger_usage
 
     @balance_sheet = Current.family.balance_sheet(user: Current.user, ledger_usage: @dashboard_ledger_usage)
     @investment_statement = Current.family.investment_statement(user: Current.user, ledger_usage: @dashboard_ledger_usage)

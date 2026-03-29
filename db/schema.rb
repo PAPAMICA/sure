@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_30_120000) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_30_141000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -214,6 +214,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_30_120000) do
     t.uuid "parent_id"
     t.string "lucide_icon", default: "shapes", null: false
     t.string "classification_unused", default: "expense", null: false
+    t.string "ledger_usage", default: "personal", null: false
+    t.index ["family_id", "ledger_usage", "name"], name: "index_categories_on_family_ledger_usage_and_name", unique: true
     t.index ["family_id"], name: "index_categories_on_family_id"
   end
 
