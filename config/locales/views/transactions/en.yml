@@ -124,6 +124,21 @@ en:
       transaction: transaction
       transactions: transactions
       import: Import
+      quick_categorize: Quick categorize
+    quick_categorize:
+      page_title: Quick categorize
+      back_to_list: Back to transactions
+      no_access: You cannot categorize transactions for this account.
+      all_done_title: You are caught up
+      all_done_body: There are no uncategorized transactions in your accessible accounts.
+      card_heading: Uncategorized transaction
+      name_label: Name
+      notes_label: Notes
+      save_details: Save details
+      details_saved: Details saved
+      pick_category: Choose a category
+      income_heading: Income categories
+      expense_heading: Expense categories
     list:
       drag_drop_title: Drop CSV to import
       drag_drop_subtitle: Upload transactions directly

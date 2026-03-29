@@ -22,26 +22,43 @@ class TransactionCategoriesController < ApplicationController
     @entry.lock_saved_attributes!
 
     respond_to do |format|
-      format.html { redirect_back_or_to transaction_path(@entry) }
-      format.turbo_stream do
-        render turbo_stream: [
-          turbo_stream.replace(
-            dom_id(transaction, "category_menu_mobile"),
-            partial: "transactions/transaction_category",
-            locals: { transaction: transaction, variant: "mobile" }
-          ),
-          turbo_stream.replace(
-            dom_id(transaction, "category_menu_desktop"),
-            partial: "transactions/transaction_category",
-            locals: { transaction: transaction, variant: "desktop" }
-          ),
-          turbo_stream.replace(
-            "category_name_mobile_#{transaction.id}",
-            partial: "categories/category_name_mobile",
-            locals: { transaction: transaction }
-          ),
-          *flash_notification_stream_items
-        ]
+      if params[:quick_categorize].present?
+        format.html { redirect_to quick_categorize_transactions_path }
+        format.turbo_stream do
+          next_transaction = Transaction.next_uncategorized_for(Current.user, Current.family)
+          render turbo_stream: turbo_stream.replace(
+            "quick_categorize_card",
+            partial: "transactions/quick_categorize_card",
+            locals: {
+              entry: next_transaction&.entry,
+              transaction: next_transaction,
+              income_categories: Current.family.categories.incomes.alphabetically,
+              expense_categories: Current.family.categories.expenses.alphabetically
+            }
+          )
+        end
+      else
+        format.html { redirect_back_or_to transaction_path(@entry) }
+        format.turbo_stream do
+          render turbo_stream: [
+            turbo_stream.replace(
+              dom_id(transaction, "category_menu_mobile"),
+              partial: "transactions/transaction_category",
+              locals: { transaction: transaction, variant: "mobile" }
+            ),
+            turbo_stream.replace(
+              dom_id(transaction, "category_menu_desktop"),
+              partial: "transactions/transaction_category",
+              locals: { transaction: transaction, variant: "desktop" }
+            ),
+            turbo_stream.replace(
+              "category_name_mobile_#{transaction.id}",
+              partial: "categories/category_name_mobile",
+              locals: { transaction: transaction }
+            ),
+            *flash_notification_stream_items
+          ]
+        end
       end
     end
   end

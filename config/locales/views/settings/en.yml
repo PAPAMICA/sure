@@ -63,6 +63,12 @@ en:
         sharing_default_label: Default sharing for new accounts
         sharing_shared: Share with all members
         sharing_private: Keep private by default
+        sync_heading: Bank sync (admin)
+        sync_subtitle: Hourly sync and login behavior for connected accounts
+        hourly_bank_sync_label: Sync linked bank accounts every hour
+        hourly_bank_sync_hint: In addition to the server-wide daily sync, enqueue a full family sync every hour. Use with care for provider rate limits.
+        auto_sync_on_login_label: Sync when a member logs in
+        auto_sync_on_login_hint: When enabled, the family syncs automatically once per day on first visit if there are active accounts.
     profiles:
       destroy:
         cannot_remove_self: You cannot remove yourself from the account.
@@ -160,6 +166,7 @@ en:
       api_keys_label: API Key
       appearance_label: Appearance
       bank_sync_label: Bank Sync
+      notifications_label: Notifications
     settings_nav_link_large:
       next: Next
       previous: Back
@@ -192,3 +199,24 @@ en:
       enable_banking_panel:
         callback_url_instruction: "For the callback URL, use %{callback_url}."
         connection_error: Connection Error
+    notifications:
+      show:
+        page_title: Notifications (Apprise)
+        intro: Send alerts through your own Apprise API instance or compatible webhook. See the
+        intro_link_label: Apprise project
+        url_label: Notify URL
+        url_hint: Full POST URL (for example your Apprise API /notify/… endpoint).
+        new_tx_heading: New transactions
+        new_tx_enable: Enable new-transaction notifications
+        balance_heading: Balances after sync
+        balance_enable: Enable balance notifications after each successful account sync
+        filter_accounts: Limit to accounts (leave empty for all)
+        filter_categories: Limit to categories (leave empty for all; only matches when a category is already set)
+        filter_kinds: Transaction kinds (leave empty for all)
+        filter_flow: Flow type (leave empty for all)
+        flow_income: Income
+        flow_expense: Expense
+        flow_transfer: Transfer / internal movement
+        save: Save
+      update:
+        saved: Notification settings saved

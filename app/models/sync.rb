@@ -195,6 +195,9 @@ class Sync < ApplicationRecord
 
     def handle_completion_transition
       family.touch(:latest_sync_completed_at)
+      if syncable_type == "Account"
+        AppriseBalanceNotificationJob.perform_later(syncable_id)
+      end
     end
 
     def window_valid

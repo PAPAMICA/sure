@@ -25,6 +25,8 @@ class Entry < ApplicationRecord
 
   before_destroy :prevent_individual_child_deletion, if: :split_child?
 
+  after_create_commit :enqueue_apprise_new_transaction_notification, if: :transaction_entry_for_apprise?
+
   scope :visible, -> {
     joins(:account).where(accounts: { status: [ "draft", "active" ] })
   }
@@ -478,5 +480,13 @@ class Entry < ApplicationRecord
       return if destroyed_by_association || unsplitting
 
       throw :abort
+    end
+
+    def transaction_entry_for_apprise?
+      entryable_type == "Transaction" && !excluded?
+    end
+
+    def enqueue_apprise_new_transaction_notification
+      AppriseNewTransactionNotificationJob.perform_later(id)
     end
 end

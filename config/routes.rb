@@ -185,6 +185,7 @@ Rails.application.routes.draw do
     resource :llm_usage, only: :show
     resource :guides, only: :show
     resource :bank_sync, only: :show, controller: "bank_sync"
+    resource :notification, only: %i[show update], controller: "notifications"
     resource :providers, only: %i[show update]
   end
 
@@ -285,6 +286,7 @@ Rails.application.routes.draw do
     collection do
       delete :clear_filter
       patch :update_preferences
+      get :quick_categorize
     end
 
     member do

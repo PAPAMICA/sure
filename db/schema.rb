@@ -527,6 +527,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_28_120000) do
     t.boolean "data_enrichment_enabled", default: false
     t.boolean "early_access", default: false
     t.boolean "auto_sync_on_login", default: true, null: false
+    t.boolean "hourly_bank_sync", default: false, null: false
+    t.text "apprise_notify_url"
+    t.jsonb "apprise_rules", default: {}, null: false
     t.datetime "latest_sync_activity_at", default: -> { "CURRENT_TIMESTAMP" }
     t.datetime "latest_sync_completed_at", default: -> { "CURRENT_TIMESTAMP" }
     t.boolean "recurring_transactions_disabled", default: false, null: false

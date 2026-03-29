@@ -1,0 +1,9 @@
+---
+en:
+  apprise:
+    new_transaction:
+      title: New transaction
+      income: Income
+      expense: Expense
+    balance:
+      title: Account balance (after sync)

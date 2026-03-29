@@ -4,6 +4,20 @@ class TransactionsController < ApplicationController
   before_action :set_entry_for_unlock, only: :unlock
   before_action :store_params!, only: :index
 
+  def quick_categorize
+    transaction = Transaction.next_uncategorized_for(Current.user, Current.family)
+    @entry = transaction&.entry
+    @transaction = transaction
+
+    if @entry && !@entry.account.permission_for(Current.user).in?(%i[owner full_control read_write])
+      redirect_to transactions_path, alert: t("transactions.quick_categorize.no_access")
+      return
+    end
+
+    @income_categories = Current.family.categories.incomes.alphabetically
+    @expense_categories = Current.family.categories.expenses.alphabetically
+  end
+
   def new
     prefill_params_from_duplicate!
     super
@@ -136,22 +150,27 @@ class TransactionsController < ApplicationController
       @entry.reload
 
       respond_to do |format|
-        format.html { redirect_back_or_to account_path(@entry.account), notice: "Transaction updated" }
-        format.turbo_stream do
-          render turbo_stream: [
-            turbo_stream.replace(
-              dom_id(@entry, :header),
-              partial: "transactions/header",
-              locals: { entry: @entry }
-            ),
-            turbo_stream.replace(
-              dom_id(@entry, :protection),
-              partial: "entries/protection_indicator",
-              locals: { entry: @entry, unlock_path: unlock_transaction_path(@entry.transaction) }
-            ),
-            turbo_stream.replace(@entry),
-            *flash_notification_stream_items
-          ]
+        if params[:quick_categorize].present?
+          format.html { redirect_to quick_categorize_transactions_path, notice: t("transactions.quick_categorize.details_saved") }
+          format.turbo_stream { stream_redirect_to quick_categorize_transactions_path, notice: t("transactions.quick_categorize.details_saved") }
+        else
+          format.html { redirect_back_or_to account_path(@entry.account), notice: "Transaction updated" }
+          format.turbo_stream do
+            render turbo_stream: [
+              turbo_stream.replace(
+                dom_id(@entry, :header),
+                partial: "transactions/header",
+                locals: { entry: @entry }
+              ),
+              turbo_stream.replace(
+                dom_id(@entry, :protection),
+                partial: "entries/protection_indicator",
+                locals: { entry: @entry, unlock_path: unlock_transaction_path(@entry.transaction) }
+              ),
+              turbo_stream.replace(@entry),
+              *flash_notification_stream_items
+            ]
+          end
         end
       end
     else

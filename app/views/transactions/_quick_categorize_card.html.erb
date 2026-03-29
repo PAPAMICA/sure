@@ -1,0 +1,103 @@
+<%# locals: (entry:, transaction:, income_categories:, expense_categories:) %>
+<% perm = entry && entry.account.permission_for(Current.user) %>
+<% full_edit = perm && perm.in?(%i[owner full_control]) %>
+<% can_note = perm && perm.in?(%i[owner full_control read_write]) %>
+<% if entry.blank? %>
+  <div class="bg-container rounded-xl shadow-border-xs p-8 text-center space-y-3">
+    <p class="text-primary font-medium"><%= t("transactions.quick_categorize.all_done_title") %></p>
+    <p class="text-secondary text-sm"><%= t("transactions.quick_categorize.all_done_body") %></p>
+    <%= render DS::Link.new(
+      text: t("transactions.quick_categorize.back_to_list"),
+      href: transactions_path,
+      variant: "primary"
+    ) %>
+  </div>
+<% else %>
+  <div class="bg-container rounded-xl shadow-border-xs p-5 space-y-6">
+    <div class="space-y-1">
+      <p class="text-xs font-medium text-secondary uppercase tracking-wide"><%= t("transactions.quick_categorize.card_heading") %></p>
+      <p class="text-lg text-primary font-medium"><%= entry.name %></p>
+      <p class="text-2xl font-semibold text-primary">
+        <%= Money.from_amount(entry.amount, entry.currency).format %>
+      </p>
+      <div class="flex flex-wrap gap-x-4 gap-y-1 text-sm text-secondary">
+        <span><%= l(entry.date, format: :long) %></span>
+        <span><%= entry.account.name %></span>
+        <% if transaction.merchant %>
+          <span><%= transaction.merchant.name %></span>
+        <% end %>
+      </div>
+    </div>
+
+    <% if full_edit %>
+      <%= styled_form_with model: entry, url: transaction_path(entry), method: :patch, class: "space-y-4", data: { turbo: false } do |form| %>
+        <%= hidden_field_tag :quick_categorize, "1" %>
+        <%= form.text_field :name, label: t("transactions.quick_categorize.name_label") %>
+        <%= form.text_area :notes, label: t("transactions.quick_categorize.notes_label"), rows: 2 %>
+        <%= form.fields_for :entryable do |txn_form| %>
+          <%= txn_form.hidden_field :id, value: transaction.id %>
+        <% end %>
+        <div class="flex justify-end">
+          <%= form.submit t("transactions.quick_categorize.save_details"), variant: "outline" %>
+        </div>
+      <% end %>
+    <% elsif can_note %>
+      <%= styled_form_with model: entry, url: transaction_path(entry), method: :patch, class: "space-y-4", data: { turbo: false } do |form| %>
+        <%= hidden_field_tag :quick_categorize, "1" %>
+        <%= form.text_area :notes, label: t("transactions.quick_categorize.notes_label"), rows: 2 %>
+        <%= form.fields_for :entryable do |txn_form| %>
+          <%= txn_form.hidden_field :id, value: transaction.id %>
+        <% end %>
+        <div class="flex justify-end">
+          <%= form.submit t("transactions.quick_categorize.save_details"), variant: "outline" %>
+        </div>
+      <% end %>
+    <% end %>
+
+    <div class="space-y-3">
+      <p class="text-sm font-medium text-primary"><%= t("transactions.quick_categorize.pick_category") %></p>
+
+      <% if income_categories.any? %>
+        <p class="text-xs text-secondary uppercase font-medium"><%= t("transactions.quick_categorize.income_heading") %></p>
+        <div class="flex flex-wrap gap-2">
+          <% income_categories.each do |category| %>
+            <%= button_to transaction_category_path(
+                  entry,
+                  quick_categorize: "1",
+                  entry: {
+                    entryable_type: "Transaction",
+                    entryable_attributes: { id: transaction.id, category_id: category.id }
+                  }
+                ),
+                method: :patch,
+                data: { turbo_frame: "quick_categorize_card" },
+                class: "inline-flex items-center rounded-lg border border-primary px-3 py-2 text-sm text-primary hover:bg-surface-hover" do %>
+              <%= render partial: "categories/badge", locals: { category: category } %>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+
+      <% if expense_categories.any? %>
+        <p class="text-xs text-secondary uppercase font-medium mt-4"><%= t("transactions.quick_categorize.expense_heading") %></p>
+        <div class="flex flex-wrap gap-2">
+          <% expense_categories.each do |category| %>
+            <%= button_to transaction_category_path(
+                  entry,
+                  quick_categorize: "1",
+                  entry: {
+                    entryable_type: "Transaction",
+                    entryable_attributes: { id: transaction.id, category_id: category.id }
+                  }
+                ),
+                method: :patch,
+                data: { turbo_frame: "quick_categorize_card" },
+                class: "inline-flex items-center rounded-lg border border-primary px-3 py-2 text-sm text-primary hover:bg-surface-hover" do %>
+              <%= render partial: "categories/badge", locals: { category: category } %>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

@@ -50,6 +50,21 @@ fr:
     index:
       transaction: transaction
       transactions: transactions
+      quick_categorize: Catégorisation rapide
+    quick_categorize:
+      page_title: Catégorisation rapide
+      back_to_list: Retour aux transactions
+      no_access: Vous ne pouvez pas catégoriser les transactions de ce compte.
+      all_done_title: C’est à jour
+      all_done_body: Il n’y a aucune transaction non catégorisée sur vos comptes accessibles.
+      card_heading: Transaction non catégorisée
+      name_label: Libellé
+      notes_label: Notes
+      save_details: Enregistrer
+      details_saved: Détails enregistrés
+      pick_category: Choisir une catégorie
+      income_heading: Catégories de revenus
+      expense_heading: Catégories de dépenses
     searches:
       filters:
         amount_filter:

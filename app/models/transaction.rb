@@ -75,6 +75,22 @@ class Transaction < ApplicationRecord
     joins(entry: :account).where(accounts: { family_id: family.id })
   end
 
+  # Next transaction matching "uncategorized" filters (quick-categorize flow)
+  def self.next_uncategorized_for(user, family)
+    accessible_account_ids = user.accessible_accounts.pluck(:id)
+    return nil if accessible_account_ids.empty?
+
+    filters = {
+      "categories" => Category.all_uncategorized_names,
+      "active_accounts_only" => true
+    }
+    search = Transaction::Search.new(family, filters: filters, accessible_account_ids: accessible_account_ids)
+    search.transactions_scope
+          .reverse_chronological
+          .includes(:category, :merchant, entry: :account)
+          .first
+  end
+
   # Overarching grouping method for all transfer-type transactions
   def transfer?
     TRANSFER_KINDS.include?(kind)

@@ -1,0 +1,9 @@
+---
+fr:
+  apprise:
+    new_transaction:
+      title: Nouvelle transaction
+      income: Revenu
+      expense: Dépense
+    balance:
+      title: Solde du compte (après sync)

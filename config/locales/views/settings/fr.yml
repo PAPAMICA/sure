@@ -43,6 +43,12 @@ fr:
         theme_system: Système
         theme_title: Thème
         timezone: Fuseau horaire
+        sync_heading: Synchronisation bancaire (admin)
+        sync_subtitle: Fréquence de synchronisation et comportement à la connexion
+        hourly_bank_sync_label: Synchroniser les comptes liés toutes les heures
+        hourly_bank_sync_hint: En plus de la synchronisation quotidienne globale, lance une synchronisation complète de la famille chaque heure. Attention aux limites des fournisseurs.
+        auto_sync_on_login_label: Synchroniser à la connexion d’un membre
+        auto_sync_on_login_hint: Si activé, la famille se synchronise automatiquement une fois par jour à la première visite lorsqu’il existe des comptes actifs.
     profiles:
       destroy:
         cannot_remove_self: Vous ne pouvez pas vous enlever de votre compte.
@@ -133,9 +139,31 @@ fr:
       whats_new_label: Dernières nouvelles
       api_keys_label: Clés API
       bank_sync_label: Synchronisation de la banque
+      notifications_label: Notifications
     settings_nav_link_large:
       next: Suivant
       previous: Précédent
+    notifications:
+      show:
+        page_title: Notifications (Apprise)
+        intro: Envoyez des alertes via votre instance Apprise API ou webhook compatible. Voir le projet
+        intro_link_label: Apprise
+        url_label: URL de notification
+        url_hint: URL POST complète (par ex. point de terminaison Apprise API /notify/…).
+        new_tx_heading: Nouvelles transactions
+        new_tx_enable: Activer les notifications pour les nouvelles transactions
+        balance_heading: Soldes après synchronisation
+        balance_enable: Activer les notifications de solde après chaque synchronisation réussie d’un compte
+        filter_accounts: Limiter à certains comptes (vide = tous)
+        filter_categories: Limiter à certaines catégories (vide = toutes ; s’applique seulement si une catégorie est déjà définie)
+        filter_kinds: Types de transaction (vide = tous)
+        filter_flow: Type de flux (vide = tous)
+        flow_income: Revenu
+        flow_expense: Dépense
+        flow_transfer: Virement / mouvement interne
+        save: Enregistrer
+      update:
+        saved: Paramètres de notification enregistrés
     user_avatar_field:
       accepted_formats: JPG ou PNG. 5MB max.
       choose: Charger une photo
