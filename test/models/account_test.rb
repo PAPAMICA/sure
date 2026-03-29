@@ -1,7 +1,7 @@
 require "test_helper"
 
 class AccountTest < ActiveSupport::TestCase
-  include SyncableInterfaceTest, EntriesTestHelper, ActiveJob::TestHelper
+  include SyncableInterfaceTest, EntriesTestHelper, ActiveJob::TestHelper, BalanceTestHelper
 
   setup do
     @account = @syncable = accounts(:depository)
@@ -287,5 +287,30 @@ class AccountTest < ActiveSupport::TestCase
     assert_not_nil share
     assert_equal "read_write", share.permission
     assert share.include_in_finances?
+  end
+
+  test "end_balance_snapshot_on_or_before returns latest ledger row on or before date" do
+    travel_to Time.zone.local(2026, 6, 15, 12, 0, 0) do
+      @account.balances.destroy_all
+      create_balance(account: @account, date: Date.new(2026, 6, 1), balance: 1000)
+      create_balance(account: @account, date: Date.new(2026, 6, 10), balance: 1100)
+
+      snap = @account.end_balance_snapshot_on_or_before(Date.new(2026, 6, 12))
+      assert_equal Date.new(2026, 6, 10), snap[1]
+      assert_equal 0, snap[0].to_d - BigDecimal("1100")
+
+      snap2 = @account.end_balance_snapshot_on_or_before(Date.new(2026, 6, 5))
+      assert_equal Date.new(2026, 6, 1), snap2[1]
+
+      assert_nil @account.end_balance_snapshot_on_or_before(Date.new(2026, 5, 1))
+    end
+  end
+
+  test "end_balance_amount_on_or_before returns amount only" do
+    travel_to Time.zone.local(2026, 6, 15, 12, 0, 0) do
+      @account.balances.destroy_all
+      create_balance(account: @account, date: Date.new(2026, 6, 10), balance: 800)
+      assert_equal 0, @account.end_balance_amount_on_or_before(Date.new(2026, 6, 11)).to_d - BigDecimal("800")
+    end
   end
 end

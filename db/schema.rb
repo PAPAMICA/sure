@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_29_160000) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_29_200000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -536,6 +536,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_29_160000) do
     t.text "ntfy_transaction_body_template"
     t.text "ntfy_balance_title_template"
     t.text "ntfy_balance_body_template"
+    t.integer "ntfy_balance_prior_days", default: 7, null: false
     t.jsonb "apprise_rules", default: {}, null: false
     t.datetime "latest_sync_activity_at", default: -> { "CURRENT_TIMESTAMP" }
     t.datetime "latest_sync_completed_at", default: -> { "CURRENT_TIMESTAMP" }

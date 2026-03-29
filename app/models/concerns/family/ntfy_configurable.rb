@@ -56,10 +56,64 @@ module Family::NtfyConfigurable
 
     def ntfy_balance_variables(account)
       money = Money.new(account.balance, account.currency)
-      {
+      base = {
         account_name: account.name.to_s,
         balance: money.format,
         currency: account.currency.to_s
+      }
+      base.merge(ntfy_balance_comparison_template_vars(account))
+    end
+
+    def ntfy_balance_comparison_template_vars(account)
+      empty = {
+        balance_change: "",
+        balance_change_abs: "",
+        prior_balance: "",
+        prior_days: "",
+        prior_date: "",
+        prior_balance_date: "",
+        balance_change_line: ""
+      }
+
+      days = ntfy_balance_prior_days.to_i
+      return empty if days <= 0
+
+      prior_anchor = Date.current - days.days
+      row = account.end_balance_snapshot_on_or_before(prior_anchor)
+
+      prior_date_fmt = I18n.l(prior_anchor, format: :long)
+
+      if row.blank?
+        return empty.merge(
+          prior_days: days.to_s,
+          prior_date: prior_date_fmt
+        )
+      end
+
+      prior_amount, prior_record_date = row
+      cur = account.balance.to_d
+      delta = cur - prior_amount.to_d
+      change_money = Money.new(delta, account.currency)
+      prior_money = Money.new(prior_amount, account.currency)
+      abs_money = Money.new(delta.abs, account.currency)
+
+      prior_bal_date_fmt = prior_record_date ? I18n.l(prior_record_date, format: :long) : ""
+
+      line = "\n" + I18n.t(
+        "ntfy.balance.change_line",
+        prior_days: days,
+        balance_change: change_money.format,
+        prior_balance: prior_money.format
+      )
+
+      {
+        balance_change: change_money.format,
+        balance_change_abs: abs_money.format,
+        prior_balance: prior_money.format,
+        prior_days: days.to_s,
+        prior_date: prior_date_fmt,
+        prior_balance_date: prior_bal_date_fmt,
+        balance_change_line: line
       }
     end
 end

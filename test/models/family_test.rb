@@ -1,7 +1,7 @@
 require "test_helper"
 
 class FamilyTest < ActiveSupport::TestCase
-  include SyncableInterfaceTest
+  include SyncableInterfaceTest, BalanceTestHelper
 
   def setup
     @syncable = families(:dylan_family)
@@ -200,5 +200,34 @@ class FamilyTest < ActiveSupport::TestCase
     assert_not_nil document
     assert_equal({ "type" => "financial_document" }, document.metadata)
     assert_equal "vs_test123", family.reload.vector_store_id
+  end
+
+  test "ntfy balance variables include comparison when ledger history exists" do
+    family = families(:dylan_family)
+    family.update!(ntfy_balance_prior_days: 5)
+    account = accounts(:depository)
+
+    travel_to Time.zone.local(2026, 6, 20, 12, 0, 0) do
+      account.balances.destroy_all
+      create_balance(account: account, date: Date.new(2026, 6, 10), balance: 1000)
+      create_balance(account: account, date: Date.new(2026, 6, 19), balance: 1000)
+      account.update!(balance: 1050)
+
+      vars = family.send(:ntfy_balance_variables, account)
+      assert_equal "5", vars[:prior_days]
+      assert_match(/50/, vars[:balance_change].to_s)
+      assert_includes vars[:balance_change_line].to_s, vars[:balance_change].to_s
+    end
+  end
+
+  test "ntfy balance comparison vars are empty when prior days is zero" do
+    family = families(:dylan_family)
+    family.update!(ntfy_balance_prior_days: 0)
+    account = accounts(:depository)
+
+    vars = family.send(:ntfy_balance_variables, account)
+    assert_equal "", vars[:balance_change]
+    assert_equal "", vars[:balance_change_line]
+    assert_equal "", vars[:prior_days]
   end
 end

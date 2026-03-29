@@ -89,28 +89,31 @@ class NotificationRule < ApplicationRecord
   end
 
   # Sends one ntfy using family URL/credentials/templates (no dedupe).
+  # Returns true if ntfy returned HTTP 2xx; false if URL is blank, the request failed, or HTTP was not 2xx.
   def deliver_transaction_message!(transaction, entry)
-    return if family.ntfy_url.blank?
+    return false if family.ntfy_url.blank?
 
     title, body = family.ntfy_transaction_notification_for(transaction, entry)
-    Notifications::NtfyDelivery.deliver!(
+    response = Notifications::NtfyDelivery.deliver!(
       family.ntfy_url,
       title: title,
       body: body,
       **family.ntfy_delivery_credentials
     )
+    ntfy_response_success?(response)
   end
 
   def deliver_balance_message!(account)
-    return if family.ntfy_url.blank?
+    return false if family.ntfy_url.blank?
 
     title, body = family.ntfy_balance_notification_for(account)
-    Notifications::NtfyDelivery.deliver!(
+    response = Notifications::NtfyDelivery.deliver!(
       family.ntfy_url,
       title: title,
       body: body,
       **family.ntfy_delivery_credentials
     )
+    ntfy_response_success?(response)
   end
 
   # Manual trigger from UI: first matching transaction/account, or a symbol reason if impossible.
@@ -127,12 +130,12 @@ class NotificationRule < ApplicationRecord
       return :no_match unless tx
       entry = tx.entry
       return :no_entry unless entry
-      deliver_transaction_message!(tx, entry)
+      return :delivery_failed unless deliver_transaction_message!(tx, entry)
       :ok
     when "balance"
-      account = matching_accounts_scope.first
+      account = matching_accounts_scope.unscope(:order).order(:name, :id).first
       return :no_match unless account
-      deliver_balance_message!(account)
+      return :delivery_failed unless deliver_balance_message!(account)
       :ok
     else
       :unsupported
@@ -216,5 +219,9 @@ class NotificationRule < ApplicationRecord
 
     def target_immutable_on_update
       errors.add(:target, :immutable) if target_changed?
+    end
+
+    def ntfy_response_success?(response)
+      response.respond_to?(:code) && response.code.to_i.between?(200, 299)
     end
 end

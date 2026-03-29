@@ -19,6 +19,7 @@ en:
       no_ntfy: Set an ntfy topic URL in notification settings first.
       no_match: No transaction or account matches this rule yet.
       no_entry: Matching transaction has no entry; cannot send.
+      delivery_failed: ntfy did not confirm delivery (non-2xx HTTP or network error). Check your URL, authentication, and server logs.
       failed: Could not send notification.
     test:
       send_button: Send test notification
@@ -81,11 +82,20 @@ en:
       template_transaction_title_label: Title template
       template_transaction_body_label: Body template
       template_balance_heading: Balance notifications (after sync / scheduled)
+      ntfy_balance_prior_days_label: Compare to balance how many days ago?
+      ntfy_balance_prior_days_hint: "Used for balance change and prior-balance template variables. Set to 0 to hide comparison. Range: 0–365."
       template_variables_balance: |
         Available variables:
         %{account_name} — Account name
-        %{balance} — Formatted balance
+        %{balance} — Formatted current balance
         %{currency} — Currency code
+        %{balance_change} — Formatted difference (current − balance on or before that day)
+        %{balance_change_abs} — Absolute change, formatted
+        %{prior_balance} — Formatted balance on or before the comparison date
+        %{prior_days} — Comparison window in days (same as the setting above)
+        %{prior_date} — Calendar date used as the comparison anchor (long format)
+        %{prior_balance_date} — Date of the ledger row used for the prior balance (long format)
+        %{balance_change_line} — Localized one-line summary (leading newline when present; empty if no data)
       template_balance_title_label: Title template
       template_balance_body_label: Body template
       template_leave_blank_hint: Leave empty to use the default template.
@@ -95,7 +105,7 @@ en:
     new:
       title_transaction: New transaction notification rule
       title_balance: New balance notification rule
-    edit:
+    edit_page:
       title: Edit notification rule
     form:
       name_label: Name

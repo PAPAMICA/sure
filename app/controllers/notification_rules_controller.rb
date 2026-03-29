@@ -63,7 +63,8 @@ class NotificationRulesController < ApplicationController
         ntfy_transaction_title_template: p[:ntfy_transaction_title_template].presence,
         ntfy_transaction_body_template: p[:ntfy_transaction_body_template].presence,
         ntfy_balance_title_template: p[:ntfy_balance_title_template].presence,
-        ntfy_balance_body_template: p[:ntfy_balance_body_template].presence
+        ntfy_balance_body_template: p[:ntfy_balance_body_template].presence,
+        ntfy_balance_prior_days: family_ntfy_prior_days_param(p)
       )
     else
       attrs = {
@@ -72,7 +73,8 @@ class NotificationRulesController < ApplicationController
         ntfy_transaction_title_template: p[:ntfy_transaction_title_template].presence,
         ntfy_transaction_body_template: p[:ntfy_transaction_body_template].presence,
         ntfy_balance_title_template: p[:ntfy_balance_title_template].presence,
-        ntfy_balance_body_template: p[:ntfy_balance_body_template].presence
+        ntfy_balance_body_template: p[:ntfy_balance_body_template].presence,
+        ntfy_balance_prior_days: family_ntfy_prior_days_param(p)
       }
       attrs[:ntfy_access_token] = p[:ntfy_access_token] if p[:ntfy_access_token].present?
       attrs[:ntfy_basic_password] = p[:ntfy_basic_password] if p[:ntfy_basic_password].present?
@@ -94,6 +96,8 @@ class NotificationRulesController < ApplicationController
       [ :alert, t("notification_rules.trigger_deliver.no_match") ]
     when :no_entry
       [ :alert, t("notification_rules.trigger_deliver.no_entry") ]
+    when :delivery_failed
+      [ :alert, t("notification_rules.trigger_deliver.delivery_failed") ]
     else
       [ :alert, t("notification_rules.trigger_deliver.failed") ]
     end
@@ -128,8 +132,15 @@ class NotificationRulesController < ApplicationController
       params.require(:family).permit(
         :ntfy_url, :ntfy_access_token, :ntfy_basic_username, :ntfy_basic_password, :clear_ntfy_credentials,
         :ntfy_transaction_title_template, :ntfy_transaction_body_template,
-        :ntfy_balance_title_template, :ntfy_balance_body_template
+        :ntfy_balance_title_template, :ntfy_balance_body_template, :ntfy_balance_prior_days
       )
+    end
+
+    def family_ntfy_prior_days_param(p)
+      v = p[:ntfy_balance_prior_days]
+      return 7 if v.blank?
+
+      v.to_i.clamp(0, 365)
     end
 
     def perform_ntfy_test(p)

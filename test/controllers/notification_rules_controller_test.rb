@@ -19,6 +19,15 @@ class NotificationRulesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "https://ntfy.sh/test-topic", @admin.family.reload.ntfy_url
   end
 
+  test "admin can save ntfy balance prior days" do
+    patch update_family_ntfy_notification_rules_url, params: {
+      family: { ntfy_url: "https://ntfy.sh/t", ntfy_balance_prior_days: 14 },
+      family_action: "save"
+    }
+    assert_redirected_to notification_rules_url
+    assert_equal 14, @admin.family.reload.ntfy_balance_prior_days
+  end
+
   test "member cannot update family ntfy settings" do
     family = families(:dylan_family)
     family.update_column(:ntfy_url, "https://ntfy.sh/safe")
@@ -112,6 +121,22 @@ class NotificationRulesControllerTest < ActionDispatch::IntegrationTest
     post trigger_deliver_notification_rule_url(rule)
     assert_redirected_to notification_rules_url
     assert_equal I18n.t("notification_rules.trigger_deliver.success"), flash[:notice]
+  end
+
+  test "admin trigger_deliver shows alert when ntfy returns non-2xx" do
+    Notifications::NtfyDelivery.stubs(:deliver!).returns(Struct.new(:code).new("401"))
+    @admin.family.update_columns(ntfy_url: "https://ntfy.sh/topic")
+
+    rule = @admin.family.notification_rules.create!(
+      name: "Balance ping",
+      target: :balance,
+      delivery: :on_sync,
+      active: true
+    )
+
+    post trigger_deliver_notification_rule_url(rule)
+    assert_redirected_to notification_rules_url
+    assert_equal I18n.t("notification_rules.trigger_deliver.delivery_failed"), flash[:alert]
   end
 
   test "member cannot trigger_deliver" do

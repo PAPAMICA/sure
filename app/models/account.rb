@@ -420,6 +420,22 @@ class Account < ApplicationRecord
     account_shares.where(user: user).destroy_all
   end
 
+  # Latest materialized day-end snapshot on or before +target_date+ (this account's currency only).
+  # Returns +[ end_balance, date ]+ or +nil+ when no balance row exists.
+  def end_balance_snapshot_on_or_before(target_date)
+    balances
+      .where(currency: currency)
+      .where("date <= ?", target_date)
+      .order(date: :desc)
+      .limit(1)
+      .pick(:end_balance, :date)
+  end
+
+  # Latest +end_balance+ amount on or before +target_date+ (see {#end_balance_snapshot_on_or_before}).
+  def end_balance_amount_on_or_before(target_date)
+    end_balance_snapshot_on_or_before(target_date)&.first
+  end
+
   def auto_share_with_family!
     records = family.users.where.not(id: owner_id).pluck(:id).map do |user_id|
       { account_id: id, user_id: user_id, permission: "read_write",

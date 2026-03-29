@@ -7,6 +7,7 @@ fr:
       expense: Dépense
     balance:
       title: Solde du compte (après sync)
+      change_line: "Δ %{prior_days} j : %{balance_change} (était %{prior_balance})"
     default_templates:
       transaction_title: Nouvelle transaction
       transaction_body: |
@@ -15,7 +16,5 @@ fr:
         %{date}
         %{account_name}
         %{category_name}
-      balance_title: Solde du compte
-      balance_body: |
-        %{account_name}
-        %{balance}
+      balance_title: "%{account_name}"
+      balance_body: "%{balance}%{balance_change_line}"

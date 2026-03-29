@@ -82,6 +82,13 @@
 
           <div class="space-y-2">
             <p class="text-xs font-medium text-primary"><%= t("notification_rules.index.template_balance_heading") %></p>
+            <%= f.number_field :ntfy_balance_prior_days,
+                  label: t("notification_rules.index.ntfy_balance_prior_days_label"),
+                  min: 0,
+                  max: 365,
+                  step: 1,
+                  class: "form-field__input w-full max-w-xs",
+                  hint: t("notification_rules.index.ntfy_balance_prior_days_hint") %>
             <pre class="text-xs text-secondary whitespace-pre-wrap font-mono bg-container-inset rounded-lg p-3 border border-primary"><%= t("notification_rules.index.template_variables_balance") %></pre>
             <%= f.text_area :ntfy_balance_title_template,
                   label: t("notification_rules.index.template_balance_title_label"),

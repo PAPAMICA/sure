@@ -19,6 +19,7 @@ fr:
       no_ntfy: Définissez d’abord l’URL du topic ntfy dans les paramètres de notification.
       no_match: Aucune transaction ou compte ne correspond encore à cette règle.
       no_entry: La transaction correspondante n’a pas d’écriture ; envoi impossible.
+      delivery_failed: ntfy n’a pas confirmé l’envoi (HTTP non 2xx ou erreur réseau). Vérifiez l’URL, l’authentification et les journaux serveur.
       failed: Impossible d’envoyer la notification.
     test:
       send_button: Envoyer une notification test
@@ -81,11 +82,20 @@ fr:
       template_transaction_title_label: Modèle du titre
       template_transaction_body_label: Modèle du corps
       template_balance_heading: Notifications de solde (après sync / planifié)
+      ntfy_balance_prior_days_label: Comparer au solde d’il y a combien de jours ?
+      ntfy_balance_prior_days_hint: "Sert pour les variables d’écart et de solde antérieur dans les modèles. Mettez 0 pour masquer la comparaison. Plage : 0–365."
       template_variables_balance: |
         Variables disponibles :
         %{account_name} — Nom du compte
-        %{balance} — Solde formaté
+        %{balance} — Solde actuel formaté
         %{currency} — Code devise
+        %{balance_change} — Écart formaté (solde actuel − solde au plus tard à cette date)
+        %{balance_change_abs} — Écart en valeur absolue, formaté
+        %{prior_balance} — Solde formaté au plus tard à la date de référence
+        %{prior_days} — Nombre de jours de comparaison (comme le réglage ci-dessus)
+        %{prior_date} — Date calendaire servant d’ancre de comparaison (format long)
+        %{prior_balance_date} — Date de la ligne de grand livre utilisée pour le solde antérieur (format long)
+        %{balance_change_line} — Résumé sur une ligne, localisé (saut de ligne en tête si présent ; vide si pas de données)
       template_balance_title_label: Modèle du titre
       template_balance_body_label: Modèle du corps
       template_leave_blank_hint: Laisser vide pour utiliser le modèle par défaut.
@@ -95,7 +105,7 @@ fr:
     new:
       title_transaction: Nouvelle règle — transactions
       title_balance: Nouvelle règle — soldes
-    edit:
+    edit_page:
       title: Modifier la règle de notification
     form:
       name_label: Nom

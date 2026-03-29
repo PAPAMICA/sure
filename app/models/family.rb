@@ -53,6 +53,8 @@ class Family < ApplicationRecord
   validates :moniker, inclusion: { in: MONIKERS }
   validates :assistant_type, inclusion: { in: ASSISTANT_TYPES }
   validates :default_account_sharing, inclusion: { in: SHARING_DEFAULTS }
+  validates :ntfy_balance_prior_days,
+    numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 365 }
 
 
   def moniker_label
