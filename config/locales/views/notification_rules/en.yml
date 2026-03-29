@@ -12,18 +12,23 @@ en:
       success: Notification rule updated.
     destroy:
       success: Notification rule deleted.
-    default_url_updated: Default ntfy topic URL saved.
+    ntfy_settings_updated: Notification settings saved.
+    trigger_deliver:
+      button_title: Send one notification now (first matching transaction or account)
+      success: Notification sent.
+      no_ntfy: Set an ntfy topic URL in notification settings first.
+      no_match: No transaction or account matches this rule yet.
+      no_entry: Matching transaction has no entry; cannot send.
+      failed: Could not send notification.
     test:
-      section_title: Test ntfy
       send_button: Send test notification
-      form_hint: Enter a topic URL and send a test without saving the form (field below, or the family default if empty).
-      url_field_label: ntfy topic URL to test
       push_title: Test notification
       push_body: If you received this, your ntfy topic URL is configured correctly.
       success: Test notification sent successfully.
       failure: Could not reach ntfy (invalid URL or network error). Check the logs.
       http_error: "ntfy returned HTTP %{code}. Check your URL and server logs."
-      url_missing: Enter a topic URL or save a default URL on the family first.
+      url_missing: Enter a topic URL in the form or save one first.
+      inline_hint: "Test uses the URL and credentials in the form above (unsaved fields are included). Save to persist changes."
     errors:
       transaction_on_sync: Transaction rules cannot use “after account sync” delivery. Use immediate or scheduled.
       balance_immediate: Balance rules cannot use immediate delivery. Use after sync or scheduled.
@@ -48,15 +53,43 @@ en:
       intro_after_link: Create rules with IF conditions (like auto-categorization), optional minimum amount, and how often to check.
       ntfy_auth_doc_prefix: "Servers with access control need authentication — see "
       ntfy_auth_doc_link: ntfy authentication
+      ntfy_settings_heading: Notification settings (ntfy)
+      ntfy_settings_intro: "Connection, credentials, and message templates apply to all rules. Only family admins can edit this section."
+      ntfy_connection_heading: Connection
       ntfy_auth_hint: "Bearer token (recommended) or HTTP Basic. Leave token and password empty to keep saved values."
       secret_placeholder: Leave blank to keep current
+      ntfy_access_token_label: Access token (Bearer)
+      ntfy_basic_username_label: Basic auth username
+      ntfy_basic_username_hint: Optional. Leave empty with only a password to use ntfy’s “empty user + token” Basic style.
+      ntfy_basic_password_label: Basic auth password
       ntfy_token_family_hint: Paste a new token to replace the stored one. Leave empty to keep the current token.
       ntfy_password_family_hint: Paste a new password to replace the stored one. Leave empty to keep the current password.
       clear_ntfy_credentials_label: Clear all saved ntfy credentials (token, username, password)
-      default_url_heading: Default ntfy topic URL
-      default_url_hint: Used when a rule leaves the URL empty. Only family admins can change this. Use your full topic URL (e.g. https://ntfy.sh/your-secret-topic).
       default_url_label: Topic URL
-      default_url_save: Save default URL
+      templates_heading: Message templates
+      templates_intro: "Use %{variable} placeholders. Leave a field empty to use the built-in default. New lines are preserved in the message body."
+      template_transaction_heading: Transaction notifications
+      template_variables_transaction: |
+        Available variables:
+        %{sign_label} — Income or expense label
+        %{amount} — Formatted absolute amount
+        %{entry_name} — Transaction name
+        %{date} — Entry date (long format)
+        %{account_name} — Account name
+        %{category_name} — Category (may be empty)
+        %{merchant_name} — Merchant (may be empty)
+      template_transaction_title_label: Title template
+      template_transaction_body_label: Body template
+      template_balance_heading: Balance notifications (after sync / scheduled)
+      template_variables_balance: |
+        Available variables:
+        %{account_name} — Account name
+        %{balance} — Formatted balance
+        %{currency} — Currency code
+      template_balance_title_label: Title template
+      template_balance_body_label: Body template
+      template_leave_blank_hint: Leave empty to use the default template.
+      save_ntfy_settings: Save settings
       list_heading: Rules
       empty: No notification rules yet.
     new:
@@ -74,18 +107,7 @@ en:
       frequency_prompt: Select frequency
       frequency_hint: The scheduler runs hourly; your rule runs when it is due based on this frequency.
       active_label: Rule active
-      ntfy_heading: ntfy
-      ntfy_url_label: Topic URL (optional)
-      ntfy_url_hint: Full URL to POST to (e.g. https://ntfy.sh/your-topic). Overrides the family default for this rule only.
-      ntfy_auth_doc_prefix: "If your server requires login, see "
-      ntfy_auth_doc_link: ntfy authentication
-      ntfy_access_token_label: Access token (Bearer)
-      ntfy_access_token_hint: Optional. Overrides the family default for this rule. Empty clears the rule token (family default applies).
-      ntfy_basic_username_label: Basic auth username
-      ntfy_basic_username_hint: Optional with password. Leave empty to use only a token as Basic password (ntfy curl -u :token style).
-      ntfy_basic_password_label: Basic auth password
-      ntfy_basic_password_hint: Optional. Empty keeps the current rule password.
-      ntfy_secret_placeholder: Leave blank to keep stored value
+      ntfy_config_moved_hint: "ntfy URL, credentials, and message templates are configured in the notification settings above (not per rule)."
       amount_heading: Amount filter
       minimum_amount_label: Minimum absolute amount
       minimum_amount_hint: Only applies to transaction rules. Leave blank to include all amounts.

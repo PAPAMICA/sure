@@ -7,7 +7,7 @@ module NotificationRules
       return unless account
 
       NotificationRule.where(family: account.family, active: true, target: :balance, delivery: :on_sync).find_each do |rule|
-        next unless rule.resolve_ntfy_url.present?
+        next unless account.family.ntfy_url.present?
         next unless rule.matches_account?(account)
 
         rule.deliver_balance_message!(account)

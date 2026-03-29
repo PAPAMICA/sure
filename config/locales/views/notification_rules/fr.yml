@@ -12,18 +12,23 @@ fr:
       success: Règle de notification mise à jour.
     destroy:
       success: Règle de notification supprimée.
-    default_url_updated: URL du topic ntfy par défaut enregistrée.
+    ntfy_settings_updated: Paramètres de notification enregistrés.
+    trigger_deliver:
+      button_title: Envoyer une notification maintenant (première transaction ou compte correspondant)
+      success: Notification envoyée.
+      no_ntfy: Définissez d’abord l’URL du topic ntfy dans les paramètres de notification.
+      no_match: Aucune transaction ou compte ne correspond encore à cette règle.
+      no_entry: La transaction correspondante n’a pas d’écriture ; envoi impossible.
+      failed: Impossible d’envoyer la notification.
     test:
-      section_title: Tester ntfy
       send_button: Envoyer une notification test
-      form_hint: Saisissez l’URL du topic et envoyez un test sans enregistrer le formulaire (champ ci-dessous, ou l’URL par défaut de la famille si vide).
-      url_field_label: URL du topic ntfy à tester
       push_title: Notification test
       push_body: Si vous recevez ce message, votre URL de topic ntfy est correctement configurée.
       success: Notification test envoyée avec succès.
       failure: Impossible de joindre ntfy (URL invalide ou erreur réseau). Consultez les journaux.
       http_error: "ntfy a répondu HTTP %{code}. Vérifiez l’URL et les journaux serveur."
-      url_missing: Saisissez une URL de topic ou enregistrez d’abord une URL par défaut pour la famille.
+      url_missing: Saisissez une URL de topic dans le formulaire ou enregistrez-la d’abord.
+      inline_hint: "Le test utilise l’URL et les identifiants du formulaire ci-dessus (y compris non enregistrés). Enregistrez pour conserver les changements."
     errors:
       transaction_on_sync: Les règles sur les transactions ne peuvent pas utiliser la livraison « après synchronisation du compte ». Utilisez immédiat ou planifié.
       balance_immediate: Les règles sur les soldes ne peuvent pas utiliser la livraison immédiate. Utilisez après synchronisation ou planifié.
@@ -48,15 +53,43 @@ fr:
       intro_after_link: Créez des règles avec des conditions SI (comme la catégorisation automatique), un montant minimum optionnel et une fréquence de vérification.
       ntfy_auth_doc_prefix: "Les serveurs avec contrôle d’accès exigent une authentification — voir "
       ntfy_auth_doc_link: authentification ntfy
+      ntfy_settings_heading: Paramètres de notification (ntfy)
+      ntfy_settings_intro: "Connexion, identifiants et modèles de message s’appliquent à toutes les règles. Seuls les administrateurs de la famille peuvent modifier cette section."
+      ntfy_connection_heading: Connexion
       ntfy_auth_hint: "Jeton Bearer (recommandé) ou HTTP Basic. Laissez jeton et mot de passe vides pour conserver les valeurs enregistrées."
       secret_placeholder: Laisser vide pour conserver l’actuel
+      ntfy_access_token_label: Jeton d’accès (Bearer)
+      ntfy_basic_username_label: Utilisateur Basic auth
+      ntfy_basic_username_hint: Facultatif. Laissez vide avec uniquement un mot de passe pour le style Basic « utilisateur vide + jeton » de ntfy.
+      ntfy_basic_password_label: Mot de passe Basic auth
       ntfy_token_family_hint: Collez un nouveau jeton pour remplacer celui enregistré. Laissez vide pour ne pas changer.
       ntfy_password_family_hint: Collez un nouveau mot de passe pour remplacer celui enregistré. Laissez vide pour ne pas changer.
       clear_ntfy_credentials_label: Effacer tous les identifiants ntfy enregistrés (jeton, utilisateur, mot de passe)
-      default_url_heading: URL du topic ntfy par défaut
-      default_url_hint: Utilisée lorsqu’une règle ne définit pas d’URL. Seuls les administrateurs de la famille peuvent la modifier. URL complète du topic (ex. https://ntfy.sh/votre-topic-secret).
       default_url_label: URL du topic
-      default_url_save: Enregistrer l’URL par défaut
+      templates_heading: Modèles de message
+      templates_intro: "Utilisez des variables %{nom}. Laissez un champ vide pour le modèle par défaut. Les sauts de ligne sont conservés dans le corps du message."
+      template_transaction_heading: Notifications de transaction
+      template_variables_transaction: |
+        Variables disponibles :
+        %{sign_label} — Libellé revenu / dépense
+        %{amount} — Montant formaté (valeur absolue)
+        %{entry_name} — Libellé de la transaction
+        %{date} — Date de l’écriture (format long)
+        %{account_name} — Nom du compte
+        %{category_name} — Catégorie (peut être vide)
+        %{merchant_name} — Commerçant (peut être vide)
+      template_transaction_title_label: Modèle du titre
+      template_transaction_body_label: Modèle du corps
+      template_balance_heading: Notifications de solde (après sync / planifié)
+      template_variables_balance: |
+        Variables disponibles :
+        %{account_name} — Nom du compte
+        %{balance} — Solde formaté
+        %{currency} — Code devise
+      template_balance_title_label: Modèle du titre
+      template_balance_body_label: Modèle du corps
+      template_leave_blank_hint: Laisser vide pour utiliser le modèle par défaut.
+      save_ntfy_settings: Enregistrer les paramètres
       list_heading: Règles
       empty: Aucune règle de notification pour l’instant.
     new:
@@ -74,18 +107,7 @@ fr:
       frequency_prompt: Choisir la fréquence
       frequency_hint: Le planificateur tourne chaque heure ; la règle s’exécute lorsqu’elle est due selon cette fréquence.
       active_label: Règle active
-      ntfy_heading: ntfy
-      ntfy_url_label: URL du topic (facultatif)
-      ntfy_url_hint: URL complète en POST (ex. https://ntfy.sh/mon-topic). Remplace l’URL par défaut de la famille pour cette règle uniquement.
-      ntfy_auth_doc_prefix: "Si votre serveur exige une connexion, voir "
-      ntfy_auth_doc_link: authentification ntfy
-      ntfy_access_token_label: Jeton d’accès (Bearer)
-      ntfy_access_token_hint: Facultatif. Remplace le défaut de la famille pour cette règle. Vide efface le jeton de la règle (défaut famille appliqué).
-      ntfy_basic_username_label: Utilisateur Basic auth
-      ntfy_basic_username_hint: Facultatif avec mot de passe. Laissez vide pour n’utiliser qu’un jeton comme mot de passe Basic (style curl -u :token).
-      ntfy_basic_password_label: Mot de passe Basic auth
-      ntfy_basic_password_hint: Facultatif. Vide conserve le mot de passe de la règle.
-      ntfy_secret_placeholder: Laisser vide pour conserver la valeur enregistrée
+      ntfy_config_moved_hint: "L’URL ntfy, les identifiants et les modèles de message se configurent dans les paramètres de notification ci-dessus (pas par règle)."
       amount_heading: Filtre sur le montant
       minimum_amount_label: Montant minimum (valeur absolue)
       minimum_amount_hint: S’applique uniquement aux règles sur les transactions. Laisser vide pour tous les montants.

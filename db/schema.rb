@@ -532,6 +532,10 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_29_160000) do
     t.text "ntfy_access_token"
     t.string "ntfy_basic_username"
     t.text "ntfy_basic_password"
+    t.text "ntfy_transaction_title_template"
+    t.text "ntfy_transaction_body_template"
+    t.text "ntfy_balance_title_template"
+    t.text "ntfy_balance_body_template"
     t.jsonb "apprise_rules", default: {}, null: false
     t.datetime "latest_sync_activity_at", default: -> { "CURRENT_TIMESTAMP" }
     t.datetime "latest_sync_completed_at", default: -> { "CURRENT_TIMESTAMP" }
@@ -982,10 +986,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_29_160000) do
     t.string "target", null: false
     t.string "delivery", null: false
     t.string "frequency"
-    t.text "ntfy_url"
-    t.text "ntfy_access_token"
-    t.string "ntfy_basic_username"
-    t.text "ntfy_basic_password"
     t.decimal "minimum_amount", precision: 19, scale: 4
     t.date "effective_date"
     t.datetime "last_scheduled_run_at"

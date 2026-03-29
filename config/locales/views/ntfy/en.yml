@@ -7,3 +7,15 @@ en:
       expense: Expense
     balance:
       title: Account balance (after sync)
+    default_templates:
+      transaction_title: New transaction
+      transaction_body: |
+        %{sign_label} %{amount}
+        %{entry_name}
+        %{date}
+        %{account_name}
+        %{category_name}
+      balance_title: Account balance
+      balance_body: |
+        %{account_name}
+        %{balance}

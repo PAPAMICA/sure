@@ -321,9 +321,11 @@ Rails.application.routes.draw do
   end
 
   resources :notification_rules, except: :show do
+    member do
+      post :trigger_deliver
+    end
     collection do
-      patch :update_default_ntfy_url
-      post :test_ntfy
+      patch :update_family_ntfy
     end
   end
 

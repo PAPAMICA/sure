@@ -62,8 +62,15 @@ fr:
       notes_label: Notes
       save_details: Enregistrer
       details_saved: Détails enregistrés
-      pick_category: Rechercher une catégorie
-      search_placeholder: Taper pour filtrer…
+      pick_category: Choisir une catégorie
+      search_placeholder: Rechercher une catégorie…
+      search_hint: La liste se met à jour pendant la saisie. Entrée sélectionne la première suggestion.
+      search_no_results: Aucune catégorie ne correspond. Essayez une autre orthographe ou effacez la recherche.
+      all_categories_meta:
+        zero: "Aucune catégorie"
+        one: "1 catégorie"
+        other: "%{count} catégories"
+      search_results_meta: "%{count} sur %{total} correspondent"
     searches:
       filters:
         amount_filter:

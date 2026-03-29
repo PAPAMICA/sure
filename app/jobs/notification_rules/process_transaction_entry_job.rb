@@ -13,7 +13,7 @@ module NotificationRules
       family = entry.account.family
 
       NotificationRule.where(family: family, active: true, target: :transaction, delivery: :immediate).find_each do |rule|
-        next unless rule.resolve_ntfy_url.present?
+        next unless family.ntfy_url.present?
         next unless rule.matches_transaction?(transaction)
 
         rule.deliver_transaction_message!(transaction, entry)

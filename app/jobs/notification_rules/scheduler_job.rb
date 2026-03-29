@@ -5,7 +5,7 @@ module NotificationRules
     def perform
       NotificationRule.where(active: true, delivery: :scheduled).find_each do |rule|
         next unless rule.due_for_scheduled_run?
-        next unless rule.resolve_ntfy_url.present?
+        next unless rule.family.ntfy_url.present?
 
         case rule.target
         when "transaction"

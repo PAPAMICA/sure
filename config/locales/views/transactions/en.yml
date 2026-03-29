@@ -136,8 +136,15 @@ en:
       notes_label: Notes
       save_details: Save details
       details_saved: Details saved
-      pick_category: Search category
-      search_placeholder: Type to filter…
+      pick_category: Choose a category
+      search_placeholder: Search categories…
+      search_hint: The list updates as you type. Press Enter to select the first match.
+      search_no_results: No categories match your search. Try another spelling or clear the search.
+      all_categories_meta:
+        zero: "No categories"
+        one: "1 category"
+        other: "%{count} categories"
+      search_results_meta: "%{count} of %{total} match"
     list:
       drag_drop_title: Drop CSV to import
       drag_drop_subtitle: Upload transactions directly

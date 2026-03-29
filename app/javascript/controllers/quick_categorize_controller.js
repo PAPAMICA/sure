@@ -1,12 +1,13 @@
 import { Controller } from "@hotwired/stimulus";
 
-// Quick categorize: search/filter categories, Enter picks first match, debounced autosave for text fields.
-// Category rows use [data-qc-category] so filtering does not rely on Stimulus multi-target registration.
+// Quick categorize: live filter reorders the DOM (matches first), Enter picks first visible, debounced autosave.
 export default class extends Controller {
-  static targets = ["search", "name", "notes"];
+  static targets = ["search", "name", "notes", "categoryList", "emptyState", "resultMeta"];
   static values = {
     autosaveUrl: String,
     transactionId: String,
+    allCategoriesText: String,
+    resultsCountText: String,
   };
 
   connect() {
@@ -19,17 +20,85 @@ export default class extends Controller {
         }
       });
     }
+    this._filterScheduled = false;
     this.filter();
   }
 
-  filter() {
-    const q = this.normalizeForSearch(this.searchTarget?.value || "");
-    this.categoryRowElements.forEach((row) => {
-      const raw = row.getAttribute("data-qc-category") || "";
-      const name = this.normalizeForSearch(raw);
-      const show = q.length === 0 || name.includes(q);
-      row.classList.toggle("hidden", !show);
+  scheduleFilter() {
+    if (this._filterScheduled) return;
+    this._filterScheduled = true;
+    requestAnimationFrame(() => {
+      this._filterScheduled = false;
+      this.filter();
     });
+  }
+
+  filter() {
+    if (!this.hasCategoryListTarget) return;
+
+    const q = this.normalizeForSearch(this.searchTarget?.value || "");
+    const container = this.categoryListTarget;
+    const emptyEl = this.hasEmptyStateTarget ? this.emptyStateTarget : null;
+    const items = [...container.querySelectorAll("[data-qc-category]")];
+
+    const withMeta = items.map((el) => {
+      const raw = el.getAttribute("data-qc-category") || "";
+      const norm = this.normalizeForSearch(raw);
+      const match = q.length === 0 || norm.includes(q);
+      const sort = parseInt(el.getAttribute("data-qc-sort") || "0", 10);
+      return { el, match, sort };
+    });
+
+    const matching = withMeta.filter((x) => x.match).sort((a, b) => a.sort - b.sort);
+    const notMatching = withMeta.filter((x) => !x.match).sort((a, b) => a.sort - b.sort);
+
+    if (q.length > 0 && matching.length === 0) {
+      emptyEl?.classList.remove("hidden");
+      items.forEach((el) => el.classList.add("hidden"));
+      if (emptyEl) {
+        container.replaceChildren(emptyEl, ...items);
+      }
+      this.updateResultMeta(q, items.length, 0);
+      return;
+    }
+
+    emptyEl?.classList.add("hidden");
+    for (const { el } of matching) {
+      el.classList.remove("hidden");
+    }
+    for (const { el } of notMatching) {
+      if (q.length > 0) {
+        el.classList.add("hidden");
+      } else {
+        el.classList.remove("hidden");
+      }
+    }
+
+    const ordered = [];
+    if (emptyEl) {
+      ordered.push(emptyEl);
+    }
+    ordered.push(
+      ...matching.map((x) => x.el),
+      ...notMatching.map((x) => x.el),
+    );
+    container.replaceChildren(...ordered);
+
+    this.updateResultMeta(q, items.length, matching.length);
+  }
+
+  updateResultMeta(query, total, matchCount) {
+    if (!this.hasResultMetaTarget) return;
+    const el = this.resultMetaTarget;
+    if (query.length === 0) {
+      el.textContent = this.allCategoriesTextValue;
+    } else if (matchCount === 0) {
+      el.textContent = "";
+    } else {
+      el.textContent = this.resultsCountTextValue
+        .replace("%{count}", String(matchCount))
+        .replace("%{total}", String(total));
+    }
   }
 
   normalizeForSearch(str) {
@@ -46,16 +115,14 @@ export default class extends Controller {
     this.pickFirstVisibleCategory();
   }
 
-  get categoryRowElements() {
-    return Array.from(this.element.querySelectorAll("[data-qc-category]"));
-  }
-
   pickFirstVisibleCategory() {
-    const row = this.categoryRowElements.find((r) => !r.classList.contains("hidden"));
+    if (!this.hasCategoryListTarget) return;
+    const row = [...this.categoryListTarget.querySelectorAll("[data-qc-category]")].find(
+      (r) => !r.classList.contains("hidden"),
+    );
     if (!row) return;
     const btn =
-      row.querySelector("button[type='submit']") ||
-      row.querySelector("input[type='submit']");
+      row.querySelector("button[type='submit']") || row.querySelector("input[type='submit']");
     btn?.click();
   }
 

@@ -15,6 +15,15 @@
     </p>
   </div>
   <div class="flex items-center gap-2 shrink-0">
+    <% if Current.user.admin? %>
+      <%= button_to trigger_deliver_notification_rule_path(notification_rule),
+            method: :post,
+            class: "inline-flex items-center justify-center rounded-lg p-2 text-secondary hover:bg-surface-hover hover:text-primary",
+            title: t("notification_rules.trigger_deliver.button_title"),
+            aria: { label: t("notification_rules.trigger_deliver.button_title") } do %>
+        <%= icon "send", size: "sm" %>
+      <% end %>
+    <% end %>
     <%= render DS::Link.new(text: t("notification_rules.edit"), href: edit_notification_rule_path(notification_rule), variant: "ghost", size: :sm, icon: "pencil", frame: :modal) %>
     <%= button_to notification_rule_path(notification_rule), method: :delete, class: "inline-flex items-center gap-1 text-sm text-destructive hover:opacity-80", data: { turbo_confirm: t("notification_rules.confirm_destroy") } do %>
       <%= icon("trash-2", size: "sm") %>

@@ -37,18 +37,6 @@ class NotificationRule < ApplicationRecord
     registry.condition_filters
   end
 
-  def resolve_ntfy_url
-    ntfy_url.presence || family.ntfy_url
-  end
-
-  def resolve_ntfy_credentials
-    {
-      access_token: ntfy_access_token.presence || family.ntfy_access_token.presence,
-      basic_username: ntfy_basic_username.presence || family.ntfy_basic_username.presence,
-      basic_password: ntfy_basic_password.presence || family.ntfy_basic_password.presence
-    }
-  end
-
   def due_for_scheduled_run?
     return false unless scheduled?
     return true if last_scheduled_run_at.nil?
@@ -100,42 +88,55 @@ class NotificationRule < ApplicationRecord
     matching_accounts_scope.where(id: account.id).exists?
   end
 
+  # Sends one ntfy using family URL/credentials/templates (no dedupe).
   def deliver_transaction_message!(transaction, entry)
-    url = resolve_ntfy_url
-    return if url.blank?
+    return if family.ntfy_url.blank?
 
-    money = Money.new(entry.amount.abs, entry.currency)
-    formatted = money.format
-    sign_label = entry.amount.negative? ? I18n.t("ntfy.new_transaction.income") : I18n.t("ntfy.new_transaction.expense")
-    body = [
-      "#{sign_label} #{formatted}",
-      entry.name,
-      I18n.l(entry.date, format: :long),
-      entry.account.name,
-      transaction.category&.name
-    ].compact.join("\n")
-
+    title, body = family.ntfy_transaction_notification_for(transaction, entry)
     Notifications::NtfyDelivery.deliver!(
-      url,
-      title: I18n.t("ntfy.new_transaction.title"),
+      family.ntfy_url,
+      title: title,
       body: body,
-      **resolve_ntfy_credentials
+      **family.ntfy_delivery_credentials
     )
   end
 
   def deliver_balance_message!(account)
-    url = resolve_ntfy_url
-    return if url.blank?
+    return if family.ntfy_url.blank?
 
-    money = Money.new(account.balance, account.currency)
-    body = "#{account.name}\n#{money.format}"
-
+    title, body = family.ntfy_balance_notification_for(account)
     Notifications::NtfyDelivery.deliver!(
-      url,
-      title: I18n.t("ntfy.balance.title"),
+      family.ntfy_url,
+      title: title,
       body: body,
-      **resolve_ntfy_credentials
+      **family.ntfy_delivery_credentials
     )
+  end
+
+  # Manual trigger from UI: first matching transaction/account, or a symbol reason if impossible.
+  def trigger_sample_deliver!
+    return :no_ntfy if family.ntfy_url.blank?
+
+    case target
+    when "transaction"
+      tx = matching_transactions_scope
+        .with_entry
+        .merge(Entry.reverse_chronological)
+        .includes(:category, :merchant, entry: :account)
+        .first
+      return :no_match unless tx
+      entry = tx.entry
+      return :no_entry unless entry
+      deliver_transaction_message!(tx, entry)
+      :ok
+    when "balance"
+      account = matching_accounts_scope.first
+      return :no_match unless account
+      deliver_balance_message!(account)
+      :ok
+    else
+      :unsupported
+    end
   end
 
   def period_key_for_dedupe

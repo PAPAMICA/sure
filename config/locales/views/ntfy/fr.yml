@@ -7,3 +7,15 @@ fr:
       expense: Dépense
     balance:
       title: Solde du compte (après sync)
+    default_templates:
+      transaction_title: Nouvelle transaction
+      transaction_body: |
+        %{sign_label} %{amount}
+        %{entry_name}
+        %{date}
+        %{account_name}
+        %{category_name}
+      balance_title: Solde du compte
+      balance_body: |
+        %{account_name}
+        %{balance}

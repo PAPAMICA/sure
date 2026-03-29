@@ -3,9 +3,12 @@
 <% full_edit = perm && perm.in?(%i[owner full_control]) %>
 <% can_note = perm && perm.in?(%i[owner full_control read_write]) %>
 <% if entry.blank? %>
-  <div class="bg-container rounded-xl shadow-border-xs p-8 text-center space-y-3">
-    <p class="text-primary font-medium"><%= t("transactions.quick_categorize.all_done_title") %></p>
-    <p class="text-secondary text-sm"><%= t("transactions.quick_categorize.all_done_body") %></p>
+  <div class="bg-container rounded-2xl shadow-border-xs border border-primary p-10 text-center space-y-4 max-w-lg mx-auto">
+    <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-container-inset text-secondary">
+      <%= icon "check", size: "lg" %>
+    </div>
+    <p class="text-primary text-lg font-semibold"><%= t("transactions.quick_categorize.all_done_title") %></p>
+    <p class="text-secondary text-sm max-w-sm mx-auto"><%= t("transactions.quick_categorize.all_done_body") %></p>
     <%= render DS::Link.new(
       text: t("transactions.quick_categorize.back_to_list"),
       href: transactions_path,
@@ -13,96 +16,140 @@
     ) %>
   </div>
 <% else %>
-  <div class="bg-container rounded-xl shadow-border-xs p-5 space-y-6"
+  <div class="space-y-6"
        data-controller="quick-categorize"
        data-quick-categorize-autosave-url-value="<%= transaction_path(entry) %>"
-       data-quick-categorize-transaction-id-value="<%= transaction.id %>">
-    <div class="space-y-1">
-      <p class="text-xs font-medium text-secondary uppercase tracking-wide"><%= t("transactions.quick_categorize.card_heading") %></p>
-      <p class="text-lg text-primary font-medium"><%= entry.name %></p>
-      <p class="text-2xl font-semibold text-primary">
-        <%= Money.new(entry.amount, entry.currency).format %>
-      </p>
-      <div class="flex flex-wrap gap-x-4 gap-y-1 text-sm text-secondary">
-        <span><%= l(entry.date, format: :long) %></span>
-        <span><%= entry.account.name %></span>
-        <% if transaction.merchant %>
-          <span><%= transaction.merchant.name %></span>
-        <% end %>
+       data-quick-categorize-transaction-id-value="<%= transaction.id %>"
+       data-quick-categorize-all-categories-text-value="<%= t("transactions.quick_categorize.all_categories_meta", count: categories.size) %>"
+       data-quick-categorize-results-count-text-value="<%= t("transactions.quick_categorize.search_results_meta") %>">
+    <%# Résumé transaction %>
+    <div class="bg-container rounded-2xl shadow-border-xs border border-primary overflow-hidden">
+      <div class="bg-container-inset border-b border-primary px-5 py-4">
+        <p class="text-xs font-medium text-secondary uppercase tracking-wide"><%= t("transactions.quick_categorize.card_heading") %></p>
+        <p class="mt-1 text-lg font-semibold text-primary leading-snug"><%= entry.name %></p>
+        <p class="mt-2 text-3xl font-semibold tabular-nums text-primary tracking-tight">
+          <%= Money.new(entry.amount, entry.currency).format %>
+        </p>
+        <div class="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm text-secondary">
+          <span class="inline-flex items-center gap-1.5">
+            <%= icon "calendar", size: "sm", class: "text-secondary shrink-0" %>
+            <%= l(entry.date, format: :long) %>
+          </span>
+          <span class="inline-flex items-center gap-1.5">
+            <%= icon "landmark", size: "sm", class: "text-secondary shrink-0" %>
+            <%= entry.account.name %>
+          </span>
+          <% if transaction.merchant %>
+            <span class="inline-flex items-center gap-1.5">
+              <%= icon "store", size: "sm", class: "text-secondary shrink-0" %>
+              <%= transaction.merchant.name %>
+            </span>
+          <% end %>
+        </div>
       </div>
-    </div>
 
-    <% if full_edit %>
-      <div class="space-y-3">
-        <%= label_tag "entry_name", t("transactions.quick_categorize.name_label"), class: "text-sm font-medium text-primary" %>
-        <%= text_field_tag "entry[name]", entry.name,
-              id: "entry_name",
-              class: "form-field__input w-full",
-              autocomplete: "off",
-              data: {
-                quick_categorize_target: "name",
-                action: "input->quick-categorize#scheduleSave"
-              } %>
-        <%= label_tag "entry_notes", t("transactions.quick_categorize.notes_label"), class: "text-sm font-medium text-primary" %>
-        <%= text_area_tag "entry[notes]", entry.notes,
-              id: "entry_notes",
-              rows: 2,
-              class: "form-field__input w-full",
-              data: {
-                quick_categorize_target: "notes",
-                action: "input->quick-categorize#scheduleSave"
-              } %>
-      </div>
-    <% elsif can_note %>
-      <div class="space-y-3">
-        <%= label_tag "entry_notes", t("transactions.quick_categorize.notes_label"), class: "text-sm font-medium text-primary" %>
-        <%= text_area_tag "entry[notes]", entry.notes,
-              id: "entry_notes",
-              rows: 2,
-              class: "form-field__input w-full",
-              data: {
-                quick_categorize_target: "notes",
-                action: "input->quick-categorize#scheduleSave"
-              } %>
-      </div>
-    <% end %>
+      <% if full_edit %>
+        <div class="px-5 py-4 space-y-4 border-b border-primary">
+          <%= label_tag "entry_name", t("transactions.quick_categorize.name_label"), class: "text-sm font-medium text-primary" %>
+          <%= text_field_tag "entry[name]", entry.name,
+                id: "entry_name",
+                class: "form-field__input w-full",
+                autocomplete: "off",
+                data: {
+                  quick_categorize_target: "name",
+                  action: "input->quick-categorize#scheduleSave"
+                } %>
+          <%= label_tag "entry_notes", t("transactions.quick_categorize.notes_label"), class: "text-sm font-medium text-primary" %>
+          <%= text_area_tag "entry[notes]", entry.notes,
+                id: "entry_notes",
+                rows: 2,
+                class: "form-field__input w-full",
+                data: {
+                  quick_categorize_target: "notes",
+                  action: "input->quick-categorize#scheduleSave"
+                } %>
+        </div>
+      <% elsif can_note %>
+        <div class="px-5 py-4 space-y-3 border-b border-primary">
+          <%= label_tag "entry_notes", t("transactions.quick_categorize.notes_label"), class: "text-sm font-medium text-primary" %>
+          <%= text_area_tag "entry[notes]", entry.notes,
+                id: "entry_notes",
+                rows: 2,
+                class: "form-field__input w-full",
+                data: {
+                  quick_categorize_target: "notes",
+                  action: "input->quick-categorize#scheduleSave"
+                } %>
+        </div>
+      <% end %>
 
-    <div class="space-y-3">
-      <label for="quick_categorize_search" class="text-sm font-medium text-primary"><%= t("transactions.quick_categorize.pick_category") %></label>
-      <%= text_field_tag :q, "",
-            id: "quick_categorize_search",
-            type: "search",
-            autocomplete: "off",
-            class: "form-field__input w-full",
-            placeholder: t("transactions.quick_categorize.search_placeholder"),
-            data: {
-              quick_categorize_target: "search",
-              action: "input->quick-categorize#filter keydown->quick-categorize#searchKeydown"
-            } %>
+      <%# Catégories %>
+      <div class="px-5 py-4 space-y-3">
+        <div class="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <label for="quick_categorize_search" class="text-sm font-medium text-primary"><%= t("transactions.quick_categorize.pick_category") %></label>
+            <p class="text-xs text-secondary mt-0.5"><%= t("transactions.quick_categorize.search_hint") %></p>
+          </div>
+          <p class="text-xs text-secondary tabular-nums shrink-0" data-quick-categorize-target="resultMeta" aria-live="polite"></p>
+        </div>
 
-      <div class="flex flex-wrap gap-1.5">
-        <% categories.each do |category| %>
-          <%= tag.div class: "inline-block", data: { qc_category: category.name.to_s.downcase } do %>
-            <%= button_to transaction_category_path(
-                  entry,
-                  quick_categorize: "1",
-                  entry: {
-                    entryable_type: "Transaction",
-                    entryable_attributes: { id: transaction.id, category_id: category.id }
-                  }
-                ),
-                method: :patch,
-                data: { turbo_frame: "quick_categorize_card" },
-                class: "inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm text-primary hover:bg-surface-hover" do %>
-              <% if category.lucide_icon.present? %>
-                <span style="color: <%= category.color %>">
-                  <%= icon category.lucide_icon, size: "sm", color: "current" %>
-                </span>
+        <div class="relative">
+          <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-secondary" aria-hidden="true">
+            <%= icon "search", size: "sm" %>
+          </span>
+          <%= text_field_tag :q, "",
+                id: "quick_categorize_search",
+                type: "search",
+                autocomplete: "off",
+                class: "form-field__input w-full pl-10",
+                placeholder: t("transactions.quick_categorize.search_placeholder"),
+                data: {
+                  quick_categorize_target: "search",
+                  action: "input->quick-categorize#scheduleFilter keydown->quick-categorize#searchKeydown"
+                } %>
+        </div>
+
+        <div
+          data-quick-categorize-target="categoryList"
+          class="max-h-[min(50vh,22rem)] overflow-y-auto overflow-x-hidden rounded-xl border border-primary bg-container-inset p-2 space-y-1.5"
+          role="list"
+        >
+          <div
+            data-quick-categorize-target="emptyState"
+            class="hidden rounded-lg border border-dashed border-primary px-4 py-8 text-center"
+            role="status"
+          >
+            <p class="text-sm text-secondary"><%= t("transactions.quick_categorize.search_no_results") %></p>
+          </div>
+
+          <% categories.each_with_index do |category, idx| %>
+            <%= tag.div class: "block", role: "listitem", data: { qc_category: category.name.to_s.downcase, qc_sort: idx } do %>
+              <%= button_to transaction_category_path(
+                    entry,
+                    quick_categorize: "1",
+                    entry: {
+                      entryable_type: "Transaction",
+                      entryable_attributes: { id: transaction.id, category_id: category.id }
+                    }
+                  ),
+                  method: :patch,
+                  data: { turbo_frame: "quick_categorize_card" },
+                  class: "w-full flex items-center gap-3 rounded-lg border border-transparent px-3 py-2.5 text-left text-sm text-primary transition-colors hover:bg-surface-hover hover:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-container focus-visible:ring-gray-400" do %>
+                <% if category.lucide_icon.present? %>
+                  <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-container border border-primary" style="color: <%= category.color %>">
+                    <%= icon category.lucide_icon, size: "sm", color: "current" %>
+                  </span>
+                <% else %>
+                  <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-container border border-primary text-secondary">
+                    <%= icon "tag", size: "sm" %>
+                  </span>
+                <% end %>
+                <span class="min-w-0 flex-1 font-medium truncate" style="color: <%= category.color %>"><%= category.name %></span>
+                <%= icon "chevron-right", size: "sm", class: "text-secondary shrink-0 opacity-60" %>
               <% end %>
-              <span style="color: <%= category.color %>"><%= category.name %></span>
             <% end %>
           <% end %>
-        <% end %>
+        </div>
       </div>
     </div>
   </div>

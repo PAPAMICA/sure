@@ -205,7 +205,7 @@ en:
         intro: Send alerts through ntfy. See
         intro_link_label: ntfy.sh
         url_label: Topic URL
-        url_hint: Full topic URL to POST to (for example https://ntfy.sh/your-secret-topic).
+        url_hint: Configure topic URL, credentials, and message templates on the notification rules page.
         new_tx_heading: New transactions
         new_tx_enable: Enable new-transaction notifications
         balance_heading: Balances after sync
