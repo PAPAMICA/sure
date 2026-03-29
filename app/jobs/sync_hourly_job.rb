@@ -2,9 +2,10 @@ class SyncHourlyJob < ApplicationJob
   queue_as :scheduled
   sidekiq_options lock: :until_executed, on_conflict: :log
 
-  # Provider item classes that opt-in to hourly syncing
+  # Provider item classes that opt-in to hourly syncing (in addition to families with +hourly_bank_sync+).
   HOURLY_SYNCABLES = [
-    CoinstatsItem # https://coinstats.app/api-docs/rate-limits#plan-limits
+    CoinstatsItem, # https://coinstats.app/api-docs/rate-limits#plan-limits
+    EnableBankingItem
   ].freeze
 
   def perform

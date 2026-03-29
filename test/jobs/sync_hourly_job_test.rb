@@ -1,6 +1,10 @@
 require "test_helper"
 
 class SyncHourlyJobTest < ActiveJob::TestCase
+  test "EnableBankingItem opts in to hourly provider sync" do
+    assert_includes SyncHourlyJob::HOURLY_SYNCABLES, EnableBankingItem
+  end
+
   test "syncs families that opted into hourly bank sync" do
     scope = mock("hourly_families_scope")
     Family.expects(:where).with(hourly_bank_sync: true).returns(scope)

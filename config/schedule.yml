@@ -23,7 +23,7 @@ sync_hourly:
   cron: "0 * * * *" # every hour at the top of the hour
   class: "SyncHourlyJob"
   queue: "scheduled"
-  description: "Syncs provider items that opt-in to hourly syncing"
+  description: "Hourly bank sync for opted-in families; hourly item sync for Coinstats, Enable Banking, etc."
 
 notification_rules_scheduler:
   cron: "5 * * * *" # every hour at :05 (after hourly sync)
