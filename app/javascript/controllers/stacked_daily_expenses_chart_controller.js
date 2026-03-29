@@ -125,16 +125,11 @@ export default class extends Controller {
       .select(this.element)
       .append("div")
       .attr("data-tooltip", "")
-      .style("position", "absolute")
-      .style("pointer-events", "none")
-      .style("opacity", 0)
-      .style("background", "var(--color-container, #fff)")
-      .style("border", "1px solid var(--color-border-primary, #e5e7eb)")
-      .style("border-radius", "8px")
-      .style("padding", "8px 10px")
-      .style("font-size", "12px")
-      .style("box-shadow", "0 2px 8px rgba(0,0,0,0.08)")
-      .style("z-index", "20");
+      .attr(
+        "class",
+        "absolute pointer-events-none z-20 max-w-[min(20rem,calc(100vw-2rem))] rounded-lg border border-primary bg-container px-2.5 py-2 text-xs text-primary shadow-border-xs",
+      )
+      .style("opacity", 0);
 
     const elBox = () => this.element.getBoundingClientRect();
 
@@ -150,14 +145,14 @@ export default class extends Controller {
         .filter((p) => p.v > 0)
         .sort((a, b) => b.v - a.v);
       const total = parts.reduce((s, p) => s + p.v, 0);
-      const lines = [`<div class="font-medium text-primary">${dateStr}</div>`];
+      const lines = [`<div class="font-medium text-primary mb-0.5">${dateStr}</div>`];
       for (const p of parts) {
         lines.push(
-          `<div class="flex justify-between gap-4"><span style="color:${p.color}">●</span> <span>${p.name}</span> <span class="tabular-nums">${fmtMoney.format(p.v)}</span></div>`,
+          `<div class="flex items-baseline justify-between gap-3"><span class="shrink-0" style="color:${p.color}" aria-hidden="true">●</span><span class="min-w-0 flex-1 text-secondary">${p.name}</span><span class="shrink-0 tabular-nums text-primary">${fmtMoney.format(p.v)}</span></div>`,
         );
       }
       lines.push(
-        `<div class="mt-1 pt-1 border-t border-primary font-medium text-primary">${fmtMoney.format(total)}</div>`,
+        `<div class="mt-1.5 pt-1.5 border-t border-primary font-medium tabular-nums text-primary">${fmtMoney.format(total)}</div>`,
       );
       tooltip.html(lines.join(""));
       tooltip.style("opacity", 1);

@@ -1,0 +1,9 @@
+---
+en:
+  activerecord:
+    errors:
+      models:
+        family:
+          attributes:
+            hourly_bank_sync_window_end:
+              hourly_window_invalid: "must be greater than or equal to the start hour (same calendar day)"

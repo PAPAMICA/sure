@@ -1,0 +1,14 @@
+---
+fr:
+  pending_duplicate_merges:
+    new:
+      title: Fusionner avec la transaction comptabilisée
+      warning_title: Fusion manuelle des doublons
+      warning_description: Utilisez cette option pour fusionner manuellement une transaction en attente avec sa version comptabilisée. La transaction en attente sera supprimée et seule la version comptabilisée sera conservée.
+      pending_transaction: Transaction en attente
+      select_posted: Choisir la transaction comptabilisée à fusionner
+      showing_range: "Affichage %{start} — %{end}"
+      previous: "← 10 précédentes"
+      next: "10 suivantes →"
+      no_candidates: Aucune transaction comptabilisée trouvée sur ce compte.
+      submit_button: Fusionner les transactions

@@ -2,6 +2,19 @@
 fr:
   cryptos:
     edit:
-      edit: Éditer %{account}
+      edit: Modifier %{account}
+    form:
+      subtype_label: Type de compte
+      subtype_prompt: Sélectionnez le type…
+      subtype_none: Non précisé
+      tax_treatment_label: Régime fiscal
+      tax_treatment_hint: La plupart des cryptos sont dans un compte imposable. Choisissez une autre option si elles sont dans un compte défiscalisé (ex. IRA autogéré).
     new:
       title: Saisir le solde du compte
+    subtypes:
+      wallet:
+        short: Portefeuille
+        long: Portefeuille crypto
+      exchange:
+        short: Plateforme
+        long: Plateforme d'échange crypto

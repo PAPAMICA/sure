@@ -3,6 +3,8 @@ fr:
   defaults:
     brand_name: "%{brand_name}"
     product_name: "%{product_name}"
+  global:
+    expand: Développer
   activerecord:
     errors:
       messages:
@@ -155,6 +157,8 @@ fr:
   helpers:
     select:
       prompt: Veuillez sélectionner
+      search_placeholder: Rechercher
+      default_label: Sélectionner…
     submit:
       create: Créer un(e) %{model}
       submit: Enregistrer ce(tte) %{model}

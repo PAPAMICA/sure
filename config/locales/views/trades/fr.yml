@@ -5,6 +5,7 @@ fr:
       account: Compte de transfert (facultatif)
       account_prompt: Rechercher un compte
       amount: Montant
+      fee: Frais de transaction
       holding: Symbole boursier
       holding_optional: Symbole boursier (facultatif)
       price: Prix par action
@@ -35,15 +36,21 @@ fr:
     show:
       additional: Détails supplémentaires
       amount_label: Montant
+      buy: Achat
+      category_label: Catégorie
       cost_per_share_label: Coût par action
       date_label: Date
       delete: Supprimer
+      fee_label: Frais de transaction
       delete_subtitle: Cette action ne peut pas être annulée
-      delete_title: Supprimer la transaction
+      delete_title: Supprimer l'opération
       details: Détails
       exclude_subtitle: Cette transaction ne sera pas incluse dans les rapports et les calculs
       exclude_title: Exclure des analyses
+      no_category: Sans catégorie
       note_label: Note
       note_placeholder: Ajoutez tout commentaire supplémentaire ici...
       quantity_label: Quantité
+      sell: Vente
       settings: Paramètres
+      type_label: Type

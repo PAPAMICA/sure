@@ -1,6 +1,7 @@
 ---
 fr:
   accounts:
+    not_authorized: "Vous n'avez pas la permission de gérer ce compte"
     account:
       edit: Modifier
       link_lunchflow: Lier avec Lunch Flow
@@ -13,6 +14,7 @@ fr:
       remove_default: Retirer par défaut
       default_label: Par défaut
       delete: Supprimer le compte
+      sharing: Partage
     chart:
       data_not_available: Données non disponibles pour la période sélectionnée
     create:
@@ -27,7 +29,8 @@ fr:
       new_account: Nouveau compte
       no_accounts: Aucun compte pour l'instant
     form:
-      balance: Solde actuel
+      balance: "Solde à la date :"
+      opening_balance_date_label: Date du solde d'ouverture
       ledger_usage_label: Type de compte
       ledger_usage_hint: Sert à filtrer le tableau de bord. « Perso » par défaut.
       ledger_usage:
@@ -70,8 +73,11 @@ fr:
         entry: entrée
         filter: Filtrer
         new: Nouveau
+        new_activity: Nouvelle activité
         new_balance: Nouveau solde
+        new_trade: Nouvelle opération
         new_transaction: Nouvelle transaction
+        new_transfer: Nouveau transfert
         no_entries: Aucune entrée trouvée
         pending: En attente
         search:
@@ -88,6 +94,8 @@ fr:
         confirm_title: Supprimer le compte ?
         edit: Modifier
         import: Importer des transactions
+        import_trades: Importer des opérations
+        import_transactions: Importer des transactions
         manage: Gérer les comptes
     update:
       success: "Compte %{type} mis à jour"
@@ -113,6 +121,23 @@ fr:
       credit_card: Carte de crédit
       loan: Prêt
       other_liability: Autre passif
+    tax_treatments:
+      taxable: Imposable
+      tax_deferred: Épargne différée
+      tax_exempt: Exonéré
+      tax_advantaged: Avantages fiscaux
+    tax_treatment_descriptions:
+      taxable: Plus-values imposées à la réalisation
+      tax_deferred: Cotisations déductibles, imposition au retrait
+      tax_exempt: Cotisations après impôt, plus-values non imposées
+      tax_advantaged: Avantages fiscaux sous conditions
+    subtype_regions:
+      us: États-Unis
+      uk: Royaume-Uni
+      ca: Canada
+      au: Australie
+      eu: Europe
+      generic: Général
     confirm_unlink:
       title: Délier le compte du fournisseur ?
       description_html: "Vous êtes sur le point de délier <strong>%{account_name}</strong> de <strong>%{provider_name}</strong>. Cela le convertira en compte manuel."

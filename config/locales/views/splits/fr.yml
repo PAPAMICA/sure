@@ -1,0 +1,47 @@
+---
+fr:
+  splits:
+    new:
+      title: Fractionner la transaction
+      description: Divisez cette transaction en plusieurs lignes avec des catégories et des montants différents.
+      submit: Fractionner
+      cancel: Annuler
+      add_row: Ajouter une ligne
+      remove_row: Retirer
+      remaining: Restant
+      amounts_must_match: La somme des montants fractionnés doit égaler le montant d'origine.
+      name_label: Nom
+      name_placeholder: Nom du fractionnement
+      amount_label: Montant
+      category_label: Catégorie
+      uncategorized: "(non catégorisée)"
+      original_name: "Nom :"
+      original_date: "Date :"
+      original_amount: "Montant"
+      split_number: "Fraction %{number}"
+    create:
+      success: Transaction fractionnée avec succès
+      not_splittable: Cette transaction ne peut pas être fractionnée.
+    destroy:
+      success: Fractionnement annulé avec succès
+    show:
+      title: Lignes du fractionnement
+      description: Cette transaction a été divisée en les lignes suivantes.
+      button_title: Fractionner la transaction
+      button_description: Diviser cette transaction en plusieurs lignes avec des catégories et des montants différents.
+      button: Fractionner
+      unsplit_title: Annuler le fractionnement
+      unsplit_button: Annuler le fractionnement
+      unsplit_confirm: Toutes les lignes du fractionnement seront supprimées et la transaction d'origine sera restaurée.
+    edit:
+      title: Modifier le fractionnement
+      description: Modifiez les lignes de ce fractionnement.
+      submit: Mettre à jour le fractionnement
+      not_split: Cette transaction n'est pas fractionnée.
+    update:
+      success: Fractionnement mis à jour avec succès
+    child:
+      title: Ligne d'un fractionnement
+      description: Cette ligne fait partie d'une transaction fractionnée.
+      edit_split: Modifier le fractionnement
+      unsplit: Annuler le fractionnement

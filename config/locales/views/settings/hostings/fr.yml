@@ -6,6 +6,9 @@ fr:
         description: Contrôlez comment les nouvelles personnes s'inscrivent à votre instance de %{product}.
         email_confirmation_description: Lorsque cette option est activée, les utilisateurs doivent confirmer leur adresse e-mail lors du changement.
         email_confirmation_title: Exiger la confirmation de l'e-mail
+        default_family_title: Famille par défaut pour les nouveaux utilisateurs
+        default_family_description: "N'ajoutez les nouveaux utilisateurs à cette famille que s'ils n'ont pas d'invitation."
+        default_family_none: Aucune (créer une nouvelle famille)
         generate_tokens: Générer un nouveau code
         generated_tokens: Codes générés
         title: Inscription
@@ -15,6 +18,7 @@ fr:
           invite_only: Sur invitation uniquement
       show:
         general: Paramètres généraux
+        ai_assistant: Assistant IA
         financial_data_providers: Fournisseurs de données financières
         sync_settings: Paramètres de synchronisation
         invites: Codes d'invitation
@@ -34,11 +38,39 @@ fr:
         providers:
           twelve_data: Twelve Data
           yahoo_finance: Yahoo Finance
+      assistant_settings:
+        title: Assistant IA
+        description: Choisissez comment l'assistant de chat répond. Intégré utilise votre fournisseur LLM configuré directement. Externe délègue à un agent distant qui peut rappeler les outils financiers de Sure via MCP.
+        type_label: Type d'assistant
+        type_builtin: Intégré (LLM direct)
+        type_external: Externe (agent distant)
+        external_status: Point de terminaison de l'assistant externe
+        external_configured: Configuré
+        external_not_configured: Non configuré. Saisissez l'URL et le jeton ci-dessous, ou définissez les variables EXTERNAL_ASSISTANT_URL et EXTERNAL_ASSISTANT_TOKEN.
+        env_notice: "Le type d'assistant est verrouillé sur « %{type} » via la variable ASSISTANT_TYPE."
+        env_configured_external: Configuré avec succès via les variables d'environnement.
+        url_label: URL du point de terminaison
+        url_placeholder: "https://votre-agent/v1/chat"
+        url_help: URL complète de l'API de votre agent, fournie par votre hébergeur d'agent.
+        token_label: Jeton API
+        token_placeholder: Saisissez le jeton fourni par votre agent
+        token_help: Jeton d'authentification envoyé en Bearer à chaque requête.
+        agent_id_label: ID d'agent (optionnel)
+        agent_id_placeholder: "main (défaut)"
+        agent_id_help: Route vers un agent précis lorsque le fournisseur en propose plusieurs. Laissez vide pour le défaut.
+        disconnect_title: Connexion externe
+        disconnect_description: Supprimer la connexion à l'assistant externe et revenir à l'assistant intégré.
+        disconnect_button: Déconnecter
+        confirm_disconnect:
+          title: Déconnecter l'assistant externe ?
+          body: Cela supprimera l'URL, le jeton et l'ID d'enregistrés et activera l'assistant intégré. Vous pourrez reconnecter plus tard.
       brand_fetch_settings:
         description: Saisissez l'ID client fourni par Brand Fetch
         label: ID client
         placeholder: Entrez votre ID client ici
         title: Brand Fetch
+        high_res_label: Logos haute résolution
+        high_res_description: Lorsque cette option est activée, les logos sont récupérés en 120×120 au lieu de 40×40, pour un rendu plus net sur les écrans haute densité.
       openai_settings:
         description: Saisissez le jeton d'accès et configurez éventuellement un fournisseur compatible OpenAI personnalisé
         env_configured_message: Configuré avec succès via les variables d'environnement.
@@ -69,6 +101,10 @@ fr:
         label: Clé API
         placeholder: Entrez votre clé API ici
         plan: "Plan %{plan}"
+        plan_upgrade_warning_title: Certains tickers nécessitent un abonnement payant
+        plan_upgrade_warning_description: Les tickers suivants de votre portefeuille ne peuvent pas synchroniser les cours avec votre plan Twelve Data actuel.
+        requires_plan: nécessite le plan %{plan}
+        view_pricing: Voir les tarifs Twelve Data
         title: Twelve Data
       update:
         failure: Valeur de paramètre invalide
@@ -76,6 +112,8 @@ fr:
         invalid_onboarding_state: État d'inscription invalide
         invalid_sync_time: Format d'heure de synchronisation invalide. Veuillez utiliser le format HH:MM (ex. 02:30).
         scheduler_sync_failed: Paramètres enregistrés, mais la mise à jour du planning de synchronisation a échoué. Veuillez réessayer ou vérifier les journaux du serveur.
+      disconnect_external_assistant:
+        external_assistant_disconnected: Assistant externe déconnecté
       clear_cache:
         cache_cleared: Le cache de données a été effacé. Cela peut prendre quelques instants.
       not_authorized: Vous n'êtes pas autorisé(e) à effectuer cette action

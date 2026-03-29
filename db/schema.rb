@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_30_141000) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_30_190000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -531,6 +531,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_30_141000) do
     t.boolean "early_access", default: false
     t.boolean "auto_sync_on_login", default: true, null: false
     t.boolean "hourly_bank_sync", default: false, null: false
+    t.integer "hourly_bank_sync_window_start", default: 8, null: false
+    t.integer "hourly_bank_sync_window_end", default: 21, null: false
     t.text "ntfy_url"
     t.text "ntfy_access_token"
     t.string "ntfy_basic_username"

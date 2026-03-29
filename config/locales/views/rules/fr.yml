@@ -38,3 +38,15 @@ fr:
         pending: En attente
         success: Réussi
         failed: Échoué
+    clear_ai_cache:
+      button: Réinitialiser le cache IA
+      confirm_title: Réinitialiser le cache IA ?
+      confirm_body: Voulez-vous vraiment réinitialiser le cache IA ? Les règles IA pourront retraiter toutes les transactions. Cela peut engendrer des coûts API supplémentaires.
+      confirm_button: Réinitialiser le cache
+      success: Le cache IA est en cours d'effacement. Cela peut prendre quelques instants.
+    condition_filters:
+      transaction_type:
+        income: Revenu
+        expense: Dépense
+        transfer: Transfert
+        equal_to: Égal à

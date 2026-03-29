@@ -11,6 +11,11 @@ class SyncHourlyJob < ApplicationJob
   def perform
     Rails.logger.info("Starting hourly sync")
     Family.where(hourly_bank_sync: true).find_each do |family|
+      unless family.hourly_bank_sync_active_now?
+        Rails.logger.info("[SyncHourlyJob] Skipping family #{family.id} (outside hourly window #{family.hourly_bank_sync_window_start}-#{family.hourly_bank_sync_window_end} #{family.timezone.presence || 'app default TZ'})")
+        next
+      end
+
       family.sync_later
     rescue => e
       Rails.logger.error("[SyncHourlyJob] Failed to sync family #{family.id}: #{e.message}")

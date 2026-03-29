@@ -61,10 +61,27 @@ Sidekiq.configure_server do |config|
 
   # Initialize auto-sync scheduler when Sidekiq server starts
   config.on(:startup) do
+    schedule_path = Rails.root.join("config/schedule.yml")
+    if schedule_path.file?
+      schedule = YAML.load_file(schedule_path)
+      if schedule.present?
+        errors = Sidekiq::Cron::Job.load_from_hash!(schedule, { "source" => "schedule" })
+        failed = errors&.reject { |_, err| err.blank? }
+        if failed.present?
+          Rails.logger.error("[Sidekiq::Cron] Some jobs failed to save: #{failed.inspect}")
+        else
+          Rails.logger.info("[Sidekiq::Cron] Loaded #{schedule.size} job(s) from config/schedule.yml")
+        end
+      end
+    else
+      Rails.logger.warn("[Sidekiq::Cron] config/schedule.yml not found — hourly sync and other cron jobs will not run")
+    end
+
     AutoSyncScheduler.sync!
     Rails.logger.info("[AutoSyncScheduler] Initialized sync_all_accounts cron job")
   rescue => e
-    Rails.logger.error("[AutoSyncScheduler] Failed to initialize: #{e.message}")
+    Rails.logger.error("[Sidekiq::Cron/AutoSyncScheduler] Startup failed: #{e.message}")
+    Rails.logger.error(e.backtrace&.first(10)&.join("\n"))
   end
 end
 

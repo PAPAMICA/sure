@@ -107,7 +107,11 @@ class UsersController < ApplicationController
 
     def user_params
       family_attrs = [ :name, :currency, :country, :date_format, :timezone, :locale, :month_start_day, :id ]
-      family_attrs.push(:moniker, :default_account_sharing, :hourly_bank_sync, :auto_sync_on_login) if Current.user.admin?
+      family_attrs.push(
+        :moniker, :default_account_sharing, :hourly_bank_sync,
+        :hourly_bank_sync_window_start, :hourly_bank_sync_window_end,
+        :auto_sync_on_login
+      ) if Current.user.admin?
 
       params.require(:user).permit(
         :first_name, :last_name, :email, :profile_image, :redirect_to, :delete_profile_image, :onboarded_at,
@@ -130,9 +134,13 @@ class UsersController < ApplicationController
 
       bool = ActiveModel::Type::Boolean.new
       hourly_changed = family_attrs.key?(:hourly_bank_sync) && bool.cast(family_attrs[:hourly_bank_sync]) != Current.family.hourly_bank_sync
+      window_start_changed = family_attrs.key?(:hourly_bank_sync_window_start) &&
+        family_attrs[:hourly_bank_sync_window_start].to_i != Current.family.hourly_bank_sync_window_start
+      window_end_changed = family_attrs.key?(:hourly_bank_sync_window_end) &&
+        family_attrs[:hourly_bank_sync_window_end].to_i != Current.family.hourly_bank_sync_window_end
       login_sync_changed = family_attrs.key?(:auto_sync_on_login) && bool.cast(family_attrs[:auto_sync_on_login]) != Current.family.auto_sync_on_login
 
-      moniker_changed || sharing_changed || hourly_changed || login_sync_changed
+      moniker_changed || sharing_changed || hourly_changed || window_start_changed || window_end_changed || login_sync_changed
     end
 
     def ensure_admin

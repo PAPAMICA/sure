@@ -70,7 +70,11 @@ en:
         sync_heading: Bank sync (admin)
         sync_subtitle: Hourly sync and login behavior for connected accounts
         hourly_bank_sync_label: Sync linked bank accounts every hour
-        hourly_bank_sync_hint: In addition to the server-wide daily sync, enqueue a full family sync every hour. Use with care for provider rate limits.
+        hourly_bank_sync_hint: In addition to the server-wide daily sync, enqueue a full family sync each hour during the window below (family timezone). Use with care for provider rate limits.
+        hourly_bank_sync_window_start_label: Window starts at (local time)
+        hourly_bank_sync_window_end_label: Window ends at (local time)
+        hourly_bank_sync_window_hint: First hour included; last hour included (e.g. 08:00–21:00 runs at 08:00 through 21:00, family timezone).
+        hourly_bank_sync_window_end_hint: Must be the same or later than the start hour.
         auto_sync_on_login_label: Sync when a member logs in
         auto_sync_on_login_hint: When enabled, the family syncs automatically once per day on first visit if there are active accounts.
     bank_sync:

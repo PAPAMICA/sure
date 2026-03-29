@@ -3,15 +3,23 @@ fr:
   pages:
     changelog:
       title: Nouveautés
+    privacy:
+      title: Politique de confidentialité
+      heading: Politique de confidentialité
+      placeholder: Le contenu de la politique de confidentialité s'affichera ici.
+    terms:
+      title: Conditions d'utilisation
+      heading: Conditions d'utilisation
+      placeholder: Le contenu des conditions d'utilisation s'affichera ici.
     dashboard:
+      welcome: "Bon retour, %{name}"
+      subtitle: "Voici l'état de vos finances"
       period_selector:
-        aria_label: Période des graphiques
+        aria_label: Période du graphique
         granularity_month: Mois
         granularity_quarter: Trimestre
         granularity_year: Année
         quarter_ordinal: "T%{quarter}"
-      welcome_back: Content de vous revoir
-      happening_with_finance: Voici ce qui se passe avec vos finances
       quick_categorize_badge:
         title_pending: "%{count} transactions à catégoriser"
         aria_pending: "Catégorisation rapide — %{count} transaction(s) en attente"
@@ -19,32 +27,57 @@ fr:
         aria_done: "Catégorisation rapide — tout est à jour"
       ledger_usage:
         aria_label: Comptes personnels ou professionnels
-        personal: Perso
-        professional: Pro
+        personal: Personnel
+        professional: Professionnel
         empty_title: Aucun compte dans cette vue
-        empty_description_personal: Aucun compte marqué personnel, ou aucun n’est inclus dans vos finances. Passez en vue Pro ou modifiez un compte.
-        empty_description_professional: Aucun compte marqué professionnel. Passez en vue Perso ou indiquez le type sur chaque compte.
-        switch_to_personal: Afficher les comptes perso
-        switch_to_professional: Afficher les comptes pro
+        empty_description_personal: Vous n'avez aucun compte marqué comme personnel, ou aucun n'est inclus dans vos finances. Passez en vue professionnelle ou modifiez un compte.
+        empty_description_professional: Vous n'avez aucun compte marqué comme professionnel. Passez en vue personnelle ou indiquez le type dans les paramètres des comptes.
+        switch_to_personal: Afficher les comptes personnels
+        switch_to_professional: Afficher les comptes professionnels
         edit_accounts: Gérer les comptes
       new: Nouveau
-      cashflow:
-        title: Flux de trésorerie
-        no_cashflow: Aucune donnée de flux de trésorerie pour cette période
-        add_transactions_to_display_cashflow: Ajoutez des transactions pour afficher les données de flux de trésorerie ou étendre la période
-        new: Ajouter une transaction
+      drag_to_reorder: Glisser pour réorganiser la section
+      toggle_section: Afficher ou masquer la section
       net_worth_chart:
         data_not_available: Données indisponibles pour la période sélectionnée
-        title: Valeur nette
-      daily_expenses_chart:
-        title: Dépenses par jour
-        empty: Aucune dépense sur cette période pour les comptes sélectionnés.
-        other: Autres
+        title: Patrimoine net
       no_account_empty_state:
         new_account: Nouveau compte
-        no_account_subtitle: Comme aucun compte n'a été ajouté, il n'y a pas de données à afficher. Ajoutez vos premiers comptes pour commencer à consulter les données du tableau de bord.
-        no_account_title: Pas encore de comptes
-      no_account_graph_placeholder:
-        no_account_yet: Pas encore de compte
-        add_account_to_display: Ajouter des comptes pour afficher les données de valeur nette
-        new: Ajouter un compte
+        no_account_subtitle: Comme aucun compte n'a été ajouté, il n'y a aucune donnée à afficher. Ajoutez vos premiers comptes pour voir le tableau de bord.
+        no_account_title: Aucun compte pour le moment
+      balance_sheet:
+        title: Bilan
+        no_items: "Pas encore de %{name}"
+        add_accounts: "Ajoutez vos comptes %{name} pour voir le détail"
+      cashflow_sankey:
+        title: Trésorerie
+        no_data_title: Aucune donnée de flux pour cette période
+        no_data_description: Ajoutez des transactions pour afficher le flux de trésorerie ou élargissez la période
+        add_transaction: Ajouter une transaction
+      no_accounts:
+        title: Aucun compte pour le moment
+        description: Ajoutez des comptes pour afficher le patrimoine net
+        add_account: Ajouter un compte
+      outflows_donut:
+        title: Sorties
+        total_outflows: Total des sorties
+        categories: Catégories
+        value: Valeur
+        weight: Poids
+      daily_expenses_chart:
+        title: Dépenses quotidiennes
+        empty: Aucune transaction de dépense sur cette période pour les comptes sélectionnés.
+        other: Autre
+      investment_summary:
+        title: Investissements
+        total_return: Rendement total
+        holding: Ligne
+        weight: Poids
+        value: Valeur
+        return: Rendement
+        period_activity: "Activité — %{period}"
+        contributions: Versements
+        withdrawals: Retraits
+        trades: Opérations
+        no_investments: Aucun compte d'investissement
+        add_investment: Ajoutez un compte d'investissement pour suivre votre portefeuille

@@ -5,35 +5,90 @@ fr:
       brokerage_cash: Liquidités de courtage
     destroy:
       success: Position supprimée
+    update:
+      success: Coût de revient enregistré.
+      error: Valeur de coût de revient invalide.
+    unlock_cost_basis:
+      success: Coût de revient déverrouillé. Il pourra être mis à jour à la prochaine synchro.
+    remap_security:
+      success: Titre mis à jour.
+      security_not_found: Titre sélectionné introuvable.
+    reset_security:
+      success: Titre réinitialisé sur la valeur du fournisseur.
+    sync_prices:
+      success: Données de marché synchronisées.
+      unavailable: La synchro des cours n'est pas disponible pour les titres hors ligne.
+      provider_error: Impossible de récupérer les derniers cours. Réessayez dans quelques minutes.
+    errors:
+      security_collision: "Impossible de réaffecter : vous avez déjà une position sur %{ticker} au %{date}."
+    cost_basis_sources:
+      manual: Défini par l'utilisateur
+      calculated: À partir des opérations
+      provider: Fournisseur
+    cost_basis_cell:
+      unknown: "--"
+      set_cost_basis_header: "Définir le coût de revient pour %{ticker} (%{qty} actions)"
+      total_cost_basis_label: Coût de revient total
+      or_per_share_label: "Ou saisir par action :"
+      per_share: par action
+      cancel: Annuler
+      save: Enregistrer
+      overwrite_confirm_title: Remplacer le coût de revient ?
+      overwrite_confirm_body: "Cela remplacera le coût de revient actuel de %{current}."
     holding:
       per_share: par action
       shares: "%{qty} actions"
+      unknown: "--"
+      no_cost_basis: Pas de coût de revient
     index:
       average_cost: Coût moyen
       holdings: Positions
       name: Nom
-      new_holding: Nouvelle position
+      new_holding: Nouvelle activité
       no_holdings: Aucune position à afficher.
       return: Rendement total
       weight: Poids
     missing_price_tooltip:
-      description: Cet investissement a des valeurs manquantes et nous ne pouvons pas calculer
-        son retour ou sa valeur.
+      description: Cet investissement a des valeurs manquantes ; le rendement ou la valeur n'a pas pu être calculé(e).
       missing_data: Données manquantes
     show:
       avg_cost_label: Coût moyen
       current_market_price_label: Prix de marché actuel
       delete: Supprimer
-      delete_subtitle: Cela supprimera la position et toutes vos opérations associées sur ce compte. Cette action ne peut pas être annulée.
+      delete_subtitle: Cela supprimera la position et toutes les opérations associées sur ce compte. Action irréversible.
       delete_title: Supprimer la position
+      edit_security: Modifier le titre
       history: Historique
+      no_trade_history: Aucun historique d'opérations pour cette position.
       overview: Aperçu
       portfolio_weight_label: Poids du portefeuille
       settings: Paramètres
+      security_label: Titre
+      originally: "était %{ticker}"
+      search_security: Rechercher un titre
+      search_security_placeholder: Par ticker ou nom
+      cancel: Annuler
+      remap_security: Enregistrer
+      no_security_provider: Fournisseur de titres non configuré. Recherche impossible.
+      security_remapped_label: Titre réaffecté
+      provider_sent: "Fournisseur : %{ticker}"
+      reset_to_provider: Réinitialiser (fournisseur)
+      reset_confirm_title: Réinitialiser le titre sur le fournisseur ?
+      reset_confirm_body: "Le titre passera de %{current} à %{original} et les opérations associées seront déplacées."
       ticker_label: Ticker
       trade_history_entry: "%{qty} actions de %{security} à %{price}"
       total_return_label: Rendement total
+      unknown: Inconnu
+      cost_basis_locked_label: Coût de revient verrouillé
+      cost_basis_locked_description: Votre coût de revient manuel ne sera pas modifié par les synchros.
+      unlock_cost_basis: Déverrouiller
+      unlock_confirm_title: Déverrouiller le coût de revient ?
+      unlock_confirm_body: Le coût de revient pourra être mis à jour par le fournisseur ou le calcul des opérations.
       shares_label: Actions
       book_value_label: Valeur comptable
       market_value_label: Valeur marchande
-      unknown: Inconnu
+      market_data_label: Données de marché
+      market_data_sync_button: Actualiser
+      last_price_update: Dernière mise à jour du cours
+      syncing: Synchronisation…
+      never: Jamais

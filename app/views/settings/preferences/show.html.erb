@@ -79,6 +79,17 @@
             </div>
           </div>
 
+          <div class="grid gap-4 sm:grid-cols-2">
+            <%= family_form.select :hourly_bank_sync_window_start,
+                (0..23).map { |h| [ format("%02d:00", h), h ] },
+                { label: t(".hourly_bank_sync_window_start_label"), hint: t(".hourly_bank_sync_window_hint") },
+                { data: { auto_submit_form_target: "auto" } } %>
+            <%= family_form.select :hourly_bank_sync_window_end,
+                (0..23).map { |h| [ format("%02d:00", h), h ] },
+                { label: t(".hourly_bank_sync_window_end_label"), hint: t(".hourly_bank_sync_window_end_hint") },
+                { data: { auto_submit_form_target: "auto" } } %>
+          </div>
+
           <div class="flex items-start justify-between gap-4">
             <div class="space-y-1 min-w-0">
               <p class="text-sm font-medium text-primary"><%= t(".auto_sync_on_login_label") %></p>

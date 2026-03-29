@@ -1,0 +1,9 @@
+---
+fr:
+  activerecord:
+    errors:
+      models:
+        family:
+          attributes:
+            hourly_bank_sync_window_end:
+              hourly_window_invalid: "doit être supérieure ou égale à l'heure de début (même jour civil)"

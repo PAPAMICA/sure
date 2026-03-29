@@ -232,4 +232,36 @@ class FamilyTest < ActiveSupport::TestCase
     assert_equal "", vars[:balance_change_line]
     assert_equal "", vars[:prior_days]
   end
+
+  test "hourly_bank_sync_active_now? uses family timezone and inclusive window" do
+    family = families(:dylan_family)
+    family.update!(
+      hourly_bank_sync: true,
+      timezone: "Europe/Paris",
+      hourly_bank_sync_window_start: 8,
+      hourly_bank_sync_window_end: 21
+    )
+    paris = ActiveSupport::TimeZone["Europe/Paris"]
+
+    travel_to paris.parse("2026-03-30 07:30") do
+      assert_not family.reload.hourly_bank_sync_active_now?
+    end
+    travel_to paris.parse("2026-03-30 08:00") do
+      assert family.reload.hourly_bank_sync_active_now?
+    end
+    travel_to paris.parse("2026-03-30 21:00") do
+      assert family.reload.hourly_bank_sync_active_now?
+    end
+    travel_to paris.parse("2026-03-30 22:00") do
+      assert_not family.reload.hourly_bank_sync_active_now?
+    end
+  end
+
+  test "hourly bank sync window end must be >= start" do
+    family = families(:dylan_family)
+    family.hourly_bank_sync_window_start = 10
+    family.hourly_bank_sync_window_end = 9
+    assert_not family.valid?
+    assert family.errors[:hourly_bank_sync_window_end].present?
+  end
 end

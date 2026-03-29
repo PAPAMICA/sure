@@ -56,6 +56,11 @@ class Family < ApplicationRecord
   validates :ntfy_balance_prior_days,
     numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 365 }
 
+  validates :hourly_bank_sync_window_start,
+    numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 23 }
+  validates :hourly_bank_sync_window_end,
+    numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 23 }
+  validate :hourly_bank_sync_window_order
 
   def moniker_label
     moniker.presence || "Family"
@@ -67,6 +72,16 @@ class Family < ApplicationRecord
 
   def share_all_by_default?
     default_account_sharing == "shared"
+  end
+
+  # Whether +SyncHourlyJob+ should enqueue a sync now: hourly sync enabled and current time
+  # (in the family's timezone) is within the configured window, inclusive of both ends.
+  def hourly_bank_sync_active_now?
+    return false unless hourly_bank_sync?
+
+    tz = ActiveSupport::TimeZone[timezone] || Time.zone
+    hour = Time.current.in_time_zone(tz).hour
+    hour >= hourly_bank_sync_window_start && hour <= hourly_bank_sync_window_end
   end
 
   def uses_custom_month_start?
@@ -304,4 +319,14 @@ class Family < ApplicationRecord
   def self_hoster?
     Rails.application.config.app_mode.self_hosted?
   end
+
+  private
+
+    def hourly_bank_sync_window_order
+      return if hourly_bank_sync_window_start.nil? || hourly_bank_sync_window_end.nil?
+
+      if hourly_bank_sync_window_start > hourly_bank_sync_window_end
+        errors.add(:hourly_bank_sync_window_end, :hourly_window_invalid)
+      end
+    end
 end

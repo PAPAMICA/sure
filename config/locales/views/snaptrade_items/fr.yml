@@ -1,0 +1,188 @@
+---
+fr:
+  snaptrade_items:
+    default_name: "Connexion SnapTrade"
+    create:
+      success: "Configuration SnapTrade enregistrée."
+    update:
+      success: "Configuration SnapTrade mise à jour."
+    destroy:
+      success: "Suppression de la connexion SnapTrade planifiée."
+    connect:
+      decryption_failed: "Impossible de lire les identifiants SnapTrade. Supprimez et recréez cette connexion."
+      connection_failed: "Échec de la connexion à SnapTrade : %{message}"
+    callback:
+      success: "Courtier connecté ! Sélectionnez les comptes à lier."
+      no_item: "Configuration SnapTrade introuvable."
+    complete_account_setup:
+      success:
+        one: "%{count} compte lié avec succès."
+        other: "%{count} comptes liés avec succès."
+      partial_success: "%{linked} compte(s) lié(s). Échec pour %{failed}."
+      link_failed: "Échec de la liaison des comptes : %{errors}"
+      no_accounts: "Aucun compte sélectionné pour la liaison."
+    preload_accounts:
+      not_configured: "SnapTrade n'est pas configuré."
+    select_accounts:
+      not_configured: "SnapTrade n'est pas configuré."
+    select_existing_account:
+      not_found: "Compte ou configuration SnapTrade introuvable."
+      title: "Lier à un compte SnapTrade"
+      header: "Lier un compte existant"
+      subtitle: "Sélectionnez un compte SnapTrade à lier"
+      no_accounts: "Aucun compte SnapTrade non lié disponible."
+      connect_hint: "Vous devez peut-être d'abord connecter un courtier."
+      settings_link: "Paramètres du fournisseur"
+      linking_to: "Liaison vers le compte :"
+      balance_label: "Solde :"
+      link_button: "Lier"
+      cancel_button: "Annuler"
+    link_existing_account:
+      success: "Compte lié à SnapTrade avec succès."
+      failed: "Échec de la liaison : %{message}"
+      not_found: "Compte introuvable."
+    connections:
+      unknown_brokerage: "Courtier inconnu"
+    delete_connection:
+      success: "Connexion supprimée. Un emplacement est libéré."
+      failed: "Échec de la suppression : %{message}"
+      missing_authorization_id: "Identifiant d'autorisation manquant"
+      api_deletion_failed: "Impossible de supprimer la connexion côté SnapTrade — identifiants manquants. La connexion peut encore exister dans votre compte SnapTrade."
+    delete_orphaned_user:
+      success: "Inscription orpheline supprimée."
+      failed: "Échec de la suppression de l'inscription orpheline."
+    setup_accounts:
+      title: "Configurer les comptes SnapTrade"
+      header: "Configurer vos comptes SnapTrade"
+      subtitle: "Sélectionnez les comptes courtiers à lier"
+      syncing: "Récupération de vos comptes…"
+      loading: "Récupération des comptes depuis SnapTrade…"
+      loading_hint: "Cliquez sur Actualiser pour vérifier les comptes."
+      refresh: "Actualiser"
+      info_title: "Données d'investissement SnapTrade"
+      info_holdings: "Positions avec cours et quantités actuels"
+      info_cost_basis: "Coût de revient par ligne (si disponible)"
+      info_activities: "Historique des opérations avec libellés (Achat, Vente, Dividende, etc.)"
+      info_history: "Jusqu'à 3 ans d'historique de transactions"
+      free_tier_note: "L'offre gratuite SnapTrade autorise 5 connexions courtiers. Consultez votre tableau de bord SnapTrade pour l'utilisation actuelle."
+      no_accounts_title: "Aucun compte trouvé"
+      no_accounts_message: "Aucun compte courtier trouvé. Cela peut arriver si vous avez annulé la connexion ou si votre courtier n'est pas pris en charge."
+      try_again: "Connecter un courtier"
+      back_to_settings: "Retour aux paramètres"
+      available_accounts: "Comptes disponibles"
+      balance_label: "Solde :"
+      account_number: "Compte :"
+      create_button: "Créer les comptes sélectionnés"
+      cancel_button: "Annuler"
+      creating: "Création des comptes…"
+      done_button: "Terminé"
+      or_link_existing: "Ou liez un compte existant au lieu d'en créer un nouveau :"
+      select_account: "Sélectionnez un compte…"
+      link_button: "Lier"
+      linked_accounts: "Déjà liés"
+      linked_to: "Lié à :"
+    snaptrade_item:
+      accounts_need_setup:
+        one: "%{count} compte à configurer"
+        other: "%{count} comptes à configurer"
+      deletion_in_progress: "Suppression en cours…"
+      syncing: "Synchronisation…"
+      requires_update: "La connexion doit être mise à jour"
+      error: "Erreur de synchro"
+      status: "Dernière synchro il y a %{timestamp} — %{summary}"
+      status_never: "Jamais synchronisé"
+      reconnect: "Reconnecter"
+      connect_brokerage: "Connecter un courtier"
+      add_another_brokerage: "Connecter un autre courtier"
+      delete: "Supprimer"
+      setup_needed: "Comptes à configurer"
+      setup_description: "Certains comptes SnapTrade doivent être liés à vos comptes Sure."
+      setup_action: "Configurer les comptes"
+      setup_accounts_menu: "Configurer les comptes"
+      manage_connections: "Gérer les connexions"
+      more_accounts_available:
+        one: "%{count} autre compte disponible à configurer"
+        other: "%{count} autres comptes disponibles à configurer"
+      no_accounts_title: "Aucun compte détecté"
+      no_accounts_description: "Connectez un courtier pour importer vos comptes d'investissement."
+
+  providers:
+    snaptrade:
+      name: "SnapTrade"
+      connection_description: "Connectez votre courtier via SnapTrade (25+ courtiers pris en charge)"
+      description: "SnapTrade se connecte à plus de 25 grands courtiers (Fidelity, Vanguard, Schwab, Robinhood, etc.) et fournit l'historique des opérations avec libellés et coût de revient."
+      setup_title: "Instructions de configuration :"
+      step_1_html: "Créez un compte sur <a href=\"https://dashboard.snaptrade.com\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary underline\">dashboard.snaptrade.com</a>"
+      step_2: "Copiez votre Client ID et Consumer Key depuis le tableau de bord"
+      step_3: "Saisissez vos identifiants ci-dessous et cliquez sur Enregistrer"
+      step_4: "Allez sur la page Comptes et utilisez « Connecter un autre courtier » pour lier vos comptes d'investissement"
+      free_tier_warning: "L'offre gratuite inclut 5 connexions courtiers. Au-delà, un abonnement SnapTrade payant est nécessaire."
+      client_id_label: "Client ID"
+      client_id_placeholder: "Saisissez votre Client ID SnapTrade"
+      client_id_update_placeholder: "Nouveau Client ID pour mise à jour"
+      consumer_key_label: "Consumer Key"
+      consumer_key_placeholder: "Saisissez votre Consumer Key SnapTrade"
+      consumer_key_update_placeholder: "Nouvelle Consumer Key pour mise à jour"
+      save_button: "Enregistrer la configuration"
+      update_button: "Mettre à jour la configuration"
+      status_connected:
+        one: "%{count} compte SnapTrade"
+        other: "%{count} comptes SnapTrade"
+      needs_setup:
+        one: "%{count} à configurer"
+        other: "%{count} à configurer"
+      status_ready: "Prêt à connecter des courtiers"
+      status_needs_registration: "Identifiants enregistrés. Allez sur la page Comptes pour connecter les courtiers."
+      status_not_configured: "Non configuré"
+      setup_accounts_button: "Configurer les comptes"
+      connect_button: "Connecter un courtier"
+      connected_brokerages: "Connectés :"
+      manage_connections: "Gérer les connexions"
+      connection_limit_info: "L'offre gratuite SnapTrade autorise 5 connexions courtiers. Supprimez les connexions inutilisées pour libérer des emplacements."
+      loading_connections: "Chargement des connexions…"
+      connections_error: "Échec du chargement des connexions : %{message}"
+      accounts_count:
+        one: "%{count} compte"
+        other: "%{count} comptes"
+      orphaned_connection: "Connexion orpheline (non synchronisée localement)"
+      needs_linking: "à lier"
+      no_connections: "Aucune connexion courtier trouvée."
+      delete_connection: "Supprimer"
+      delete_connection_title: "Supprimer la connexion courtier ?"
+      delete_connection_body: "Cela supprimera définitivement la connexion %{brokerage} de SnapTrade. Tous les comptes de ce courtier seront déliés. Vous devrez vous reconnecter pour resynchroniser ces comptes."
+      delete_connection_confirm: "Supprimer la connexion"
+      orphaned_users_title:
+        one: "%{count} inscription orpheline"
+        other: "%{count} inscriptions orphelines"
+      orphaned_users_description: "Il s'agit d'anciennes inscriptions SnapTrade qui occupent vos emplacements de connexion. Supprimez-les pour libérer des emplacements."
+      orphaned_user: "Inscription orpheline"
+      delete_orphaned_user: "Supprimer"
+      delete_orphaned_user_title: "Supprimer l'inscription orpheline ?"
+      delete_orphaned_user_body: "Cela supprimera définitivement cet utilisateur SnapTrade orphelin et toutes ses connexions courtiers, libérant des emplacements."
+      delete_orphaned_user_confirm: "Supprimer l'inscription"
+
+  snaptrade_item:
+    sync_status:
+      no_accounts: "Aucun compte trouvé"
+      synced:
+        one: "%{count} compte synchronisé"
+        other: "%{count} comptes synchronisés"
+      synced_with_setup: "%{linked} synchronisé(s), %{unlinked} à configurer"
+    institution_summary:
+      none: "Aucun établissement connecté"
+      count:
+        one: "%{count} établissement"
+        other: "%{count} établissements"
+    brokerage_summary:
+      none: "Aucun courtier connecté"
+      count:
+        one: "%{count} courtier"
+        other: "%{count} courtiers"
+    syncer:
+      discovering: "Découverte des comptes…"
+      importing: "Importation des comptes depuis SnapTrade…"
+      processing: "Traitement des positions et opérations…"
+      calculating: "Calcul des soldes…"
+      checking_config: "Vérification de la configuration…"
+      needs_setup: "%{count} compte(s) à configurer…"
+      activities_fetching_async: "Les opérations sont récupérées en arrière-plan. Cela peut prendre jusqu'à une minute pour les nouvelles connexions courtiers."
