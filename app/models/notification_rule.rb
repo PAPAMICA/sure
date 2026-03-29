@@ -2,7 +2,12 @@ class NotificationRule < ApplicationRecord
   UnsupportedTargetError = Class.new(StandardError)
 
   belongs_to :family
-  has_many :conditions, class_name: "NotificationRule::Condition", dependent: :destroy, inverse_of: :notification_rule
+  # Only root conditions; sub_conditions live on compound rows (see NotificationRule::Condition#sub_conditions).
+  # Including child rows here duplicated them in the form and broke the IF section.
+  has_many :conditions, -> { where(parent_id: nil) },
+           class_name: "NotificationRule::Condition",
+           dependent: :destroy,
+           inverse_of: :notification_rule
   has_many :deliveries, class_name: "NotificationRuleDelivery", dependent: :delete_all, inverse_of: :notification_rule
 
   accepts_nested_attributes_for :conditions, allow_destroy: true
@@ -15,12 +20,16 @@ class NotificationRule < ApplicationRecord
 
   validates :name, length: { minimum: 1 }, allow_nil: true
   validates :frequency, inclusion: { in: FREQUENCIES }, allow_nil: true, allow_blank: true
+  validates :scheduled_hour, inclusion: { in: 0..23 }, allow_nil: true
+  validates :scheduled_day_of_week, inclusion: { in: 0..6 }, allow_nil: true
   validate :delivery_matches_target
   validate :frequency_for_scheduled
+  validate :weekly_hour_requires_weekday
   validate :no_nested_compound_conditions
   validate :target_immutable_on_update, on: :update
 
-  before_validation :normalize_name, :normalize_minimum_amount, :clear_frequency_unless_scheduled
+  before_validation :normalize_name, :normalize_minimum_amount, :clear_frequency_unless_scheduled,
+    :clear_scheduled_anchors_for_frequency
 
   def registry
     @registry ||= case target
@@ -37,19 +46,22 @@ class NotificationRule < ApplicationRecord
     registry.condition_filters
   end
 
+  # Scheduler runs hourly (e.g. :05). +scheduled_hour+ limits daily/weekly runs to that hour in the family timezone.
+  # +scheduled_day_of_week+ uses Ruby wday (0 = Sunday … 6 = Saturday).
   def due_for_scheduled_run?
     return false unless scheduled?
-    return true if last_scheduled_run_at.nil?
+
+    now = Time.current.in_time_zone(family_time_zone)
 
     case frequency
     when "hourly"
-      last_scheduled_run_at < 1.hour.ago
+      last_scheduled_run_at.nil? || last_scheduled_run_at < 1.hour.ago
     when "every_4_hours"
-      last_scheduled_run_at < 4.hours.ago
+      last_scheduled_run_at.nil? || last_scheduled_run_at < 4.hours.ago
     when "daily"
-      last_scheduled_run_at.to_date < Date.current
+      due_for_daily_schedule?(now)
     when "weekly"
-      last_scheduled_run_at < 1.week.ago
+      due_for_weekly_schedule?(now)
     else
       false
     end
@@ -139,6 +151,7 @@ class NotificationRule < ApplicationRecord
   end
 
   def period_key_for_dedupe
+    local_date = Time.current.in_time_zone(family_time_zone).to_date
     case frequency
     when "hourly"
       Time.current.utc.strftime("%Y-%m-%d-%H")
@@ -146,11 +159,11 @@ class NotificationRule < ApplicationRecord
       bucket = Time.current.utc.hour / 4
       "#{Time.current.utc.strftime('%Y-%m-%d')}-#{bucket}"
     when "daily"
-      Date.current.to_s
+      local_date.to_s
     when "weekly"
-      Date.current.beginning_of_week(:monday).to_s
+      local_date.beginning_of_week(:monday).to_s
     else
-      Date.current.to_s
+      local_date.to_s
     end
   end
 
@@ -205,6 +218,71 @@ class NotificationRule < ApplicationRecord
 
     def clear_frequency_unless_scheduled
       self.frequency = nil unless scheduled?
+    end
+
+    def clear_scheduled_anchors_for_frequency
+      unless scheduled?
+        self.scheduled_hour = nil
+        self.scheduled_day_of_week = nil
+        return
+      end
+
+      case frequency
+      when "hourly", "every_4_hours"
+        self.scheduled_hour = nil
+        self.scheduled_day_of_week = nil
+      when "daily"
+        self.scheduled_day_of_week = nil
+      end
+    end
+
+    def family_time_zone
+      z = family&.timezone.presence
+      z && ActiveSupport::TimeZone[z] ? ActiveSupport::TimeZone[z] : Time.zone
+    end
+
+    def due_for_daily_schedule?(now)
+      if scheduled_hour.nil?
+        return true if last_scheduled_run_at.nil?
+        last_scheduled_run_at.in_time_zone(family_time_zone).to_date < now.to_date
+      else
+        slot_start = now.beginning_of_day.change(hour: scheduled_hour, min: 0, sec: 0)
+        return false unless now >= slot_start
+        return true if last_scheduled_run_at.nil?
+        last_scheduled_run_at < slot_start
+      end
+    end
+
+    def due_for_weekly_schedule?(now)
+      if scheduled_day_of_week.nil? && scheduled_hour.nil?
+        return true if last_scheduled_run_at.nil?
+        return last_scheduled_run_at < 1.week.ago
+      end
+
+      if scheduled_day_of_week.present?
+        return false unless now.wday == scheduled_day_of_week
+      end
+
+      if scheduled_hour.present?
+        slot_start = now.beginning_of_day.change(hour: scheduled_hour, min: 0, sec: 0)
+        return false unless now >= slot_start
+        return true if last_scheduled_run_at.nil?
+        return last_scheduled_run_at < slot_start
+      end
+
+      return true if last_scheduled_run_at.nil?
+      last_scheduled_run_at.in_time_zone(family_time_zone).to_date < now.to_date
+    end
+
+    def weekly_hour_requires_weekday
+      return unless scheduled? && frequency == "weekly"
+      return if scheduled_hour.nil?
+      return if scheduled_day_of_week.present?
+
+      errors.add(
+        :scheduled_day_of_week,
+        I18n.t("notification_rules.errors.scheduled_weekday_required_with_hour")
+      )
     end
 
     def apply_minimum_amount(scope)

@@ -183,6 +183,7 @@ class NotificationRulesController < ApplicationController
     def notification_rule_params
       attrs = params.require(:notification_rule).permit(
         :name, :active, :target, :delivery, :frequency,
+        :scheduled_hour, :scheduled_day_of_week,
         :minimum_amount, :effective_date, :effective_date_enabled,
         conditions_attributes: [
           :id, :condition_type, :operator, :value, :_destroy,

@@ -38,6 +38,7 @@ en:
     errors:
       transaction_on_sync: Transaction rules cannot use “after account sync” delivery. Use immediate or scheduled.
       balance_immediate: Balance rules cannot use immediate delivery. Use after sync or scheduled.
+      scheduled_weekday_required_with_hour: Choose a weekday when you set a time of day for a weekly rule.
     badges:
       target_transaction: Transactions
       target_balance: Balances
@@ -122,7 +123,7 @@ en:
       delivery_on_sync: After each account sync (balance snapshot)
       delivery_scheduled: On a schedule (scan matching items)
       frequency_prompt: Select frequency
-      frequency_hint: The scheduler runs hourly; your rule runs when it is due based on this frequency.
+      frequency_hint: The scheduler runs every hour (e.g. at five past the hour). Daily and weekly times use your family timezone (in settings).
       active_label: Rule active
       ntfy_config_moved_hint: "ntfy URL, credentials, and message templates are configured in the notification settings above (not per rule)."
       amount_heading: Amount filter
@@ -134,3 +135,9 @@ en:
       add_condition_group: Add condition group
       submit: Save rule
       add_sub_condition: Add condition
+      scheduled_hour_label: Time of day (optional)
+      scheduled_time_any: Any time that day
+      scheduled_hour_hint: If set, the rule runs after this hour on the chosen days (first scheduler tick in that hour, usually at five past).
+      scheduled_weekday_label: Weekday (optional)
+      scheduled_weekday_any: Any day (legacy behavior, about once per week)
+      scheduled_weekday_hint: If set with weekly frequency, the rule only runs on that weekday. If you set a time of day, you must choose a weekday.

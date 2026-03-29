@@ -29,6 +29,70 @@ class NotificationRuleTest < ActiveSupport::TestCase
     assert rule.valid?
   end
 
+  test "daily with scheduled_hour is not due before that hour in family timezone" do
+    @family.update!(timezone: "Europe/Paris")
+    rule = @family.notification_rules.create!(
+      name: "Daily 9",
+      target: :balance,
+      delivery: :scheduled,
+      frequency: "daily",
+      scheduled_hour: 9,
+      active: true
+    )
+    paris = ActiveSupport::TimeZone["Europe/Paris"]
+    travel_to paris.parse("2026-03-29 08:30") do
+      assert_not rule.due_for_scheduled_run?
+    end
+    travel_to paris.parse("2026-03-29 09:05") do
+      assert rule.due_for_scheduled_run?
+    end
+  end
+
+  test "daily without scheduled_hour is due once per calendar day in family timezone" do
+    @family.update!(timezone: "UTC")
+    rule = @family.notification_rules.create!(
+      name: "Daily any",
+      target: :balance,
+      delivery: :scheduled,
+      frequency: "daily",
+      active: true
+    )
+    rule.update_column(:last_scheduled_run_at, Time.utc(2026, 3, 28, 12, 0, 0))
+    travel_to Time.utc(2026, 3, 29, 1, 0, 0) do
+      assert rule.due_for_scheduled_run?
+    end
+  end
+
+  test "weekly with hour requires weekday" do
+    rule = @family.notification_rules.build(
+      name: "Bad weekly",
+      target: :balance,
+      delivery: :scheduled,
+      frequency: "weekly",
+      scheduled_hour: 10,
+      scheduled_day_of_week: nil,
+      active: true
+    )
+    assert_not rule.valid?
+    assert_includes rule.errors[:scheduled_day_of_week],
+      I18n.t("notification_rules.errors.scheduled_weekday_required_with_hour")
+  end
+
+  test "switching frequency to hourly clears scheduled time fields" do
+    rule = @family.notification_rules.create!(
+      name: "Switch",
+      target: :balance,
+      delivery: :scheduled,
+      frequency: "daily",
+      scheduled_hour: 8,
+      active: true
+    )
+    rule.update!(frequency: "hourly")
+    rule.reload
+    assert_nil rule.scheduled_hour
+    assert_nil rule.scheduled_day_of_week
+  end
+
   test "duplicate! persists a copy with conditions" do
     account = accounts(:depository)
     rule = @family.notification_rules.create!(

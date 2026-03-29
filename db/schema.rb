@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_29_200000) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_29_210000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -990,6 +990,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_29_200000) do
     t.decimal "minimum_amount", precision: 19, scale: 4
     t.date "effective_date"
     t.datetime "last_scheduled_run_at"
+    t.integer "scheduled_hour"
+    t.integer "scheduled_day_of_week"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["family_id", "active"], name: "index_notification_rules_on_family_id_and_active"

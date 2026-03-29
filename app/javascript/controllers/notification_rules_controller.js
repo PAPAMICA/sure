@@ -9,6 +9,9 @@ export default class extends Controller {
     "effectiveDateInput",
     "frequencyWrap",
     "minimumAmountWrap",
+    "scheduleAnchorWrap",
+    "scheduleHourWrap",
+    "scheduleDowWrap",
   ];
 
   connect() {
@@ -38,6 +41,11 @@ export default class extends Controller {
 
   deliveryChanged(event) {
     this.#setFrequencyWrapVisible(event.target.value === "scheduled");
+    this.#syncScheduleFieldsVisibility();
+  }
+
+  frequencyChanged() {
+    this.#syncScheduleFieldsVisibility();
   }
 
   #syncFrequencyFieldVisibility() {
@@ -47,6 +55,7 @@ export default class extends Controller {
     if (!deliverySelect || !this.hasFrequencyWrapTarget) return;
 
     this.#setFrequencyWrapVisible(deliverySelect.value === "scheduled");
+    this.#syncScheduleFieldsVisibility();
   }
 
   #setFrequencyWrapVisible(show) {
@@ -54,10 +63,38 @@ export default class extends Controller {
 
     this.frequencyWrapTarget.classList.toggle("hidden", !show);
     if (!show) {
-      const select = this.frequencyWrapTarget.querySelector("select");
-      if (select) {
-        select.selectedIndex = 0;
+      const freqSelect = this.frequencyWrapTarget.querySelector(
+        'select[name*="[frequency]"]',
+      );
+      if (freqSelect) {
+        freqSelect.selectedIndex = 0;
       }
+    }
+  }
+
+  #syncScheduleFieldsVisibility() {
+    if (!this.hasScheduleAnchorWrapTarget) return;
+
+    const deliverySelect = this.element.querySelector(
+      'select[name*="[delivery]"]',
+    );
+    const scheduled = deliverySelect?.value === "scheduled";
+    const freqSelect = this.frequencyWrapTarget?.querySelector(
+      'select[name*="[frequency]"]',
+    );
+    const frequency = freqSelect?.value ?? "";
+    const showAnchor =
+      scheduled && (frequency === "daily" || frequency === "weekly");
+
+    this.scheduleAnchorWrapTarget.classList.toggle("hidden", !showAnchor);
+    if (this.hasScheduleHourWrapTarget) {
+      this.scheduleHourWrapTarget.classList.toggle("hidden", !showAnchor);
+    }
+    if (this.hasScheduleDowWrapTarget) {
+      this.scheduleDowWrapTarget.classList.toggle(
+        "hidden",
+        !showAnchor || frequency !== "weekly",
+      );
     }
   }
 

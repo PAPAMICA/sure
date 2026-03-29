@@ -38,6 +38,7 @@ fr:
     errors:
       transaction_on_sync: Les règles sur les transactions ne peuvent pas utiliser la livraison « après synchronisation du compte ». Utilisez immédiat ou planifié.
       balance_immediate: Les règles sur les soldes ne peuvent pas utiliser la livraison immédiate. Utilisez après synchronisation ou planifié.
+      scheduled_weekday_required_with_hour: Choisissez un jour de la semaine lorsque vous définissez une heure pour une règle hebdomadaire.
     badges:
       target_transaction: Transactions
       target_balance: Soldes
@@ -122,7 +123,7 @@ fr:
       delivery_on_sync: Après chaque synchronisation du compte (solde)
       delivery_scheduled: Selon un planning (analyse des éléments correspondants)
       frequency_prompt: Choisir la fréquence
-      frequency_hint: Le planificateur tourne chaque heure ; la règle s’exécute lorsqu’elle est due selon cette fréquence.
+      frequency_hint: Le planificateur s’exécute chaque heure (par ex. à :05). Les heures des modes quotidien et hebdomadaire utilisent le fuseau horaire de la famille (dans les paramètres).
       active_label: Règle active
       ntfy_config_moved_hint: "L’URL ntfy, les identifiants et les modèles de message se configurent dans les paramètres de notification ci-dessus (pas par règle)."
       amount_heading: Filtre sur le montant
@@ -134,3 +135,9 @@ fr:
       add_condition_group: Ajouter un groupe de conditions
       submit: Enregistrer la règle
       add_sub_condition: Ajouter une condition
+      scheduled_hour_label: Heure (facultatif)
+      scheduled_time_any: N’importe quelle heure ce jour-là
+      scheduled_hour_hint: Si renseignée, la règle s’exécute après cette heure les jours concernés (premier passage du planificateur dans cette heure, en général à :05).
+      scheduled_weekday_label: Jour de la semaine (facultatif)
+      scheduled_weekday_any: N’importe quel jour (comportement historique, environ une fois par semaine)
+      scheduled_weekday_hint: Avec une fréquence hebdomadaire, limite l’exécution à ce jour. Si vous définissez une heure, le jour est obligatoire.
