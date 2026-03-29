@@ -13,6 +13,17 @@ en:
     destroy:
       success: Notification rule deleted.
     default_url_updated: Default Apprise URL saved.
+    test:
+      section_title: Test Apprise
+      send_button: Send test notification
+      form_hint: Enter a notify URL and send a test without saving the form (uses the field below, or the family default if empty).
+      url_field_label: Apprise notify URL to test
+      push_title: Test notification
+      push_body: If you received this, your Apprise URL is configured correctly.
+      success: Test notification sent successfully.
+      failure: Could not reach Apprise (invalid URL or network error). Check the logs.
+      http_error: "Apprise returned HTTP %{code}. Check your URL and server logs."
+      url_missing: Enter an Apprise URL or save a default URL on the family first.
     errors:
       transaction_on_sync: Transaction rules cannot use “after account sync” delivery. Use immediate or scheduled.
       balance_immediate: Balance rules cannot use immediate delivery. Use after sync or scheduled.

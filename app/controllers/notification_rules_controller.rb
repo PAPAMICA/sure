@@ -1,10 +1,10 @@
 class NotificationRulesController < ApplicationController
   include StreamExtensions
 
-  layout "settings"
+  layout :notification_rules_layout
 
   before_action :set_notification_rule, only: %i[edit update destroy]
-  before_action :require_family_admin!, only: :update_default_apprise_url
+  before_action :require_family_admin!, only: %i[update_default_apprise_url test_apprise]
 
   def index
     @notification_rules = Current.family.notification_rules.includes(conditions: :sub_conditions).order(:name, :created_at)
@@ -52,7 +52,38 @@ class NotificationRulesController < ApplicationController
     redirect_to notification_rules_path, notice: t("notification_rules.default_url_updated")
   end
 
+  def test_apprise
+    url = params[:apprise_notify_url].to_s.strip.presence || Current.family.apprise_notify_url
+
+    if url.blank?
+      redirect_back_or_to notification_rules_path, alert: t("notification_rules.test.url_missing")
+      return
+    end
+
+    response = Notifications::AppriseDelivery.deliver!(
+      url,
+      title: t("notification_rules.test.push_title"),
+      body: t("notification_rules.test.push_body")
+    )
+
+    if response.respond_to?(:code) && response.code.to_i.between?(200, 299)
+      redirect_back_or_to notification_rules_path, notice: t("notification_rules.test.success")
+    elsif response.nil?
+      redirect_back_or_to notification_rules_path, alert: t("notification_rules.test.failure")
+    else
+      redirect_back_or_to notification_rules_path, alert: t("notification_rules.test.http_error", code: response.code)
+    end
+  end
+
   private
+
+    def notification_rules_layout
+      if turbo_frame_request? && %w[new edit create update].include?(action_name)
+        false
+      else
+        "settings"
+      end
+    end
 
     def default_delivery_for(target)
       target == "balance" ? "on_sync" : "immediate"

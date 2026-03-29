@@ -13,6 +13,17 @@ fr:
     destroy:
       success: Règle de notification supprimée.
     default_url_updated: URL Apprise par défaut enregistrée.
+    test:
+      section_title: Tester Apprise
+      send_button: Envoyer une notification test
+      form_hint: Saisissez une URL de notification et envoyez un test sans enregistrer le formulaire (ce champ, ou l’URL par défaut de la famille si vide).
+      url_field_label: URL Apprise à tester
+      push_title: Notification test
+      push_body: Si vous recevez ce message, votre URL Apprise est correctement configurée.
+      success: Notification test envoyée avec succès.
+      failure: Impossible de joindre Apprise (URL invalide ou erreur réseau). Consultez les journaux.
+      http_error: "Apprise a répondu HTTP %{code}. Vérifiez l’URL et les journaux serveur."
+      url_missing: Saisissez une URL Apprise ou enregistrez d’abord une URL par défaut pour la famille.
     errors:
       transaction_on_sync: Les règles sur les transactions ne peuvent pas utiliser la livraison « après synchronisation du compte ». Utilisez immédiat ou planifié.
       balance_immediate: Les règles sur les soldes ne peuvent pas utiliser la livraison immédiate. Utilisez après synchronisation ou planifié.

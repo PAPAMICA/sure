@@ -96,7 +96,7 @@ class NotificationRule < ApplicationRecord
     url = resolve_apprise_url
     return if url.blank?
 
-    money = Money.from_amount(entry.amount.abs, entry.currency)
+    money = Money.new(entry.amount.abs, entry.currency)
     formatted = money.format
     sign_label = entry.amount.negative? ? I18n.t("apprise.new_transaction.income") : I18n.t("apprise.new_transaction.expense")
     body = [
@@ -119,7 +119,7 @@ class NotificationRule < ApplicationRecord
     url = resolve_apprise_url
     return if url.blank?
 
-    money = Money.from_amount(account.balance, account.currency)
+    money = Money.new(account.balance, account.currency)
     body = "#{account.name}\n#{money.format}"
 
     Notifications::AppriseDelivery.deliver!(
