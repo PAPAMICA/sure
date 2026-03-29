@@ -36,11 +36,12 @@ class IncomeStatement::DailyExpenseBars
     top_buckets = sorted.first(MAX_LAYERS - 1).map(&:first)
     other_buckets = sorted.drop(MAX_LAYERS - 1).map(&:first).to_set
 
-    categories_by_id = @family.categories.index_by(&:id)
+    # Category ids are UUIDs; never use .to_i (would collide or become 0).
+    categories_by_id = @family.categories.index_by { |c| c.id.to_s }
 
     layers = []
     top_buckets.each do |bid|
-      cat = categories_by_id[bid.to_i]
+      cat = categories_by_id[bid]
       layers << {
         "key" => bid,
         "name" => cat&.name || OTHER_NAME,

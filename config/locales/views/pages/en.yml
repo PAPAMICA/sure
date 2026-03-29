@@ -16,6 +16,10 @@ en:
       subtitle: "Here's what's happening with your finances"
       period_selector:
         aria_label: Chart time period
+        granularity_month: Month
+        granularity_quarter: Quarter
+        granularity_year: Year
+        quarter_ordinal: "Q%{quarter}"
       ledger_usage:
         aria_label: Personal or business accounts
         personal: Personal

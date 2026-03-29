@@ -105,14 +105,6 @@ class PagesController < ApplicationController
           collapsible: true
         },
         {
-          key: "outflows_donut",
-          title: "pages.dashboard.outflows_donut.title",
-          partial: "pages/dashboard/outflows_donut",
-          locals: { outflows_data: @outflows_data, period: @period, dashboard_ledger_usage: @dashboard_ledger_usage },
-          visible: @accounts.any? && @outflows_data[:categories].present?,
-          collapsible: true
-        },
-        {
           key: "daily_expenses_chart",
           title: "pages.dashboard.daily_expenses_chart.title",
           partial: "pages/dashboard/daily_expenses_chart",
@@ -122,6 +114,14 @@ class PagesController < ApplicationController
             dashboard_ledger_usage: @dashboard_ledger_usage
           },
           visible: @accounts.any?,
+          collapsible: true
+        },
+        {
+          key: "outflows_donut",
+          title: "pages.dashboard.outflows_donut.title",
+          partial: "pages/dashboard/outflows_donut",
+          locals: { outflows_data: @outflows_data, period: @period, dashboard_ledger_usage: @dashboard_ledger_usage },
+          visible: @accounts.any? && @outflows_data[:categories].present?,
           collapsible: true
         },
         {

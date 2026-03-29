@@ -6,6 +6,10 @@ fr:
     dashboard:
       period_selector:
         aria_label: Période des graphiques
+        granularity_month: Mois
+        granularity_quarter: Trimestre
+        granularity_year: Année
+        quarter_ordinal: "T%{quarter}"
       welcome_back: Content de vous revoir
       happening_with_finance: Voici ce qui se passe avec vos finances
       ledger_usage:

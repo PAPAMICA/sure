@@ -42,7 +42,7 @@ fr:
         dashboard_period_selector_title: Contrôle de la période (tableau de bord)
         dashboard_period_selector_description: Choisissez comment sélectionner la période pour les graphiques du tableau de bord et le graphique de solde sur les pages compte.
         dashboard_period_selector_preset: Plages prédéfinies (1J, MTD, 30J, etc.)
-        dashboard_period_selector_month_year: Mois et année
+        dashboard_period_selector_month_year: Calendrier (mois, trimestre ou année)
         split_grouped_title: Regrouper les transactions ventilées
         split_grouped_description: Afficher les ventilations regroupées sous leur parent dans la liste des transactions. Sinon, chaque ligne enfant apparaît seule.
     preferences:

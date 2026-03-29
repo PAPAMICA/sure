@@ -405,7 +405,7 @@ class User < ApplicationRecord
     end
 
     def default_dashboard_section_order
-      %w[cashflow_sankey outflows_donut daily_expenses_chart investment_summary net_worth_chart balance_sheet]
+      %w[cashflow_sankey daily_expenses_chart outflows_donut investment_summary net_worth_chart balance_sheet]
     end
 
     def default_reports_section_order

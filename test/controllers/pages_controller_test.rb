@@ -31,8 +31,34 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
 
     get root_path, params: { dashboard_month: 6, dashboard_year: 2023 }
     assert_response :ok
+    assert_select "select[name=dashboard_period_granularity] option[selected][value='month']"
     assert_select "select[name=dashboard_month] option[selected][value='6']"
     assert_select "select[name=dashboard_year] option[selected][value='2023']"
+  end
+
+  test "dashboard year granularity hides month and quarter selects" do
+    prefs = (@user.preferences || {}).dup
+    prefs["dashboard_period_selector"] = "month_year"
+    @user.update!(preferences: prefs)
+
+    get root_path, params: { dashboard_period_granularity: "year", dashboard_year: 2023 }
+    assert_response :ok
+    assert_select "select[name=dashboard_period_granularity] option[selected][value='year']"
+    assert_select "select[name=dashboard_month]", count: 0
+    assert_select "select[name=dashboard_quarter]", count: 0
+    assert_select "select[name=dashboard_year] option[selected][value='2023']"
+  end
+
+  test "dashboard quarter granularity shows quarter select not month" do
+    prefs = (@user.preferences || {}).dup
+    prefs["dashboard_period_selector"] = "month_year"
+    @user.update!(preferences: prefs)
+
+    get root_path, params: { dashboard_period_granularity: "quarter", dashboard_quarter: 2, dashboard_year: 2023 }
+    assert_response :ok
+    assert_select "select[name=dashboard_period_granularity] option[selected][value='quarter']"
+    assert_select "select[name=dashboard_quarter] option[selected][value='2']"
+    assert_select "select[name=dashboard_month]", count: 0
   end
 
   test "dashboard preset period selector when month year preference off" do

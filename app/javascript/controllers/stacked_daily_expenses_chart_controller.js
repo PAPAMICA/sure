@@ -41,7 +41,7 @@ export default class extends Controller {
 
     const w = this.element.clientWidth;
     const h = Math.max(220, this.element.clientHeight || 280);
-    const margin = { top: 12, right: 8, bottom: dates.length > 31 ? 52 : 36, left: 44 };
+    const margin = { top: 12, right: 10, bottom: dates.length > 31 ? 52 : 36, left: 72 };
 
     if (w < margin.left + margin.right + 40) {
       return;
@@ -64,10 +64,12 @@ export default class extends Controller {
       .nice()
       .range([innerH, 0]);
 
-    const fmtMoney = new Intl.NumberFormat(undefined, {
+    const docLang = document.documentElement.lang || undefined;
+    const fmtMoney = new Intl.NumberFormat(docLang, {
       style: "currency",
       currency,
       maximumFractionDigits: 0,
+      currencyDisplay: "narrowSymbol",
     });
 
     this.element.style.position = "relative";
@@ -78,7 +80,8 @@ export default class extends Controller {
       .attr("width", w)
       .attr("height", h)
       .attr("role", "img")
-      .attr("aria-label", "Daily expenses by category");
+      .attr("aria-label", "Daily expenses by category")
+      .style("overflow", "visible");
 
     const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
 

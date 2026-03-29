@@ -188,10 +188,7 @@ module ApplicationHelper
   # Query params for root_path / account_path when linking to the same chart period (Perso/Pro toggle, etc.).
   def dashboard_period_query_for_path(period)
     if Current.user.dashboard_month_year_period_selector?
-      {
-        dashboard_month: period.start_date.month,
-        dashboard_year: period.start_date.year
-      }
+      dashboard_calendar_params_for_path(period)
     elsif period.key.present?
       { period: period.key }
     else
@@ -199,6 +196,37 @@ module ApplicationHelper
         dashboard_month: period.start_date.month,
         dashboard_year: period.start_date.year
       }
+    end
+  end
+
+  # State for the dashboard/account calendar period selects (month / quarter / year).
+  def dashboard_calendar_form_state(period)
+    g = request.params[:dashboard_period_granularity].presence_in(%w[month quarter year])
+    g ||= infer_dashboard_granularity_from_period(period)
+
+    y = request.params[:dashboard_year].presence&.to_i
+    y = period.start_date.year if y.nil? || !y.between?(1970, 2100)
+
+    m = request.params[:dashboard_month].presence&.to_i
+    m = period.start_date.month if m.nil? || !m.between?(1, 12)
+
+    q = request.params[:dashboard_quarter].presence&.to_i
+    q = dashboard_quarter_index_from_date(period.start_date) if q.nil? || !q.between?(1, 4)
+
+    { granularity: g, year: y, month: m, quarter: q }
+  end
+
+  def dashboard_granularity_options
+    [
+      [ t("pages.dashboard.period_selector.granularity_month"), "month" ],
+      [ t("pages.dashboard.period_selector.granularity_quarter"), "quarter" ],
+      [ t("pages.dashboard.period_selector.granularity_year"), "year" ]
+    ]
+  end
+
+  def dashboard_quarter_options
+    (1..4).map do |q|
+      [ t("pages.dashboard.period_selector.quarter_ordinal", quarter: q), q ]
     end
   end
 
@@ -216,6 +244,46 @@ module ApplicationHelper
   end
 
   private
+    def dashboard_calendar_params_for_path(period)
+      g = request.params[:dashboard_period_granularity].presence_in(%w[month quarter year])
+      g ||= infer_dashboard_granularity_from_period(period)
+
+      y = request.params[:dashboard_year].presence&.to_i
+      y = period.end_date.year if y.nil? || !y.between?(1970, 2100)
+
+      h = { dashboard_period_granularity: g, dashboard_year: y }
+      case g
+      when "month"
+        m = request.params[:dashboard_month].presence&.to_i
+        m = period.start_date.month if m.nil? || !m.between?(1, 12)
+        h[:dashboard_month] = m
+      when "quarter"
+        q = request.params[:dashboard_quarter].presence&.to_i
+        q = dashboard_quarter_index_from_date(period.start_date) if q.nil? || !q.between?(1, 4)
+        h[:dashboard_quarter] = q
+      end
+      h
+    end
+
+    # Only infer quarter/year for full calendar quarter/year end dates (avoids
+    # treating January-only ranges as "year" when building query params).
+    def infer_dashboard_granularity_from_period(period)
+      sd = period.start_date
+      ed = period.end_date
+
+      if sd == sd.beginning_of_year && ed == sd.end_of_year
+        "year"
+      elsif sd == sd.beginning_of_quarter && ed == sd.end_of_quarter
+        "quarter"
+      else
+        "month"
+      end
+    end
+
+    def dashboard_quarter_index_from_date(date)
+      ((date.month - 1) / 3) + 1
+    end
+
     def calculate_total(item, money_method, negate)
       # Filter out transfer-type transactions from entries
       # Only Entry objects have entryable transactions, Account objects don't

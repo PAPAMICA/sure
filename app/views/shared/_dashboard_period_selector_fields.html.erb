@@ -1,12 +1,25 @@
 <%# locals: (period:) %>
 <div class="inline-flex flex-wrap items-center gap-2" role="group" aria-label="<%= t("pages.dashboard.period_selector.aria_label") %>">
   <% if Current.user.dashboard_month_year_period_selector? %>
-    <%= select_tag :dashboard_month,
-          options_for_select(dashboard_month_name_options, period.start_date.month),
+    <% cal = dashboard_calendar_form_state(period) %>
+    <%= select_tag :dashboard_period_granularity,
+          options_for_select(dashboard_granularity_options, cal[:granularity]),
           data: { auto_submit_form_target: "auto" },
           class: "bg-container border border-secondary font-medium rounded-lg px-3 py-2 text-sm pr-7 cursor-pointer text-primary focus:outline-hidden focus:ring-0" %>
+    <% if cal[:granularity] == "month" %>
+      <%= select_tag :dashboard_month,
+            options_for_select(dashboard_month_name_options, cal[:month]),
+            data: { auto_submit_form_target: "auto" },
+            class: "bg-container border border-secondary font-medium rounded-lg px-3 py-2 text-sm pr-7 cursor-pointer text-primary focus:outline-hidden focus:ring-0" %>
+    <% end %>
+    <% if cal[:granularity] == "quarter" %>
+      <%= select_tag :dashboard_quarter,
+            options_for_select(dashboard_quarter_options, cal[:quarter]),
+            data: { auto_submit_form_target: "auto" },
+            class: "bg-container border border-secondary font-medium rounded-lg px-3 py-2 text-sm pr-7 cursor-pointer text-primary focus:outline-hidden focus:ring-0" %>
+    <% end %>
     <%= select_tag :dashboard_year,
-          options_for_select(dashboard_year_range_options.map { |y| [ y.to_s, y ] }, period.start_date.year),
+          options_for_select(dashboard_year_range_options.map { |y| [ y.to_s, y ] }, cal[:year]),
           data: { auto_submit_form_target: "auto" },
           class: "bg-container border border-secondary font-medium rounded-lg px-3 py-2 text-sm pr-7 cursor-pointer text-primary focus:outline-hidden focus:ring-0" %>
   <% else %>
