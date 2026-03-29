@@ -39,9 +39,10 @@ export default class extends Controller {
       return;
     }
 
-    const w = this.element.clientWidth;
+    // Floor width so SVG + subpixel layout never exceeds the card (horizontal overflow).
+    const w = Math.max(0, Math.floor(this.element.getBoundingClientRect().width));
     const h = Math.max(220, this.element.clientHeight || 280);
-    const margin = { top: 12, right: 10, bottom: dates.length > 31 ? 52 : 36, left: 72 };
+    const margin = { top: 12, right: 20, bottom: dates.length > 31 ? 52 : 36, left: 72 };
 
     if (w < margin.left + margin.right + 40) {
       return;
@@ -77,11 +78,15 @@ export default class extends Controller {
     const svg = d3
       .select(this.element)
       .append("svg")
-      .attr("width", w)
+      .attr("viewBox", `0 0 ${w} ${h}`)
+      .attr("width", "100%")
       .attr("height", h)
       .attr("role", "img")
       .attr("aria-label", "Daily expenses by category")
-      .style("overflow", "visible");
+      .attr("preserveAspectRatio", "xMinYMin meet")
+      .style("display", "block")
+      .style("max-width", "100%")
+      .style("overflow", "hidden");
 
     const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
 
