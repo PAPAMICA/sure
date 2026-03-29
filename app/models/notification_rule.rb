@@ -7,7 +7,8 @@ class NotificationRule < ApplicationRecord
 
   accepts_nested_attributes_for :conditions, allow_destroy: true
 
-  enum :target, { transaction: "transaction", balance: "balance" }, validate: true
+  # prefix: true avoids defining NotificationRule.transaction (conflicts with AR::Base.transaction)
+  enum :target, { transaction: "transaction", balance: "balance" }, validate: true, prefix: true
   enum :delivery, { immediate: "immediate", scheduled: "scheduled", on_sync: "on_sync" }, validate: true
 
   FREQUENCIES = %w[hourly every_4_hours daily weekly].freeze
@@ -182,9 +183,9 @@ class NotificationRule < ApplicationRecord
     end
 
     def delivery_matches_target
-      if transaction? && on_sync?
+      if target_transaction? && on_sync?
         errors.add(:base, I18n.t("notification_rules.errors.transaction_on_sync"))
-      elsif balance? && immediate?
+      elsif target_balance? && immediate?
         errors.add(:base, I18n.t("notification_rules.errors.balance_immediate"))
       end
     end

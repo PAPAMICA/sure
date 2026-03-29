@@ -25,7 +25,7 @@
     </div>
     <div class="ml-6 space-y-3">
       <%= f.select :delivery,
-            notification_rule.transaction? ?
+            notification_rule.target_transaction? ?
               [ [ t("notification_rules.form.delivery_immediate_tx"), "immediate" ], [ t("notification_rules.form.delivery_scheduled"), "scheduled" ] ] :
               [ [ t("notification_rules.form.delivery_on_sync"), "on_sync" ], [ t("notification_rules.form.delivery_scheduled"), "scheduled" ] ],
             {},
@@ -53,7 +53,7 @@
     </div>
   </section>
 
-  <% if notification_rule.transaction? %>
+  <% if notification_rule.target_transaction? %>
     <section class="space-y-4" data-notification-rules-target="minimumAmountWrap">
       <div class="flex items-center gap-1 text-secondary">
         <h3 class="text-sm font-medium text-primary"><%= t("notification_rules.form.amount_heading") %></h3>
