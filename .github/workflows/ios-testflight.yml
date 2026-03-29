@@ -97,7 +97,7 @@ jobs:
 
       - name: Copy app icon source
         if: ${{ steps.check_prereqs.outputs.enabled == 'true' }}
-        run: cp public/android-chrome-512x512.png mobile/assets/icon/app_icon.png
+        run: cp public/logo.png mobile/assets/icon/app_icon.png
 
       - name: Generate app icons
         working-directory: mobile

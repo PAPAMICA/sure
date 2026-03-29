@@ -51,7 +51,7 @@ end %>
       <% end %>
 
       <%= link_to home_path, class: "block" do %>
-        <%= image_tag "logomark-color.svg", class: "w-9 h-9 mx-auto" %>
+        <%= image_tag "/logo.png", alt: "", class: "w-9 h-9 mx-auto object-contain" %>
       <% end %>
 
       <div class="flex items-center gap-1">
@@ -60,7 +60,8 @@ end %>
                 personal_url: ledger_path_with_usage("personal"),
                 professional_url: ledger_path_with_usage("professional"),
                 current_usage: ledger_usage_switch_current,
-                quick_categorize_remaining: layout_quick_categorize_remaining_for_badge %>
+                quick_categorize_remaining: layout_quick_categorize_remaining_for_badge,
+                nav_badge_dom_id: "quick_categorize_nav_badge_mobile" %>
         <% end %>
         <button type="button"
                 class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-secondary hover:text-primary transition-colors"
@@ -81,7 +82,7 @@ end %>
       <nav class="h-full flex flex-col shrink-0 w-[84px] py-4 mr-3">
         <div class="pl-2 mb-3">
           <%= link_to home_path, class: "block" do %>
-            <%= image_tag "logomark-color.svg", class: "w-9 h-9 mx-auto" %>
+            <%= image_tag "/logo.png", alt: "", class: "w-9 h-9 mx-auto object-contain" %>
           <% end %>
         </div>
 
@@ -164,7 +165,8 @@ end %>
                     personal_url: ledger_path_with_usage("personal"),
                     professional_url: ledger_path_with_usage("professional"),
                     current_usage: ledger_usage_switch_current,
-                    quick_categorize_remaining: layout_quick_categorize_remaining_for_badge %>
+                    quick_categorize_remaining: layout_quick_categorize_remaining_for_badge,
+                    nav_badge_dom_id: "quick_categorize_nav_badge_desktop" %>
             <% end %>
             <button type="button"
                     class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-secondary hover:text-primary hover:bg-surface-hover transition-colors"

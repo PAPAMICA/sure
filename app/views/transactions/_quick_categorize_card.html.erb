@@ -14,7 +14,8 @@
     <%= render DS::Link.new(
       text: t("transactions.quick_categorize.back_to_list"),
       href: transactions_path(usage: lu),
-      variant: "primary"
+      variant: "primary",
+      frame: "_top"
     ) %>
   </div>
 <% else %>

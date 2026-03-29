@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
@@ -130,10 +129,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         alignment: Alignment.topLeft,
         child: Padding(
           padding: const EdgeInsets.only(top: 12, left: 12),
-          child: SvgPicture.asset(
-            'assets/images/logomark.svg',
+          child: Image.asset(
+            'assets/images/logo.png',
             width: 36,
             height: 36,
+            fit: BoxFit.contain,
           ),
         ),
       ),

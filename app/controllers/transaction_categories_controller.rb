@@ -68,7 +68,7 @@ class TransactionCategoriesController < ApplicationController
         if params[:quick_categorize].present?
           format.html { redirect_to quick_categorize_transactions_path(usage: qc_ledger) }
           format.turbo_stream do
-            render turbo_stream: quick_categorize_card_stream(qc_ledger, advance: true)
+            render turbo_stream: quick_categorize_layout_streams(qc_ledger, advance: true)
           end
         else
           format.html { redirect_back_or_to transaction_path(@entry) }
@@ -108,7 +108,7 @@ class TransactionCategoriesController < ApplicationController
       end
     end
 
-    def quick_categorize_card_stream(qc_ledger, advance: true)
+    def quick_categorize_quick_state(qc_ledger, advance:)
       if advance
         next_transaction = Transaction.next_uncategorized_for(Current.user, Current.family, ledger_usage: qc_ledger)
         entry = next_transaction&.entry
@@ -124,17 +124,62 @@ class TransactionCategoriesController < ApplicationController
         ledger_usage: qc_ledger
       )
 
+      {
+        entry: entry,
+        transaction: transaction,
+        uncategorized_count: uncategorized_count,
+        categories: Current.family.categories.with_ledger_usage(qc_ledger).alphabetically
+      }
+    end
+
+    def quick_categorize_card_stream(qc_ledger, advance: true)
+      state = quick_categorize_quick_state(qc_ledger, advance: advance)
       turbo_stream.update(
         "quick_categorize_card",
         partial: "transactions/quick_categorize_card",
         locals: {
-          entry: entry,
-          transaction: transaction,
-          categories: Current.family.categories.with_ledger_usage(qc_ledger).alphabetically,
+          entry: state[:entry],
+          transaction: state[:transaction],
+          categories: state[:categories],
           ledger_usage: qc_ledger,
-          uncategorized_count: uncategorized_count
+          uncategorized_count: state[:uncategorized_count]
         }
       )
+    end
+
+    def quick_categorize_layout_streams(qc_ledger, advance: true)
+      state = quick_categorize_quick_state(qc_ledger, advance: advance)
+      [
+        turbo_stream.update(
+          "quick_categorize_card",
+          partial: "transactions/quick_categorize_card",
+          locals: {
+            entry: state[:entry],
+            transaction: state[:transaction],
+            categories: state[:categories],
+            ledger_usage: qc_ledger,
+            uncategorized_count: state[:uncategorized_count]
+          }
+        ),
+        turbo_stream.replace(
+          "quick_categorize_nav_badge_mobile",
+          partial: "shared/quick_categorize_nav_badge",
+          locals: {
+            current_usage: qc_ledger,
+            remaining: state[:uncategorized_count],
+            html_id: "quick_categorize_nav_badge_mobile"
+          }
+        ),
+        turbo_stream.replace(
+          "quick_categorize_nav_badge_desktop",
+          partial: "shared/quick_categorize_nav_badge",
+          locals: {
+            current_usage: qc_ledger,
+            remaining: state[:uncategorized_count],
+            html_id: "quick_categorize_nav_badge_desktop"
+          }
+        )
+      ]
     end
 
     def entry_params

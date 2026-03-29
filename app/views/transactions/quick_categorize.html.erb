@@ -7,16 +7,12 @@
       icon: "chevron-left",
       href: transactions_path(**with_ledger_usage_url_options),
       variant: "ghost",
-      size: :sm
+      size: :sm,
+      frame: "_top"
     ) %>
     <div class="h-4 w-px bg-gray-200 theme-dark:bg-gray-700 shrink-0" aria-hidden="true"></div>
     <div class="min-w-0 flex-1">
       <h1 class="text-lg font-semibold text-primary truncate"><%= t(".page_title") %></h1>
-      <% if @uncategorized_count.to_i.positive? %>
-        <p class="text-xs text-secondary tabular-nums mt-0.5">
-          <%= t("transactions.quick_categorize.uncategorized_remaining", count: @uncategorized_count) %>
-        </p>
-      <% end %>
     </div>
   </div>
 

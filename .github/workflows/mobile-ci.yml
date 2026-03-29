@@ -4,8 +4,7 @@ on:
   pull_request:
     paths:
       - 'mobile/**'
-      - 'public/android-chrome-*.png'
-      - 'public/apple-touch-icon.png'
+      - 'public/logo.png'
       - '.github/workflows/flutter-build.yml'
       - '.github/workflows/mobile-ci.yml'
   push:
@@ -13,8 +12,7 @@ on:
       - main
     paths:
       - 'mobile/**'
-      - 'public/android-chrome-*.png'
-      - 'public/apple-touch-icon.png'
+      - 'public/logo.png'
       - '.github/workflows/flutter-build.yml'
       - '.github/workflows/mobile-ci.yml'
 
