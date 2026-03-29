@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus";
 
-// Quick categorize: live filter reorders the DOM (matches first), Enter picks first visible, debounced autosave.
+// Quick categorize: live filter, arrow keys to move selection, Enter to confirm, debounced autosave.
 export default class extends Controller {
   static targets = [
     "search",
@@ -20,6 +20,7 @@ export default class extends Controller {
   };
 
   connect() {
+    this._selectionIndex = -1;
     if (this.hasSearchTarget) {
       requestAnimationFrame(() => {
         try {
@@ -67,6 +68,8 @@ export default class extends Controller {
       if (emptyEl) {
         container.replaceChildren(emptyEl, ...items);
       }
+      this._selectionIndex = -1;
+      this.refreshSelectionHighlight();
       this.updateResultMeta(q, items.length, 0);
       return;
     }
@@ -93,7 +96,42 @@ export default class extends Controller {
     );
     container.replaceChildren(...ordered);
 
+    this.syncSelectionAfterFilter();
+    this.refreshSelectionHighlight();
     this.updateResultMeta(q, items.length, matching.length);
+  }
+
+  visibleCategoryRows() {
+    if (!this.hasCategoryListTarget) return [];
+    return [...this.categoryListTarget.querySelectorAll("[data-qc-category]")].filter(
+      (r) => !r.classList.contains("hidden"),
+    );
+  }
+
+  syncSelectionAfterFilter() {
+    const rows = this.visibleCategoryRows();
+    if (rows.length === 0) {
+      this._selectionIndex = -1;
+      return;
+    }
+    if (this._selectionIndex >= rows.length) {
+      this._selectionIndex = rows.length - 1;
+    }
+  }
+
+  refreshSelectionHighlight() {
+    if (!this.hasCategoryListTarget) return;
+    for (const row of this.categoryListTarget.querySelectorAll("[data-qc-category]")) {
+      row.classList.remove("bg-surface-hover", "border-primary");
+      row.classList.add("border-transparent");
+    }
+    const rows = this.visibleCategoryRows();
+    const sel = rows[this._selectionIndex];
+    if (sel) {
+      sel.classList.remove("border-transparent");
+      sel.classList.add("bg-surface-hover", "border-primary");
+      sel.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
   }
 
   prepareCreateCategory(event) {
@@ -129,9 +167,36 @@ export default class extends Controller {
   }
 
   searchKeydown(event) {
-    if (event.key !== "Enter") return;
-    event.preventDefault();
-    this.pickFirstVisibleCategory();
+    if (event.key === "Enter") {
+      event.preventDefault();
+      if (this._selectionIndex >= 0) {
+        const rows = this.visibleCategoryRows();
+        const row = rows[this._selectionIndex];
+        const btn =
+          row?.querySelector("button[type='submit']") || row?.querySelector("input[type='submit']");
+        btn?.click();
+      } else {
+        this.pickFirstVisibleCategory();
+      }
+      return;
+    }
+
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      const rows = this.visibleCategoryRows();
+      if (rows.length === 0) return;
+
+      if (event.key === "ArrowDown") {
+        if (this._selectionIndex < 0) {
+          this._selectionIndex = 0;
+        } else {
+          this._selectionIndex = Math.min(this._selectionIndex + 1, rows.length - 1);
+        }
+      } else {
+        this._selectionIndex = Math.max(this._selectionIndex - 1, -1);
+      }
+      this.refreshSelectionHighlight();
+    }
   }
 
   pickFirstVisibleCategory() {

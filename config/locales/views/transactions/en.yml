@@ -138,7 +138,8 @@ en:
       details_saved: Details saved
       pick_category: Choose a category
       search_placeholder: Search categories…
-      search_hint: The list updates as you type. Press Enter to select the first match.
+      search_hint: The list updates as you type.
+      keyboard_hint: Use ↑ and ↓ to move, Enter to select.
       search_no_results: No categories match your search. Try another spelling or clear the search.
       create_category_hint: You can create a category with the name you typed; it will be applied to this transaction.
       create_category_submit: Create category from search
