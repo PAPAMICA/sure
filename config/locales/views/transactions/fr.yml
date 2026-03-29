@@ -66,6 +66,9 @@ fr:
       search_placeholder: Rechercher une catégorie…
       search_hint: La liste se met à jour pendant la saisie. Entrée sélectionne la première suggestion.
       search_no_results: Aucune catégorie ne correspond. Essayez une autre orthographe ou effacez la recherche.
+      create_category_hint: Vous pouvez créer une catégorie avec le nom saisi ; elle sera appliquée à cette transaction.
+      create_category_submit: Créer la catégorie à partir de la recherche
+      create_category_blank: Saisissez un nom de catégorie dans le champ de recherche avant de créer.
       all_categories_meta:
         zero: "Aucune catégorie"
         one: "1 catégorie"

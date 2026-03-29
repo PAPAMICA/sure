@@ -2,7 +2,15 @@ import { Controller } from "@hotwired/stimulus";
 
 // Quick categorize: live filter reorders the DOM (matches first), Enter picks first visible, debounced autosave.
 export default class extends Controller {
-  static targets = ["search", "name", "notes", "categoryList", "emptyState", "resultMeta"];
+  static targets = [
+    "search",
+    "name",
+    "notes",
+    "categoryList",
+    "emptyState",
+    "resultMeta",
+    "categoryNameField",
+  ];
   static values = {
     autosaveUrl: String,
     transactionId: String,
@@ -86,6 +94,16 @@ export default class extends Controller {
     container.replaceChildren(...ordered);
 
     this.updateResultMeta(q, items.length, matching.length);
+  }
+
+  prepareCreateCategory(event) {
+    const name = (this.searchTarget?.value || "").trim();
+    if (this.hasCategoryNameFieldTarget) {
+      this.categoryNameFieldTarget.value = name;
+    }
+    if (!name) {
+      event.preventDefault();
+    }
   }
 
   updateResultMeta(query, total, matchCount) {

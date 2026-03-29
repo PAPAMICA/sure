@@ -118,10 +118,29 @@
         >
           <div
             data-quick-categorize-target="emptyState"
-            class="hidden rounded-lg border border-dashed border-primary px-4 py-8 text-center"
+            class="hidden rounded-lg border border-dashed border-primary px-4 py-8 text-center space-y-4"
             role="status"
           >
             <p class="text-sm text-secondary"><%= t("transactions.quick_categorize.search_no_results") %></p>
+            <p class="text-xs text-secondary"><%= t("transactions.quick_categorize.create_category_hint") %></p>
+            <%= form_with url: transaction_category_path(entry),
+                  method: :post,
+                  data: {
+                    turbo_frame: "quick_categorize_card",
+                    action: "submit->quick-categorize#prepareCreateCategory"
+                  },
+                  class: "flex flex-col items-center gap-3" do %>
+              <%= hidden_field_tag :quick_categorize, "1" %>
+              <%= hidden_field_tag :usage, lu %>
+              <%= hidden_field_tag "category[name]", "",
+                    data: { quick_categorize_target: "categoryNameField" } %>
+              <button
+                type="submit"
+                class="inline-flex items-center justify-center gap-2 rounded-lg border border-primary bg-container px-4 py-2.5 text-sm font-medium text-primary shadow-border-xs transition-colors hover:bg-surface-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-container focus-visible:ring-gray-400">
+                <%= icon "plus", size: "sm", class: "shrink-0" %>
+                <%= t("transactions.quick_categorize.create_category_submit") %>
+              </button>
+            <% end %>
           </div>
 
           <% categories.each_with_index do |category, idx| %>
