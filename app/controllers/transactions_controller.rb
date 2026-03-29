@@ -7,6 +7,7 @@ class TransactionsController < ApplicationController
   before_action :store_params!, only: :index # runs after set_ledger_usage on index
 
   def quick_categorize
+    @uncategorized_count = Transaction.quick_categorize_uncategorized_count(Current.user, Current.family, ledger_usage: @ledger_usage)
     transaction = Transaction.next_uncategorized_for(Current.user, Current.family, ledger_usage: @ledger_usage)
     @entry = transaction&.entry
     @transaction = transaction

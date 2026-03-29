@@ -132,6 +132,9 @@ en:
       all_done_title: You are caught up
       all_done_body: There are no uncategorized transactions in your accessible accounts.
       card_heading: Uncategorized transaction
+      uncategorized_remaining:
+        one: 1 transaction left to categorize
+        other: "%{count} transactions left to categorize"
       name_label: Name
       notes_label: Notes
       save_details: Save details

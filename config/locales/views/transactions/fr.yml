@@ -58,6 +58,9 @@ fr:
       all_done_title: C’est à jour
       all_done_body: Il n’y a aucune transaction non catégorisée sur vos comptes accessibles.
       card_heading: Transaction non catégorisée
+      uncategorized_remaining:
+        one: 1 transaction à catégoriser
+        other: "%{count} transactions à catégoriser"
       name_label: Libellé
       notes_label: Notes
       save_details: Enregistrer

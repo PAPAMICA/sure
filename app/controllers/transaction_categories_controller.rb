@@ -118,6 +118,12 @@ class TransactionCategoriesController < ApplicationController
         transaction = @entry.transaction
       end
 
+      uncategorized_count = Transaction.quick_categorize_uncategorized_count(
+        Current.user,
+        Current.family,
+        ledger_usage: qc_ledger
+      )
+
       turbo_stream.update(
         "quick_categorize_card",
         partial: "transactions/quick_categorize_card",
@@ -125,7 +131,8 @@ class TransactionCategoriesController < ApplicationController
           entry: entry,
           transaction: transaction,
           categories: Current.family.categories.with_ledger_usage(qc_ledger).alphabetically,
-          ledger_usage: qc_ledger
+          ledger_usage: qc_ledger,
+          uncategorized_count: uncategorized_count
         }
       )
     end

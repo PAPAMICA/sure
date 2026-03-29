@@ -52,6 +52,18 @@ class TransactionTest < ActiveSupport::TestCase
     end
   end
 
+  test "quick_categorize_uncategorized_count matches scope and next_uncategorized_for is scope first" do
+    user = users(:family_admin)
+    family = families(:dylan_family)
+    lu = "personal"
+    scope = Transaction.quick_categorize_uncategorized_scope(user, family, ledger_usage: lu)
+    assert_equal scope.count, Transaction.quick_categorize_uncategorized_count(user, family, ledger_usage: lu)
+
+    next_t = Transaction.next_uncategorized_for(user, family, ledger_usage: lu)
+    first_id = scope.limit(1).pick(:id)
+    assert_equal first_id, next_t&.id
+  end
+
   test "ACTIVITY_LABELS contains all valid labels" do
     assert_includes Transaction::ACTIVITY_LABELS, "Buy"
     assert_includes Transaction::ACTIVITY_LABELS, "Sell"

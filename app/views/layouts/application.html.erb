@@ -59,7 +59,8 @@ end %>
           <%= render "shared/ledger_usage_switch",
                 personal_url: ledger_path_with_usage("personal"),
                 professional_url: ledger_path_with_usage("professional"),
-                current_usage: ledger_usage_switch_current %>
+                current_usage: ledger_usage_switch_current,
+                quick_categorize_remaining: layout_quick_categorize_remaining_for_badge %>
         <% end %>
         <button type="button"
                 class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-secondary hover:text-primary transition-colors"
@@ -162,7 +163,8 @@ end %>
               <%= render "shared/ledger_usage_switch",
                     personal_url: ledger_path_with_usage("personal"),
                     professional_url: ledger_path_with_usage("professional"),
-                    current_usage: ledger_usage_switch_current %>
+                    current_usage: ledger_usage_switch_current,
+                    quick_categorize_remaining: layout_quick_categorize_remaining_for_badge %>
             <% end %>
             <button type="button"
                     class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-secondary hover:text-primary hover:bg-surface-hover transition-colors"

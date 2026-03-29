@@ -205,6 +205,13 @@ module ApplicationHelper
     "#{request.path}?#{qp.to_query}"
   end
 
+  # Uncategorized count for dashboard chrome (Perso/Pro badge next to ledger switch).
+  def layout_quick_categorize_remaining_for_badge
+    return 0 unless controller_name == "pages" && action_name == "dashboard"
+
+    (@quick_categorize_uncategorized_count || 0).to_i
+  end
+
   # Query params for root_path / account_path when linking to the same chart period (Perso/Pro toggle, etc.).
   def dashboard_period_query_for_path(period)
     if Current.user.dashboard_month_year_period_selector?

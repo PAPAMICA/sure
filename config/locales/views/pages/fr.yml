@@ -12,6 +12,9 @@ fr:
         quarter_ordinal: "T%{quarter}"
       welcome_back: Content de vous revoir
       happening_with_finance: Voici ce qui se passe avec vos finances
+      quick_categorize_badge:
+        title: "%{count} transactions à catégoriser"
+        aria_label: "Catégorisation rapide — %{count} transaction(s) en attente"
       ledger_usage:
         aria_label: Comptes personnels ou professionnels
         personal: Perso

@@ -1,25 +1,38 @@
-<%# locals: (personal_url:, professional_url:, current_usage:) %>
+<%# locals: (personal_url:, professional_url:, current_usage:, quick_categorize_remaining: 0) %>
 <% personal_label = t("pages.dashboard.ledger_usage.personal") %>
 <% professional_label = t("pages.dashboard.ledger_usage.professional") %>
-<div class="inline-flex rounded-lg border border-primary p-0.5 bg-container-inset shrink-0" role="group" aria-label="<%= t("pages.dashboard.ledger_usage.aria_label") %>">
-  <% personal_active = current_usage.to_s == "personal" %>
-  <% pro_active = current_usage.to_s == "professional" %>
-  <%= link_to personal_url,
-        class: class_names(
-          "inline-flex items-center justify-center w-9 h-9 rounded-md transition-colors",
-          personal_active ? "bg-container text-primary shadow-border-xs" : "text-secondary hover:text-primary"
-        ),
-        title: personal_label,
-        aria: { label: personal_label } do %>
-    <%= icon "user", size: "sm", color: "current" %>
-  <% end %>
-  <%= link_to professional_url,
-        class: class_names(
-          "inline-flex items-center justify-center w-9 h-9 rounded-md transition-colors",
-          pro_active ? "bg-container text-primary shadow-border-xs" : "text-secondary hover:text-primary"
-        ),
-        title: professional_label,
-        aria: { label: professional_label } do %>
-    <%= icon "briefcase", size: "sm", color: "current" %>
+<% qc_left = local_assigns.fetch(:quick_categorize_remaining, 0).to_i %>
+<div class="flex items-center gap-1.5 shrink-0">
+  <div class="inline-flex rounded-lg border border-primary p-0.5 bg-container-inset shrink-0" role="group" aria-label="<%= t("pages.dashboard.ledger_usage.aria_label") %>">
+    <% personal_active = current_usage.to_s == "personal" %>
+    <% pro_active = current_usage.to_s == "professional" %>
+    <%= link_to personal_url,
+          class: class_names(
+            "inline-flex items-center justify-center w-9 h-9 rounded-md transition-colors",
+            personal_active ? "bg-container text-primary shadow-border-xs" : "text-secondary hover:text-primary"
+          ),
+          title: personal_label,
+          aria: { label: personal_label } do %>
+      <%= icon "user", size: "sm", color: "current" %>
+    <% end %>
+    <%= link_to professional_url,
+          class: class_names(
+            "inline-flex items-center justify-center w-9 h-9 rounded-md transition-colors",
+            pro_active ? "bg-container text-primary shadow-border-xs" : "text-secondary hover:text-primary"
+          ),
+          title: professional_label,
+          aria: { label: professional_label } do %>
+      <%= icon "briefcase", size: "sm", color: "current" %>
+    <% end %>
+  </div>
+  <% if qc_left.positive? %>
+    <%= link_to quick_categorize_transactions_path(usage: current_usage),
+          class: "inline-flex items-center gap-1 rounded-lg border border-primary bg-container-inset px-2 py-1.5 text-xs font-semibold tabular-nums text-primary hover:bg-surface-hover transition-colors",
+          title: t("pages.dashboard.quick_categorize_badge.title", count: qc_left),
+          data: { turbo_frame: "_top" },
+          aria: { label: t("pages.dashboard.quick_categorize_badge.aria_label", count: qc_left) } do %>
+      <%= icon "layout-grid", size: "sm", class: "shrink-0 text-secondary", color: "current" %>
+      <span><%= qc_left %></span>
+    <% end %>
   <% end %>
 </div>

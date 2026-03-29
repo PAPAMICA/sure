@@ -76,22 +76,30 @@ class Transaction < ApplicationRecord
     joins(entry: :account).where(accounts: { family_id: family.id })
   end
 
-  # Next transaction matching "uncategorized" filters (quick-categorize flow)
-  def self.next_uncategorized_for(user, family, ledger_usage: nil)
+  # Base scope for quick-categorize (uncategorized, accessible accounts, optional ledger usage)
+  def self.quick_categorize_uncategorized_scope(user, family, ledger_usage: nil)
     accessible_scope = user.accessible_accounts
     accessible_scope = accessible_scope.merge(Account.with_ledger_usage(ledger_usage)) if ledger_usage.present?
     accessible_account_ids = accessible_scope.pluck(:id)
-    return nil if accessible_account_ids.empty?
+    return none if accessible_account_ids.empty?
 
     filters = {
       "categories" => Category.all_uncategorized_names,
       "active_accounts_only" => true
     }
     search = Transaction::Search.new(family, filters: filters, accessible_account_ids: accessible_account_ids)
-    search.transactions_scope
-          .reverse_chronological
-          .includes(:category, :merchant, entry: :account)
-          .first
+    search.transactions_scope.reverse_chronological
+  end
+
+  # Next transaction matching "uncategorized" filters (quick-categorize flow)
+  def self.next_uncategorized_for(user, family, ledger_usage: nil)
+    quick_categorize_uncategorized_scope(user, family, ledger_usage: ledger_usage)
+      .includes(:category, :merchant, entry: :account)
+      .first
+  end
+
+  def self.quick_categorize_uncategorized_count(user, family, ledger_usage: nil)
+    quick_categorize_uncategorized_scope(user, family, ledger_usage: ledger_usage).count
   end
 
   # Overarching grouping method for all transfer-type transactions
