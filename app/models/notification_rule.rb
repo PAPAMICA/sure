@@ -37,8 +37,8 @@ class NotificationRule < ApplicationRecord
     registry.condition_filters
   end
 
-  def resolve_apprise_url
-    apprise_notify_url.presence || family.apprise_notify_url
+  def resolve_ntfy_url
+    ntfy_url.presence || family.ntfy_url
   end
 
   def due_for_scheduled_run?
@@ -93,12 +93,12 @@ class NotificationRule < ApplicationRecord
   end
 
   def deliver_transaction_message!(transaction, entry)
-    url = resolve_apprise_url
+    url = resolve_ntfy_url
     return if url.blank?
 
     money = Money.new(entry.amount.abs, entry.currency)
     formatted = money.format
-    sign_label = entry.amount.negative? ? I18n.t("apprise.new_transaction.income") : I18n.t("apprise.new_transaction.expense")
+    sign_label = entry.amount.negative? ? I18n.t("ntfy.new_transaction.income") : I18n.t("ntfy.new_transaction.expense")
     body = [
       "#{sign_label} #{formatted}",
       entry.name,
@@ -107,26 +107,24 @@ class NotificationRule < ApplicationRecord
       transaction.category&.name
     ].compact.join("\n")
 
-    Notifications::AppriseDelivery.deliver!(
+    Notifications::NtfyDelivery.deliver!(
       url,
-      title: I18n.t("apprise.new_transaction.title"),
-      body: body,
-      notify_type: "info"
+      title: I18n.t("ntfy.new_transaction.title"),
+      body: body
     )
   end
 
   def deliver_balance_message!(account)
-    url = resolve_apprise_url
+    url = resolve_ntfy_url
     return if url.blank?
 
     money = Money.new(account.balance, account.currency)
     body = "#{account.name}\n#{money.format}"
 
-    Notifications::AppriseDelivery.deliver!(
+    Notifications::NtfyDelivery.deliver!(
       url,
-      title: I18n.t("apprise.balance.title"),
-      body: body,
-      notify_type: "info"
+      title: I18n.t("ntfy.balance.title"),
+      body: body
     )
   end
 

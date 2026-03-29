@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_29_140000) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_29_160000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -528,7 +528,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_29_140000) do
     t.boolean "early_access", default: false
     t.boolean "auto_sync_on_login", default: true, null: false
     t.boolean "hourly_bank_sync", default: false, null: false
-    t.text "apprise_notify_url"
+    t.text "ntfy_url"
     t.jsonb "apprise_rules", default: {}, null: false
     t.datetime "latest_sync_activity_at", default: -> { "CURRENT_TIMESTAMP" }
     t.datetime "latest_sync_completed_at", default: -> { "CURRENT_TIMESTAMP" }
@@ -979,7 +979,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_29_140000) do
     t.string "target", null: false
     t.string "delivery", null: false
     t.string "frequency"
-    t.text "apprise_notify_url"
+    t.text "ntfy_url"
     t.decimal "minimum_amount", precision: 19, scale: 4
     t.date "effective_date"
     t.datetime "last_scheduled_run_at"

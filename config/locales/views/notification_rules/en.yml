@@ -12,18 +12,18 @@ en:
       success: Notification rule updated.
     destroy:
       success: Notification rule deleted.
-    default_url_updated: Default Apprise URL saved.
+    default_url_updated: Default ntfy topic URL saved.
     test:
-      section_title: Test Apprise
+      section_title: Test ntfy
       send_button: Send test notification
-      form_hint: Enter a notify URL and send a test without saving the form (uses the field below, or the family default if empty).
-      url_field_label: Apprise notify URL to test
+      form_hint: Enter a topic URL and send a test without saving the form (field below, or the family default if empty).
+      url_field_label: ntfy topic URL to test
       push_title: Test notification
-      push_body: If you received this, your Apprise URL is configured correctly.
+      push_body: If you received this, your ntfy topic URL is configured correctly.
       success: Test notification sent successfully.
-      failure: Could not reach Apprise (invalid URL or network error). Check the logs.
-      http_error: "Apprise returned HTTP %{code}. Check your URL and server logs."
-      url_missing: Enter an Apprise URL or save a default URL on the family first.
+      failure: Could not reach ntfy (invalid URL or network error). Check the logs.
+      http_error: "ntfy returned HTTP %{code}. Check your URL and server logs."
+      url_missing: Enter a topic URL or save a default URL on the family first.
     errors:
       transaction_on_sync: Transaction rules cannot use “after account sync” delivery. Use immediate or scheduled.
       balance_immediate: Balance rules cannot use immediate delivery. Use after sync or scheduled.
@@ -46,9 +46,9 @@ en:
       new_balance_rule: New balance rule
       intro_before_link: Send alerts through
       intro_after_link: Create rules with IF conditions (like auto-categorization), optional minimum amount, and how often to check.
-      default_url_heading: Default Apprise URL
-      default_url_hint: Used when a rule leaves the URL empty. Only family admins can change this.
-      default_url_label: Apprise URL
+      default_url_heading: Default ntfy topic URL
+      default_url_hint: Used when a rule leaves the URL empty. Only family admins can change this. Use your full topic URL (e.g. https://ntfy.sh/your-secret-topic).
+      default_url_label: Topic URL
       default_url_save: Save default URL
       list_heading: Rules
       empty: No notification rules yet.
@@ -67,9 +67,9 @@ en:
       frequency_prompt: Select frequency
       frequency_hint: The scheduler runs hourly; your rule runs when it is due based on this frequency.
       active_label: Rule active
-      apprise_heading: Apprise
-      apprise_url_label: Apprise URL (optional)
-      apprise_url_hint: Overrides the family default for this rule only.
+      ntfy_heading: ntfy
+      ntfy_url_label: Topic URL (optional)
+      ntfy_url_hint: Full URL to POST to (e.g. https://ntfy.sh/your-topic). Overrides the family default for this rule only.
       amount_heading: Amount filter
       minimum_amount_label: Minimum absolute amount
       minimum_amount_hint: Only applies to transaction rules. Leave blank to include all amounts.

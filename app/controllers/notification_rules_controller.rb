@@ -4,7 +4,7 @@ class NotificationRulesController < ApplicationController
   layout :notification_rules_layout
 
   before_action :set_notification_rule, only: %i[edit update destroy]
-  before_action :require_family_admin!, only: %i[update_default_apprise_url test_apprise]
+  before_action :require_family_admin!, only: %i[update_default_ntfy_url test_ntfy]
 
   def index
     @notification_rules = Current.family.notification_rules.includes(conditions: :sub_conditions).order(:name, :created_at)
@@ -46,21 +46,21 @@ class NotificationRulesController < ApplicationController
     redirect_to notification_rules_path, notice: t("notification_rules.destroy.success")
   end
 
-  def update_default_apprise_url
-    url = params.require(:family).permit(:apprise_notify_url)[:apprise_notify_url].to_s.presence
-    Current.family.update!(apprise_notify_url: url)
+  def update_default_ntfy_url
+    url = params.require(:family).permit(:ntfy_url)[:ntfy_url].to_s.presence
+    Current.family.update!(ntfy_url: url)
     redirect_to notification_rules_path, notice: t("notification_rules.default_url_updated")
   end
 
-  def test_apprise
-    url = params[:apprise_notify_url].to_s.strip.presence || Current.family.apprise_notify_url
+  def test_ntfy
+    url = params[:ntfy_url].to_s.strip.presence || Current.family.ntfy_url
 
     if url.blank?
       redirect_back_or_to notification_rules_path, alert: t("notification_rules.test.url_missing")
       return
     end
 
-    response = Notifications::AppriseDelivery.deliver!(
+    response = Notifications::NtfyDelivery.deliver!(
       url,
       title: t("notification_rules.test.push_title"),
       body: t("notification_rules.test.push_body")
@@ -101,7 +101,7 @@ class NotificationRulesController < ApplicationController
 
     def notification_rule_params
       attrs = params.require(:notification_rule).permit(
-        :name, :active, :target, :delivery, :frequency, :apprise_notify_url,
+        :name, :active, :target, :delivery, :frequency, :ntfy_url,
         :minimum_amount, :effective_date, :effective_date_enabled,
         conditions_attributes: [
           :id, :condition_type, :operator, :value, :_destroy,

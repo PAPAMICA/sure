@@ -322,8 +322,8 @@ Rails.application.routes.draw do
 
   resources :notification_rules, except: :show do
     collection do
-      patch :update_default_apprise_url
-      post :test_apprise
+      patch :update_default_ntfy_url
+      post :test_ntfy
     end
   end
 

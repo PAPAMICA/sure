@@ -1,6 +1,6 @@
 ---
 fr:
-  apprise:
+  ntfy:
     new_transaction:
       title: Nouvelle transaction
       income: Revenu

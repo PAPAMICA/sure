@@ -62,9 +62,8 @@ fr:
       notes_label: Notes
       save_details: Enregistrer
       details_saved: Détails enregistrés
-      pick_category: Choisir une catégorie
-      income_heading: Catégories de revenus
-      expense_heading: Catégories de dépenses
+      pick_category: Rechercher une catégorie
+      search_placeholder: Taper pour filtrer…
     searches:
       filters:
         amount_filter:

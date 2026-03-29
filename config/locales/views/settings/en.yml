@@ -201,11 +201,11 @@ en:
         connection_error: Connection Error
     notifications:
       show:
-        page_title: Notifications (Apprise)
-        intro: Send alerts through your own Apprise API instance or compatible webhook. See the
-        intro_link_label: Apprise project
-        url_label: Notify URL
-        url_hint: Full POST URL (for example your Apprise API /notify/… endpoint).
+        page_title: Notifications (ntfy)
+        intro: Send alerts through ntfy. See
+        intro_link_label: ntfy.sh
+        url_label: Topic URL
+        url_hint: Full topic URL to POST to (for example https://ntfy.sh/your-secret-topic).
         new_tx_heading: New transactions
         new_tx_enable: Enable new-transaction notifications
         balance_heading: Balances after sync

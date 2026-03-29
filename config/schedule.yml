@@ -29,7 +29,7 @@ notification_rules_scheduler:
   cron: "5 * * * *" # every hour at :05 (after hourly sync)
   class: "NotificationRules::SchedulerJob"
   queue: "scheduled"
-  description: "Runs scheduled notification rules (Apprise)"
+  description: "Runs scheduled notification rules (ntfy)"
 
 clean_data:
   cron: "0 3 * * *" # daily at 3:00 AM

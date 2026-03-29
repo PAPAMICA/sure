@@ -32,8 +32,7 @@ class TransactionCategoriesController < ApplicationController
             locals: {
               entry: next_transaction&.entry,
               transaction: next_transaction,
-              income_categories: Current.family.categories.incomes.alphabetically,
-              expense_categories: Current.family.categories.expenses.alphabetically
+              categories: Current.family.categories.alphabetically
             }
           )
         end

@@ -12,18 +12,18 @@ fr:
       success: Règle de notification mise à jour.
     destroy:
       success: Règle de notification supprimée.
-    default_url_updated: URL Apprise par défaut enregistrée.
+    default_url_updated: URL du topic ntfy par défaut enregistrée.
     test:
-      section_title: Tester Apprise
+      section_title: Tester ntfy
       send_button: Envoyer une notification test
-      form_hint: Saisissez une URL de notification et envoyez un test sans enregistrer le formulaire (ce champ, ou l’URL par défaut de la famille si vide).
-      url_field_label: URL Apprise à tester
+      form_hint: Saisissez l’URL du topic et envoyez un test sans enregistrer le formulaire (champ ci-dessous, ou l’URL par défaut de la famille si vide).
+      url_field_label: URL du topic ntfy à tester
       push_title: Notification test
-      push_body: Si vous recevez ce message, votre URL Apprise est correctement configurée.
+      push_body: Si vous recevez ce message, votre URL de topic ntfy est correctement configurée.
       success: Notification test envoyée avec succès.
-      failure: Impossible de joindre Apprise (URL invalide ou erreur réseau). Consultez les journaux.
-      http_error: "Apprise a répondu HTTP %{code}. Vérifiez l’URL et les journaux serveur."
-      url_missing: Saisissez une URL Apprise ou enregistrez d’abord une URL par défaut pour la famille.
+      failure: Impossible de joindre ntfy (URL invalide ou erreur réseau). Consultez les journaux.
+      http_error: "ntfy a répondu HTTP %{code}. Vérifiez l’URL et les journaux serveur."
+      url_missing: Saisissez une URL de topic ou enregistrez d’abord une URL par défaut pour la famille.
     errors:
       transaction_on_sync: Les règles sur les transactions ne peuvent pas utiliser la livraison « après synchronisation du compte ». Utilisez immédiat ou planifié.
       balance_immediate: Les règles sur les soldes ne peuvent pas utiliser la livraison immédiate. Utilisez après synchronisation ou planifié.
@@ -46,9 +46,9 @@ fr:
       new_balance_rule: Nouvelle règle (soldes)
       intro_before_link: Envoyez des alertes via
       intro_after_link: Créez des règles avec des conditions SI (comme la catégorisation automatique), un montant minimum optionnel et une fréquence de vérification.
-      default_url_heading: URL Apprise par défaut
-      default_url_hint: Utilisée lorsqu’une règle ne définit pas d’URL. Seuls les administrateurs de la famille peuvent la modifier.
-      default_url_label: URL Apprise
+      default_url_heading: URL du topic ntfy par défaut
+      default_url_hint: Utilisée lorsqu’une règle ne définit pas d’URL. Seuls les administrateurs de la famille peuvent la modifier. URL complète du topic (ex. https://ntfy.sh/votre-topic-secret).
+      default_url_label: URL du topic
       default_url_save: Enregistrer l’URL par défaut
       list_heading: Règles
       empty: Aucune règle de notification pour l’instant.
@@ -67,9 +67,9 @@ fr:
       frequency_prompt: Choisir la fréquence
       frequency_hint: Le planificateur tourne chaque heure ; la règle s’exécute lorsqu’elle est due selon cette fréquence.
       active_label: Règle active
-      apprise_heading: Apprise
-      apprise_url_label: URL Apprise (facultatif)
-      apprise_url_hint: Remplace l’URL par défaut de la famille pour cette règle uniquement.
+      ntfy_heading: ntfy
+      ntfy_url_label: URL du topic (facultatif)
+      ntfy_url_hint: URL complète en POST (ex. https://ntfy.sh/mon-topic). Remplace l’URL par défaut de la famille pour cette règle uniquement.
       amount_heading: Filtre sur le montant
       minimum_amount_label: Montant minimum (valeur absolue)
       minimum_amount_hint: S’applique uniquement aux règles sur les transactions. Laisser vide pour tous les montants.

@@ -136,9 +136,8 @@ en:
       notes_label: Notes
       save_details: Save details
       details_saved: Details saved
-      pick_category: Choose a category
-      income_heading: Income categories
-      expense_heading: Expense categories
+      pick_category: Search category
+      search_placeholder: Type to filter…
     list:
       drag_drop_title: Drop CSV to import
       drag_drop_subtitle: Upload transactions directly

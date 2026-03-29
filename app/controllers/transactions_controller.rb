@@ -14,8 +14,7 @@ class TransactionsController < ApplicationController
       return
     end
 
-    @income_categories = Current.family.categories.incomes.alphabetically
-    @expense_categories = Current.family.categories.expenses.alphabetically
+    @categories = Current.family.categories.alphabetically
   end
 
   def new
@@ -153,8 +152,14 @@ class TransactionsController < ApplicationController
 
       respond_to do |format|
         if params[:quick_categorize].present?
-          format.html { redirect_to quick_categorize_transactions_path, notice: t("transactions.quick_categorize.details_saved") }
-          format.turbo_stream { stream_redirect_to quick_categorize_transactions_path, notice: t("transactions.quick_categorize.details_saved") }
+          if params[:quick_categorize_autosave].present?
+            format.html { head :no_content }
+            format.json { head :no_content }
+            format.turbo_stream { head :no_content }
+          else
+            format.html { redirect_to quick_categorize_transactions_path, notice: t("transactions.quick_categorize.details_saved") }
+            format.turbo_stream { stream_redirect_to quick_categorize_transactions_path, notice: t("transactions.quick_categorize.details_saved") }
+          end
         else
           format.html { redirect_back_or_to account_path(@entry.account), notice: "Transaction updated" }
           format.turbo_stream do

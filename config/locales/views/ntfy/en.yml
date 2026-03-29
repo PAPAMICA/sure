@@ -1,6 +1,6 @@
 ---
 en:
-  apprise:
+  ntfy:
     new_transaction:
       title: New transaction
       income: Income

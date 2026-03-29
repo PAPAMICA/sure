@@ -22,7 +22,7 @@
 <div class="space-y-6 max-w-4xl">
   <p class="text-secondary text-sm">
     <%= t("notification_rules.index.intro_before_link") %>
-    <%= link_to "Apprise", "https://github.com/caronc/apprise", class: "text-primary underline", target: "_blank", rel: "noopener noreferrer" %>.
+    <%= link_to "ntfy", "https://ntfy.sh", class: "text-primary underline", target: "_blank", rel: "noopener noreferrer" %>.
     <%= t("notification_rules.index.intro_after_link") %>
   </p>
 
@@ -30,13 +30,13 @@
     <div class="bg-container rounded-xl shadow-border-xs p-4 space-y-3">
       <h2 class="text-sm font-medium text-primary"><%= t("notification_rules.index.default_url_heading") %></h2>
       <p class="text-xs text-secondary"><%= t("notification_rules.index.default_url_hint") %></p>
-      <%= styled_form_with model: Current.family, url: update_default_apprise_url_notification_rules_path, method: :patch, class: "flex flex-col md:flex-row gap-3 md:items-end" do |f| %>
-        <%= f.text_field :apprise_notify_url, label: t("notification_rules.index.default_url_label"), value: Current.family.apprise_notify_url, container_class: "grow" %>
+      <%= styled_form_with model: Current.family, url: update_default_ntfy_url_notification_rules_path, method: :patch, class: "flex flex-col md:flex-row gap-3 md:items-end" do |f| %>
+        <%= f.text_field :ntfy_url, label: t("notification_rules.index.default_url_label"), value: Current.family.ntfy_url, container_class: "grow" %>
         <%= f.submit t("notification_rules.index.default_url_save"), variant: "primary" %>
       <% end %>
       <p class="text-xs text-secondary"><%= t("notification_rules.test.form_hint") %></p>
-      <%= styled_form_with url: test_apprise_notification_rules_path, method: :post, class: "flex flex-col sm:flex-row gap-3 sm:items-end" do |f| %>
-        <%= text_field_tag :apprise_notify_url, Current.family.apprise_notify_url,
+      <%= styled_form_with url: test_ntfy_notification_rules_path, method: :post, class: "flex flex-col sm:flex-row gap-3 sm:items-end" do |f| %>
+        <%= text_field_tag :ntfy_url, Current.family.ntfy_url,
               class: "form-field__input w-full grow",
               placeholder: t("notification_rules.index.default_url_label"),
               aria: { label: t("notification_rules.test.url_field_label") } %>

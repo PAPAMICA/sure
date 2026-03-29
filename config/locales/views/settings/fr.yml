@@ -145,11 +145,11 @@ fr:
       previous: Précédent
     notifications:
       show:
-        page_title: Notifications (Apprise)
-        intro: Envoyez des alertes via votre instance Apprise API ou webhook compatible. Voir le projet
-        intro_link_label: Apprise
-        url_label: URL de notification
-        url_hint: URL POST complète (par ex. point de terminaison Apprise API /notify/…).
+        page_title: Notifications (ntfy)
+        intro: Envoyez des alertes via ntfy. Voir
+        intro_link_label: ntfy.sh
+        url_label: URL du topic
+        url_hint: URL complète du topic en POST (ex. https://ntfy.sh/votre-topic-secret).
         new_tx_heading: Nouvelles transactions
         new_tx_enable: Activer les notifications pour les nouvelles transactions
         balance_heading: Soldes après synchronisation
