@@ -69,6 +69,28 @@ fr:
         hourly_bank_sync_hint: En plus de la synchronisation quotidienne globale, lance une synchronisation complète de la famille chaque heure. Attention aux limites des fournisseurs.
         auto_sync_on_login_label: Synchroniser à la connexion d’un membre
         auto_sync_on_login_hint: Si activé, la famille se synchronise automatiquement une fois par jour à la première visite lorsqu’il existe des comptes actifs.
+    bank_sync:
+      show:
+        page_title: Synchronisation bancaire
+        providers_heading: Fournisseurs
+        empty_title: Aucun fournisseur configuré
+        empty_description: Configurez des fournisseurs pour lier vos comptes bancaires.
+        providers:
+          lunch_flow:
+            name: Lunch Flow
+            description: États-Unis, Canada, Royaume-Uni, UE, Brésil et Asie via plusieurs fournisseurs d’open banking.
+          plaid:
+            name: Plaid
+            description: Connexions bancaires aux États-Unis et au Canada (transactions, investissements, dettes).
+          simplefin:
+            name: SimpleFIN
+            description: Connexions États-Unis et Canada via le protocole SimpleFIN.
+          enable_banking:
+            name: Enable Banking (bêta)
+            description: Connexions bancaires européennes via les API d’open banking (plusieurs pays).
+          trade_republic:
+            name: Trade Republic
+            description: Europe — banque ouverte (p. ex. Enable Banking) si Trade Republic est proposé. Pas d’API Trade Republic officielle intégrée dans Sure ; utilisez un compte Investissement ou Crypto pour l’historique et les graphiques par titre une fois les données synchronisées ou saisies.
     profiles:
       destroy:
         cannot_remove_self: Vous ne pouvez pas vous enlever de votre compte.

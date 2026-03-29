@@ -295,6 +295,7 @@ Rails.application.routes.draw do
       post :merge_duplicate
       post :dismiss_duplicate
       post :unlock
+      post :paypal_enrich
     end
   end
 
@@ -354,6 +355,9 @@ Rails.application.routes.draw do
       get :select_provider
       get :confirm_unlink
       delete :unlink
+      get :paypal_oauth_start
+      get :paypal_oauth_callback
+      delete :paypal_disconnect
     end
 
     collection do

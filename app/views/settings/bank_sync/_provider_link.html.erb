@@ -1,14 +1,15 @@
 <%# locals: (provider_link:) %>
 
-<%# Assign distinct colors to each provider %>
+<%# Stable keys — names are translated (see Settings::BankSyncController). %>
 <% provider_colors = {
-  "Lunch Flow" => "#6471eb",
-  "Plaid" => "#4da568",
-  "SimpleFin" => "#e99537",
-  "Enable Banking" => "#6471eb",
-  "CoinStats" => "#FF9332" # https://coinstats.app/press-kit/
+  "lunch_flow" => "#6471eb",
+  "plaid" => "#4da568",
+  "simplefin" => "#e99537",
+  "enable_banking" => "#6471eb",
+  "coinstats" => "#FF9332", # https://coinstats.app/press-kit/
+  "trade_republic" => "#00C853"
 } %>
-<% provider_color = provider_colors[provider_link[:name]] || "#6B7280" %>
+<% provider_color = provider_colors[provider_link[:key].to_s] || "#6B7280" %>
 
 <%= link_to provider_link[:path],
             target: provider_link[:target],

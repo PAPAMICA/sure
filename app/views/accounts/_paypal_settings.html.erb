@@ -1,0 +1,44 @@
+<%# locals: (form:, account:) %>
+<details class="group mt-4">
+  <summary class="cursor-pointer text-sm text-secondary hover:text-primary flex items-center gap-1 py-2">
+    <%= icon "chevron-right", size: "sm", class: "group-open:rotate-90 transition-transform" %>
+    <%= t("accounts.form.paypal_title") %>
+  </summary>
+  <div class="space-y-3 mt-2 pl-4 border-l border-primary">
+    <p class="text-xs text-secondary"><%= t("accounts.form.paypal_intro") %></p>
+    <%= link_to t("accounts.form.paypal_docs_link"),
+          "https://github.com/we-promise/sure/blob/main/docs/hosting/paypal.md",
+          target: "_blank",
+          rel: "noopener noreferrer",
+          class: "text-xs text-primary underline" %>
+    <%= form.select :paypal_environment,
+          [ [ t("accounts.form.paypal_environment_live"), "live" ], [ t("accounts.form.paypal_environment_sandbox"), "sandbox" ] ],
+          { label: t("accounts.form.paypal_environment_label") } %>
+    <%= form.text_field :paypal_client_id,
+          label: t("accounts.form.paypal_client_id_label"),
+          placeholder: t("accounts.form.paypal_client_id_placeholder") %>
+    <%= form.password_field :paypal_client_secret,
+          label: t("accounts.form.paypal_client_secret_label"),
+          placeholder: t("accounts.form.paypal_client_secret_placeholder"),
+          autocomplete: "new-password" %>
+    <% if account.paypal_connected? %>
+      <p class="text-xs text-success font-medium"><%= t("accounts.form.paypal_status_connected") %></p>
+      <div class="flex flex-wrap gap-2">
+        <%= link_to t("accounts.form.paypal_connect_again"),
+              paypal_oauth_start_account_path(account),
+              class: "btn btn--outline btn--sm" %>
+        <%= button_to t("accounts.form.paypal_disconnect"),
+              paypal_disconnect_account_path(account),
+              method: :delete,
+              class: "btn btn--outline btn--sm text-destructive",
+              form: { data: { turbo_confirm: t("accounts.form.paypal_disconnect_confirm") } } %>
+      </div>
+    <% elsif account.paypal_credentials_for_oauth? %>
+      <%= link_to t("accounts.form.paypal_connect"),
+            paypal_oauth_start_account_path(account),
+            class: "btn btn--primary btn--sm" %>
+    <% else %>
+      <p class="text-xs text-secondary"><%= t("accounts.form.paypal_save_credentials_first") %></p>
+    <% end %>
+  </div>
+</details>

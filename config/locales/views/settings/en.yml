@@ -73,6 +73,28 @@ en:
         hourly_bank_sync_hint: In addition to the server-wide daily sync, enqueue a full family sync every hour. Use with care for provider rate limits.
         auto_sync_on_login_label: Sync when a member logs in
         auto_sync_on_login_hint: When enabled, the family syncs automatically once per day on first visit if there are active accounts.
+    bank_sync:
+      show:
+        page_title: Bank Sync
+        providers_heading: Providers
+        empty_title: No providers configured
+        empty_description: Configure providers to link your bank accounts.
+        providers:
+          lunch_flow:
+            name: Lunch Flow
+            description: US, Canada, UK, EU, Brazil and Asia through multiple open banking providers.
+          plaid:
+            name: Plaid
+            description: US & Canada bank connections with transactions, investments, and liabilities.
+          simplefin:
+            name: SimpleFIN
+            description: US & Canada connections via SimpleFIN protocol.
+          enable_banking:
+            name: Enable Banking (beta)
+            description: European bank connections via open banking APIs across multiple countries.
+          trade_republic:
+            name: Trade Republic
+            description: Europe — open banking (e.g. Enable Banking) if your bank is listed. No official Trade Republic API in Sure; use an investment account for per-stock/crypto history and charts when data is synced or manual.
     profiles:
       destroy:
         cannot_remove_self: You cannot remove yourself from the account.

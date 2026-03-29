@@ -3,6 +3,7 @@ class TransactionsController < ApplicationController
   include LedgerUsageFromParams
 
   before_action :set_entry_for_unlock, only: :unlock
+  before_action :set_entry_for_paypal_enrich, only: :paypal_enrich
   before_action :set_ledger_usage_from_params, only: %i[index clear_filter quick_categorize update]
   before_action :store_params!, only: :index # runs after set_ledger_usage on index
 
@@ -334,6 +335,21 @@ class TransactionsController < ApplicationController
     redirect_back_or_to transactions_path
   end
 
+  def paypal_enrich
+    return unless require_account_permission!(@entry.account)
+
+    begin
+      label = Paypal::EnrichEntry.call(@entry)
+      flash[:notice] = t("transactions.paypal_enrich.success", label: label)
+    rescue Paypal::EnrichEntry::Error, Paypal::ApiClient::Error => e
+      flash[:alert] = e.message
+    rescue ArgumentError => e
+      flash[:alert] = e.message.presence || t("transactions.paypal_enrich.failed")
+    end
+
+    redirect_back_or_to transactions_path
+  end
+
   def mark_as_recurring
     transaction = accessible_transactions.includes(entry: :account).find(params[:id])
 
@@ -424,6 +440,11 @@ class TransactionsController < ApplicationController
     end
 
     def set_entry_for_unlock
+      transaction = accessible_transactions.find(params[:id])
+      @entry = transaction.entry
+    end
+
+    def set_entry_for_paypal_enrich
       transaction = accessible_transactions.find(params[:id])
       @entry = transaction.entry
     end

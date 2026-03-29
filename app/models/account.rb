@@ -4,6 +4,7 @@ class Account < ApplicationRecord
   before_validation :assign_default_owner, if: -> { owner_id.blank? }
 
   validates :name, :balance, :currency, presence: true
+  validates :paypal_environment, inclusion: { in: %w[live sandbox] }
   validate :owner_belongs_to_family, if: -> { owner_id.present? && family_id.present? }
 
   belongs_to :family
@@ -22,6 +23,19 @@ class Account < ApplicationRecord
   has_many :recurring_transactions, dependent: :destroy
 
   monetize :balance, :cash_balance
+
+  def self.encryption_ready?
+    Rails.application.credentials.active_record_encryption.present? ||
+      (ENV["ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY"].present? &&
+       ENV["ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY"].present? &&
+       ENV["ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT"].present?)
+  end
+
+  if encryption_ready?
+    encrypts :paypal_client_secret
+    encrypts :paypal_refresh_token
+    encrypts :paypal_access_token
+  end
 
   # personal = household / perso; professional = business / pro (dashboard filter)
   enum :ledger_usage, { personal: "personal", professional: "professional" }, validate: true
@@ -445,6 +459,34 @@ class Account < ApplicationRecord
   # Latest +end_balance+ amount on or before +target_date+ (see {#end_balance_snapshot_on_or_before}).
   def end_balance_amount_on_or_before(target_date)
     end_balance_snapshot_on_or_before(target_date)&.first
+  end
+
+  def paypal_sandbox?
+    paypal_environment == "sandbox"
+  end
+
+  def paypal_api_base
+    paypal_sandbox? ? "https://api-m.sandbox.paypal.com" : "https://api-m.paypal.com"
+  end
+
+  def paypal_web_authorize_base
+    paypal_sandbox? ? "https://www.sandbox.paypal.com" : "https://www.paypal.com"
+  end
+
+  def paypal_credentials_for_oauth?
+    paypal_client_id.present? && paypal_client_secret.present?
+  end
+
+  def paypal_connected?
+    paypal_refresh_token.present?
+  end
+
+  def paypal_disconnect!
+    update!(
+      paypal_refresh_token: nil,
+      paypal_access_token: nil,
+      paypal_token_expires_at: nil
+    )
   end
 
   def auto_share_with_family!

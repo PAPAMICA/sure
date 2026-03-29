@@ -45,6 +45,16 @@
       <% end %>
     <% end %>
     <%= render "entries/protection_indicator", entry: @entry, unlock_path: unlock_transaction_path(@entry.transaction) %>
+    <% if show_paypal_enrich_for_transaction?(@entry) %>
+      <div class="mx-4 mb-3 flex flex-col gap-1">
+        <%= button_to t("transactions.paypal_enrich.button"),
+              paypal_enrich_transaction_path(@entry.transaction, usage: request.params[:usage]),
+              method: :post,
+              class: "btn btn--outline btn--sm self-start",
+              data: { turbo_frame: "_top" } %>
+        <p class="text-xs text-secondary"><%= t("transactions.paypal_enrich.hint") %></p>
+      </div>
+    <% end %>
     <% dialog.with_section(title: t(".overview"), open: true) do %>
       <div>
         <% split_locked = @entry.split_child? || @entry.split_parent? %>

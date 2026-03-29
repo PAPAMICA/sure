@@ -67,6 +67,12 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_29_220000) do
     t.datetime "holdings_snapshot_at"
     t.uuid "owner_id"
     t.string "ledger_usage", default: "personal", null: false
+    t.string "paypal_client_id"
+    t.text "paypal_client_secret"
+    t.text "paypal_refresh_token"
+    t.text "paypal_access_token"
+    t.datetime "paypal_token_expires_at"
+    t.string "paypal_environment", default: "live", null: false
     t.index ["accountable_id", "accountable_type"], name: "index_accounts_on_accountable_id_and_accountable_type"
     t.index ["accountable_type"], name: "index_accounts_on_accountable_type"
     t.index ["currency"], name: "index_accounts_on_currency"

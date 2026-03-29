@@ -395,4 +395,17 @@ end
     assert_not entry.import_locked?
     assert_not entry.protected_from_sync?
   end
+
+  test "paypal enrich requires payp marker in notes" do
+    @entry.update!(notes: "groceries")
+    @entry.account.update_columns(
+      paypal_client_id: "cid",
+      paypal_refresh_token: "rt",
+      paypal_environment: "live"
+    )
+
+    post paypal_enrich_transaction_url(@entry.transaction)
+    assert_redirected_to transactions_path
+    assert_equal I18n.t("paypal.enrich.not_candidate"), flash[:alert]
+  end
 end

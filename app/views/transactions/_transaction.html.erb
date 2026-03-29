@@ -117,6 +117,13 @@
                     <% if transaction.transfer.present? %>
                       <%= render "transactions/transfer_match", transaction: transaction %>
                     <% end %>
+                    <% if show_paypal_enrich_for_transaction?(entry) %>
+                      <%= button_to t("transactions.paypal_enrich.button"),
+                            paypal_enrich_transaction_path(transaction, usage: request.params[:usage]),
+                            method: :post,
+                            class: "text-xs font-medium rounded-md border border-secondary px-1.5 py-0.5 text-secondary hover:text-primary hover:border-primary shrink-0",
+                            form: { data: { turbo_frame: "_top" } } %>
+                    <% end %>
                   </div>
                 </div>
 

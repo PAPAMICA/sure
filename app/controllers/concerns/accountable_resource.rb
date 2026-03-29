@@ -64,6 +64,7 @@ module AccountableResource
 
     # Update remaining account attributes
     update_params = account_params.except(:return_to, :balance, :currency, :opening_balance_date)
+    update_params = update_params.except(:paypal_client_secret) if update_params[:paypal_client_secret].blank?
     unless @account.update(update_params)
       @error_message = @account.errors.full_messages.join(", ")
       render :edit, status: :unprocessable_entity
@@ -103,6 +104,7 @@ module AccountableResource
         :name, :balance, :subtype, :currency, :accountable_type, :return_to,
         :opening_balance_date,
         :institution_name, :institution_domain, :notes, :ledger_usage,
+        :paypal_client_id, :paypal_client_secret, :paypal_environment,
         accountable_attributes: self.class.permitted_accountable_attributes
       )
     end
