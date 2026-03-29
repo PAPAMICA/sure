@@ -49,6 +49,21 @@ class EntryTest < ActiveSupport::TestCase
     @entry.sync_account_later
   end
 
+  test "paypal enrich candidate when PAYP appears in name" do
+    @entry.update!(name: "PAYPAL *MERCHANT", notes: "")
+    assert @entry.paypal_enrich_candidate?
+  end
+
+  test "paypal enrich candidate when PAYP appears in notes only" do
+    @entry.update!(name: "Card payment", notes: "PAYPAL ref 123")
+    assert @entry.paypal_enrich_candidate?
+  end
+
+  test "paypal enrich not candidate without payp marker" do
+    @entry.update!(name: "Grocery store", notes: "weekly shop")
+    assert_not @entry.paypal_enrich_candidate?
+  end
+
   test "can search entries" do
     family = families(:empty)
     account = family.accounts.create! name: "Test", balance: 0, currency: "USD", accountable: Depository.new

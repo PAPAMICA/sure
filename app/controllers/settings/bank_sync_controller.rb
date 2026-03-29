@@ -39,9 +39,9 @@ class Settings::BankSyncController < ApplicationController
         key: "trade_republic",
         name: t("settings.bank_sync.show.providers.trade_republic.name"),
         description: t("settings.bank_sync.show.providers.trade_republic.description"),
-        path: "https://github.com/we-promise/sure/blob/main/docs/hosting/trade_republic.md",
-        target: "_blank",
-        rel: "noopener noreferrer"
+        path: Rails.application.routes.url_helpers.settings_providers_path(anchor: "trade-republic-panel"),
+        target: nil,
+        rel: nil
       }
     ]
   end

@@ -3,7 +3,7 @@ en:
   accounts:
     form:
       paypal_title: PayPal
-      paypal_intro: Link a PayPal REST app to this account, then use “PayPal” on transactions whose notes contain PAYP to fill the label from your PayPal activity (matched by amount and date).
+      paypal_intro: Link a PayPal REST app to this account, then use “PayPal” on transactions whose name or notes contain PAYP to fill the label from your PayPal activity (matched by amount and date).
       paypal_docs_link: Setup guide (redirect URI & scopes)
       paypal_environment_label: PayPal environment
       paypal_environment_live: Production (live)
@@ -29,7 +29,7 @@ en:
   paypal:
     enrich:
       not_connected: PayPal is not connected for this account. Configure it under account settings.
-      not_candidate: This transaction has no PayPal marker in notes (expected “PAYP” in notes).
+      not_candidate: This transaction has no PayPal marker in name or notes (expected “PAYP”).
       no_match: No PayPal activity matched this amount and date window.
       blank_label: PayPal returned no usable label for the matched activity.
   transactions:
@@ -43,7 +43,7 @@ fr:
   accounts:
     form:
       paypal_title: PayPal
-      paypal_intro: Associez une application REST PayPal à ce compte, puis utilisez « PayPal » sur les transactions dont les notes contiennent PAYP pour remplir le libellé depuis votre activité PayPal (montant et date).
+      paypal_intro: Associez une application REST PayPal à ce compte, puis utilisez « PayPal » sur les transactions dont le libellé ou les notes contiennent PAYP pour remplir le libellé depuis votre activité PayPal (montant et date).
       paypal_docs_link: Guide de configuration (URI de redirection et droits)
       paypal_environment_label: Environnement PayPal
       paypal_environment_live: Production (live)
@@ -69,7 +69,7 @@ fr:
   paypal:
     enrich:
       not_connected: PayPal n’est pas connecté pour ce compte. Configurez-le dans les paramètres du compte.
-      not_candidate: Cette transaction n’a pas d’indication PayPal dans les notes (attendu « PAYP » dans les notes).
+      not_candidate: Cette transaction n’a pas d’indication PayPal dans le libellé ni les notes (attendu « PAYP »).
       no_match: Aucune activité PayPal ne correspond à ce montant et à cette fenêtre de dates.
       blank_label: PayPal n’a renvoyé aucun libellé exploitable pour l’activité trouvée.
   transactions:

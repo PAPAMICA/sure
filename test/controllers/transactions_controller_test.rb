@@ -396,7 +396,7 @@ end
     assert_not entry.protected_from_sync?
   end
 
-  test "paypal enrich requires payp marker in notes" do
+  test "paypal enrich rejects transactions without payp marker in name or notes" do
     @entry.update!(notes: "groceries")
     @entry.account.update_columns(
       paypal_client_id: "cid",

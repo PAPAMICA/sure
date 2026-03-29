@@ -1,0 +1,22 @@
+<div class="space-y-4" id="trade-republic-panel">
+  <div class="prose prose-sm text-secondary">
+    <p class="text-primary font-medium"><%= t("trade_republic_items.panel.title") %></p>
+    <p>
+      <%= t("trade_republic_items.panel.intro") %>
+      <%= link_to t("trade_republic_items.panel.picsou_link"), "https://github.com/Zoeille/picsou-finance/tree/main/services/tr-auth", target: "_blank", rel: "noopener noreferrer", class: "text-link underline" %>.
+      <%= t("trade_republic_items.panel.intro_tail") %>
+    </p>
+  </div>
+
+  <% item = Current.family.trade_republic_items.ordered.first %>
+  <% if item&.connected? %>
+    <div class="flex flex-wrap items-center gap-3">
+      <%= link_to t("trade_republic_items.panel.manage"), trade_republic_item_path(item), class: "btn btn--secondary btn--sm" %>
+      <%= button_to t("trade_republic_items.show.sync_now", default: "Sync now"), sync_trade_republic_item_path(item), class: "btn btn--primary btn--sm" %>
+      <%= button_to t("trade_republic_items.panel.disconnect"), disconnect_trade_republic_item_path(item), method: :post, class: "btn btn--destructive btn--sm", data: { turbo_confirm: t("trade_republic_items.panel.disconnect_confirm", default: "Disconnect Trade Republic?") } %>
+    </div>
+    <p class="text-sm text-secondary"><%= t("trade_republic_items.panel.status_connected", default: "Connected. Sub-portfolios sync with family sync.") %></p>
+  <% else %>
+    <%= link_to t("trade_republic_items.panel.connect"), new_trade_republic_item_path, class: "btn btn--primary" %>
+  <% end %>
+</div>

@@ -14,7 +14,7 @@ module ApplicationHelper
     form_with(**options, &block)
   end
 
-  # PayPal Transaction Search: notes contain PAYPAL/PAYP and account has OAuth tokens.
+  # PayPal Transaction Search: name or notes contain PAYPAL/PAYP and account has OAuth tokens.
   def show_paypal_enrich_for_transaction?(entry)
     return false unless entry&.transaction?
     return false unless entry.paypal_enrich_candidate?

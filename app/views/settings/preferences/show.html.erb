@@ -53,22 +53,65 @@
 
         <p class="text-xs italic pl-2 text-secondary">Please note, we are still working on translations for various languages.</p>
       <% end %>
+
+      <div class="pt-4 mt-4 border-t border-primary space-y-4">
+        <div>
+          <p class="text-sm font-medium text-primary"><%= t(".paypal_general_title") %></p>
+          <p class="text-sm text-secondary">
+            <%= t(".paypal_general_lead") %>
+            <%= link_to t(".paypal_general_accounts_link"), accounts_path, class: "text-link underline" %>
+            <%= t(".paypal_general_trail") %>
+          </p>
+        </div>
+        <div>
+          <p class="text-sm font-medium text-primary"><%= t(".trade_republic_integration_title") %></p>
+          <p class="text-sm text-secondary">
+            <%= t(".trade_republic_integration_lead") %>
+            <%= link_to t(".trade_republic_providers_link"), settings_providers_path(anchor: "trade-republic-panel"), class: "text-link underline" %>.
+            <%= t(".trade_republic_integration_mid") %>
+            <%= link_to t(".trade_republic_picsou_link_label"), "https://github.com/Zoeille/picsou-finance/tree/main/services/tr-auth", target: "_blank", rel: "noopener noreferrer", class: "text-link underline" %>
+            <%= t(".trade_republic_integration_tail") %>
+            <%= link_to t(".trade_republic_bank_sync_link_label"), settings_bank_sync_path, class: "text-link underline" %>.
+          </p>
+        </div>
+      </div>
     <% end %>
   </div>
 <% end %>
 
 <% if Current.user.admin? %>
   <%= settings_section title: t(".sync_heading"), subtitle: t(".sync_subtitle") do %>
-    <div>
-      <%= styled_form_with model: @user, class: "space-y-4", data: { controller: "auto-submit-form" } do |form| %>
+    <div class="space-y-4">
+      <%= styled_form_with model: @user,
+          class: "space-y-6",
+          data: { controller: "auto-submit-form", auto_submit_form_trigger_event_value: "change" } do |form| %>
         <%= form.hidden_field :redirect_to, value: "preferences" %>
         <%= form.fields_for :family do |family_form| %>
-          <%= family_form.check_box :hourly_bank_sync,
-              { label: t(".hourly_bank_sync_label"), hint: t(".hourly_bank_sync_hint"), data: { auto_submit_form_target: "auto" } },
-              "1", "0" %>
-          <%= family_form.check_box :auto_sync_on_login,
-              { label: t(".auto_sync_on_login_label"), hint: t(".auto_sync_on_login_hint"), data: { auto_submit_form_target: "auto" } },
-              "1", "0" %>
+          <div class="flex items-start justify-between gap-4">
+            <div class="space-y-1 min-w-0">
+              <p class="text-sm font-medium text-primary"><%= t(".hourly_bank_sync_label") %></p>
+              <p class="text-sm text-secondary"><%= t(".hourly_bank_sync_hint") %></p>
+            </div>
+            <div class="shrink-0 pt-0.5">
+              <%= family_form.toggle :hourly_bank_sync,
+                  { data: { auto_submit_form_target: "auto" } },
+                  "1",
+                  "0" %>
+            </div>
+          </div>
+
+          <div class="flex items-start justify-between gap-4">
+            <div class="space-y-1 min-w-0">
+              <p class="text-sm font-medium text-primary"><%= t(".auto_sync_on_login_label") %></p>
+              <p class="text-sm text-secondary"><%= t(".auto_sync_on_login_hint") %></p>
+            </div>
+            <div class="shrink-0 pt-0.5">
+              <%= family_form.toggle :auto_sync_on_login,
+                  { data: { auto_submit_form_target: "auto" } },
+                  "1",
+                  "0" %>
+            </div>
+          </div>
         <% end %>
       <% end %>
     </div>

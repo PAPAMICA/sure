@@ -1,0 +1,15 @@
+<%= content_for :page_title, t("trade_republic_items.verify.title") %>
+
+<div class="max-w-md space-y-4">
+  <p class="text-sm text-secondary"><%= t("trade_republic_items.verify.hint") %></p>
+
+  <%= form_with url: complete_auth_trade_republic_item_path(@trade_republic_item), method: :post, class: "space-y-4" do %>
+    <%= label_tag :tan, t("trade_republic_items.verify.tan_label"), class: "text-sm font-medium text-primary" %>
+    <%= text_field_tag :tan, nil, class: "form-field__input w-full rounded-lg border border-primary bg-container text-primary px-3 py-2", autocomplete: "one-time-code", required: true %>
+
+    <div class="flex gap-3">
+      <%= submit_tag t("trade_republic_items.verify.submit"), class: "btn btn--primary" %>
+      <%= link_to t("trade_republic_items.select_existing_account.cancel_button"), settings_providers_path, class: "btn btn--secondary" %>
+    </div>
+  <% end %>
+</div>

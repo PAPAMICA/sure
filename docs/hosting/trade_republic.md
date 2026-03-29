@@ -6,6 +6,20 @@ Trade Republic does **not** publish a documented, self-serve **official API** fo
 
 What exists in the ecosystem is mostly **unofficial** client libraries. They are not suitable for a production integration here: they can break without notice, may conflict with Trade Republic’s terms of use, and create security and compliance risk for self-hosters.
 
+### Native connector in Sure (self-hosted, unofficial)
+
+Sure includes a **Trade Republic** item under **Settings → Sync Providers**:
+
+1. **Built-in login (default):** the app uses **headless Chromium** (via the [Ferrum](https://github.com/rubycdp/ferrum) gem) to obtain an AWS WAF token, then calls Trade Republic’s HTTP login API—same idea as Picsou’s tr-auth, without a separate Python service. You need a working Chrome/Chromium on the server (or container) where Rails runs.
+2. **Optional external sidecar:** if you prefer [Picsou’s `services/tr-auth`](https://github.com/Zoeille/picsou-finance/tree/main/services/tr-auth) (FastAPI + Playwright), set `TRADE_REPUBLIC_TR_AUTH_URL` to its base URL, or enter that URL per connection in the UI.
+3. Connect from the UI: SMS PIN flow, then link each **sub-portfolio** (PEA, CTO, cash, etc.) to a Sure account.
+
+Portfolio data is read over Trade Republic’s **WebSocket** API (protocol v31), similar to Picsou’s Java adapter. Only **EUR-style sub-portfolio net values** are synced into Sure as balances; there is **no** per-order or per-ISIN history from this path. The API is **unofficial**, can break without notice, and may conflict with broker terms—use at your own risk.
+
+### Community reference
+
+[Picsou Finance](https://github.com/Zoeille/picsou-finance) documents the same patterns (tr-auth + WebSocket) and CSV fallbacks.
+
 ## Practical ways to use Sure with Trade Republic today
 
 ### 1. Open banking / aggregators (Europe)

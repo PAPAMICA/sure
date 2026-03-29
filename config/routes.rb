@@ -17,6 +17,22 @@ Rails.application.routes.draw do
       post :complete_account_setup
     end
   end
+
+  resources :trade_republic_items, only: %i[new create show destroy] do
+    collection do
+      get :select_existing_account
+      post :link_existing_account
+    end
+    member do
+      get :verify
+      post :complete_auth
+      post :sync
+      get :setup_accounts
+      post :complete_account_setup
+      post :disconnect
+    end
+  end
+
   resources :mercury_items, only: %i[index new create show edit update destroy] do
     collection do
       get :preload_accounts

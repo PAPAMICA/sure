@@ -65,6 +65,8 @@ gem "rack-cors"
 gem "pundit"
 gem "faraday"
 gem "faraday-retry"
+# Trade Republic native auth: headless Chromium for AWS WAF token (optional if using external tr-auth URL only)
+gem "ferrum"
 gem "faraday-multipart"
 gem "inline_svg"
 gem "octokit"

@@ -1,0 +1,32 @@
+<%= content_for :page_title, t("trade_republic_items.panel.title") %>
+
+<div class="max-w-lg space-y-6">
+  <div class="prose prose-sm text-secondary">
+    <p class="text-primary font-medium"><%= t("trade_republic_items.panel.title") %></p>
+    <p>
+      <%= t("trade_republic_items.panel.intro") %>
+      <%= link_to t("trade_republic_items.panel.picsou_link"), "https://github.com/Zoeille/picsou-finance/tree/main/services/tr-auth", target: "_blank", rel: "noopener noreferrer", class: "text-link underline" %>.
+      <%= t("trade_republic_items.panel.intro_tail") %>
+    </p>
+  </div>
+
+  <%= styled_form_with model: @trade_republic_item, url: trade_republic_items_path, class: "space-y-4" do |form| %>
+    <%= form.text_field :name, label: t("trade_republic_items.panel.connection_name", default: "Connection name") %>
+
+    <%= form.text_field :tr_auth_base_url,
+          label: t("trade_republic_items.panel.tr_auth_url_label"),
+          placeholder: t("trade_republic_items.panel.tr_auth_url_placeholder"),
+          hint: t("trade_republic_items.panel.tr_auth_url_hint") %>
+
+    <%= label_tag :phone_number, t("trade_republic_items.panel.phone_label"), class: "text-sm font-medium text-primary" %>
+    <%= telephone_field_tag :phone_number, params[:phone_number], class: "form-field__input w-full rounded-lg border border-primary bg-container text-primary px-3 py-2", autocomplete: "tel" %>
+
+    <%= label_tag :pin, t("trade_republic_items.panel.pin_label"), class: "text-sm font-medium text-primary" %>
+    <%= password_field_tag :pin, nil, class: "form-field__input w-full rounded-lg border border-primary bg-container text-primary px-3 py-2", autocomplete: "off" %>
+
+    <div class="flex gap-3">
+      <%= form.submit t("trade_republic_items.panel.submit_initiate"), class: "btn btn--primary" %>
+      <%= link_to t("trade_republic_items.select_existing_account.cancel_button"), settings_providers_path, class: "btn btn--secondary" %>
+    </div>
+  <% end %>
+</div>

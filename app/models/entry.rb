@@ -250,9 +250,9 @@ class Entry < ApplicationRecord
     amount.negative? ? "income" : "expense"
   end
 
-  # Bank import often puts "PAYPAL …" only in notes; used for PayPal Transaction Search enrichment.
+  # Bank import often puts "PAYPAL …" in notes or the counterparty name; used for PayPal Transaction Search enrichment.
   def paypal_enrich_candidate?
-    transaction? && notes.to_s.match?(/payp/i)
+    transaction? && (notes.to_s.match?(/payp/i) || name.to_s.match?(/payp/i))
   end
 
   def lock_saved_attributes!

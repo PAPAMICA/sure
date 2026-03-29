@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_29_220000) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_29_233000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -1491,6 +1491,41 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_29_220000) do
     t.index ["security_id"], name: "index_trades_on_security_id"
   end
 
+  create_table "trade_republic_accounts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "trade_republic_item_id", null: false
+    t.string "external_account_id", null: false
+    t.string "name", null: false
+    t.string "portfolio_type"
+    t.string "currency", default: "EUR", null: false
+    t.decimal "current_balance", precision: 19, scale: 4
+    t.string "suggested_accountable_type"
+    t.string "suggested_investment_subtype"
+    t.jsonb "raw_payload"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["trade_republic_item_id", "external_account_id"], name: "index_trade_republic_accounts_on_item_and_external", unique: true
+    t.index ["trade_republic_item_id"], name: "index_trade_republic_accounts_on_trade_republic_item_id"
+  end
+
+  create_table "trade_republic_items", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "family_id", null: false
+    t.string "name", null: false
+    t.string "tr_auth_base_url"
+    t.string "pending_process_id"
+    t.text "session_token"
+    t.text "refresh_token"
+    t.datetime "session_expires_at"
+    t.string "status", default: "good", null: false
+    t.boolean "scheduled_for_deletion", default: false, null: false
+    t.boolean "pending_account_setup", default: false, null: false
+    t.jsonb "raw_payload"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["family_id"], name: "index_trade_republic_items_on_family_id"
+    t.index ["pending_process_id"], name: "index_trade_republic_items_on_pending_process_id"
+    t.index ["status"], name: "index_trade_republic_items_on_status"
+  end
+
   create_table "transactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -1672,6 +1707,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_29_220000) do
   add_foreign_key "taggings", "tags"
   add_foreign_key "tags", "families"
   add_foreign_key "tool_calls", "messages"
+  add_foreign_key "trade_republic_accounts", "trade_republic_items"
+  add_foreign_key "trade_republic_items", "families"
   add_foreign_key "trades", "securities"
   add_foreign_key "transactions", "categories", on_delete: :nullify
   add_foreign_key "transactions", "merchants"
