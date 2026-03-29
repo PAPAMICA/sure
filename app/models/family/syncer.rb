@@ -18,7 +18,6 @@ class Family::Syncer
     coinstats_items
     mercury_items
     snaptrade_items
-    trade_republic_items
   ].freeze
 
   def initialize(family)

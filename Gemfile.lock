@@ -214,12 +214,6 @@ GEM
       net-http (~> 0.5)
     faraday-retry (2.3.2)
       faraday (~> 2.0)
-    ferrum (0.17.2)
-      addressable (~> 2.5)
-      base64 (~> 0.2)
-      concurrent-ruby (~> 1.1)
-      webrick (~> 1.7)
-      websocket-driver (~> 0.7)
     ffi (1.17.2-aarch64-linux-gnu)
     ffi (1.17.2-aarch64-linux-musl)
     ffi (1.17.2-arm-linux-gnu)
@@ -812,7 +806,6 @@ DEPENDENCIES
   faraday
   faraday-multipart
   faraday-retry
-  ferrum
   foreman
   hotwire-livereload
   hotwire_combobox

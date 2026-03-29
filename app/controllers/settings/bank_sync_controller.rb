@@ -34,14 +34,6 @@ class Settings::BankSyncController < ApplicationController
         path: "https://enablebanking.com",
         target: "_blank",
         rel: "noopener noreferrer"
-      },
-      {
-        key: "trade_republic",
-        name: t("settings.bank_sync.show.providers.trade_republic.name"),
-        description: t("settings.bank_sync.show.providers.trade_republic.description"),
-        path: Rails.application.routes.url_helpers.settings_providers_path(anchor: "trade-republic-panel"),
-        target: nil,
-        rel: nil
       }
     ]
   end

@@ -54,27 +54,6 @@
         <p class="text-xs italic pl-2 text-secondary">Please note, we are still working on translations for various languages.</p>
       <% end %>
 
-      <div class="pt-4 mt-4 border-t border-primary space-y-4">
-        <div>
-          <p class="text-sm font-medium text-primary"><%= t(".paypal_general_title") %></p>
-          <p class="text-sm text-secondary">
-            <%= t(".paypal_general_lead") %>
-            <%= link_to t(".paypal_general_accounts_link"), accounts_path, class: "text-link underline" %>
-            <%= t(".paypal_general_trail") %>
-          </p>
-        </div>
-        <div>
-          <p class="text-sm font-medium text-primary"><%= t(".trade_republic_integration_title") %></p>
-          <p class="text-sm text-secondary">
-            <%= t(".trade_republic_integration_lead") %>
-            <%= link_to t(".trade_republic_providers_link"), settings_providers_path(anchor: "trade-republic-panel"), class: "text-link underline" %>.
-            <%= t(".trade_republic_integration_mid") %>
-            <%= link_to t(".trade_republic_picsou_link_label"), "https://github.com/Zoeille/picsou-finance/tree/main/services/tr-auth", target: "_blank", rel: "noopener noreferrer", class: "text-link underline" %>
-            <%= t(".trade_republic_integration_tail") %>
-            <%= link_to t(".trade_republic_bank_sync_link_label"), settings_bank_sync_path, class: "text-link underline" %>.
-          </p>
-        </div>
-      </div>
     <% end %>
   </div>
 <% end %>

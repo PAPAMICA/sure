@@ -18,21 +18,6 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :trade_republic_items, only: %i[new create show destroy] do
-    collection do
-      get :select_existing_account
-      post :link_existing_account
-    end
-    member do
-      get :verify
-      post :complete_auth
-      post :sync
-      get :setup_accounts
-      post :complete_account_setup
-      post :disconnect
-    end
-  end
-
   resources :mercury_items, only: %i[index new create show edit update destroy] do
     collection do
       get :preload_accounts
@@ -311,7 +296,6 @@ Rails.application.routes.draw do
       post :merge_duplicate
       post :dismiss_duplicate
       post :unlock
-      post :paypal_enrich
     end
   end
 
@@ -371,9 +355,6 @@ Rails.application.routes.draw do
       get :select_provider
       get :confirm_unlink
       delete :unlink
-      get :paypal_oauth_start
-      get :paypal_oauth_callback
-      delete :paypal_disconnect
     end
 
     collection do

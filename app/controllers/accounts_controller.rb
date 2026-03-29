@@ -2,7 +2,7 @@ class AccountsController < ApplicationController
   include StreamExtensions
 
   before_action :set_account, only: %i[show sparkline sync set_default remove_default]
-  before_action :set_manageable_account, only: %i[toggle_active destroy unlink confirm_unlink select_provider paypal_oauth_start paypal_oauth_callback paypal_disconnect]
+  before_action :set_manageable_account, only: %i[toggle_active destroy unlink confirm_unlink select_provider]
   include Periodable
 
   def index
@@ -166,55 +166,6 @@ class AccountsController < ApplicationController
       Rails.logger.error "Failed to unlink account #{@account.id}: #{e.message}"
       redirect_to account_path(@account), alert: t("accounts.unlink.error", error: t("accounts.unlink.generic_error"))
     end
-  end
-
-  def paypal_oauth_start
-    unless @account.paypal_credentials_for_oauth?
-      redirect_to account_path(@account), alert: t("accounts.paypal.missing_credentials")
-      return
-    end
-
-    redirect_uri = paypal_oauth_callback_account_url(@account)
-    state = Paypal::OauthState.generate(account_id: @account.id)
-    url = Paypal::ApiClient.new(@account).authorization_url(redirect_uri: redirect_uri, state: state)
-    redirect_to url, allow_other_host: true
-  end
-
-  def paypal_oauth_callback
-    if params[:error].present?
-      redirect_to account_path(@account), alert: t("accounts.paypal.denied", message: params[:error_description].presence || params[:error])
-      return
-    end
-
-    begin
-      expected_id = Paypal::OauthState.verify!(params[:state])
-    rescue Paypal::OauthState::InvalidStateError
-      redirect_to account_path(@account), alert: t("accounts.paypal.oauth_state_invalid")
-      return
-    end
-
-    unless expected_id == @account.id.to_s
-      redirect_to account_path(@account), alert: t("accounts.paypal.oauth_state_invalid")
-      return
-    end
-
-    code = params[:code].presence
-    unless code
-      redirect_to account_path(@account), alert: t("accounts.paypal.missing_code")
-      return
-    end
-
-    redirect_uri = paypal_oauth_callback_account_url(@account)
-    Paypal::ApiClient.new(@account).exchange_code!(code: code, redirect_uri: redirect_uri)
-    redirect_to account_path(@account), notice: t("accounts.paypal.connected")
-  rescue Paypal::ApiClient::Error => e
-    Rails.logger.warn("PayPal OAuth callback failed: #{e.status} #{e.body}")
-    redirect_to account_path(@account), alert: t("accounts.paypal.token_exchange_failed")
-  end
-
-  def paypal_disconnect
-    @account.paypal_disconnect!
-    redirect_to account_path(@account), notice: t("accounts.paypal.disconnected")
   end
 
   def select_provider

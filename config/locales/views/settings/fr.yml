@@ -69,17 +69,6 @@ fr:
         hourly_bank_sync_hint: En plus de la synchronisation quotidienne globale, lance une synchronisation complète de la famille chaque heure. Attention aux limites des fournisseurs.
         auto_sync_on_login_label: Synchroniser à la connexion d’un membre
         auto_sync_on_login_hint: Si activé, la famille se synchronise automatiquement une fois par jour à la première visite lorsqu’il existe des comptes actifs.
-        paypal_general_title: PayPal (enrichissement des transactions)
-        paypal_general_lead: Les identifiants OAuth et API se configurent sur chaque compte bancaire, pas dans cet écran. Ouvrez
-        paypal_general_accounts_link: Comptes
-        paypal_general_trail: ", modifiez le compte → Détails supplémentaires → PayPal pour connecter. L’action PayPal apparaît lorsque le libellé ou les notes contiennent PayPal (sous-chaîne PAYP) ; vous devez être propriétaire ou avoir le contrôle total sur ce compte."
-        trade_republic_integration_title: Trade Republic
-        trade_republic_integration_lead: "Un connecteur intégré (connexion SMS + sidecar tr-auth + WebSocket) est dans"
-        trade_republic_providers_link: Fournisseurs de sync
-        trade_republic_integration_mid: " Même approche que"
-        trade_republic_picsou_link_label: tr-auth Picsou
-        trade_republic_integration_tail: " Soldes par sous-portefeuille en EUR uniquement ; non officiel et fragile. Autres options :"
-        trade_republic_bank_sync_link_label: Synchronisation bancaire
     bank_sync:
       show:
         page_title: Synchronisation bancaire
@@ -99,9 +88,6 @@ fr:
           enable_banking:
             name: Enable Banking (bêta)
             description: Connexions bancaires européennes via les API d’open banking (plusieurs pays).
-          trade_republic:
-            name: Trade Republic
-            description: Connecteur intégré (sidecar tr-auth + WebSocket) dans Fournisseurs de sync, ou banque ouverte (p. ex. Enable Banking). API non officielle ; peut casser ; soldes par sous-portefeuille en EUR seulement sans autre fournisseur pour l’activité.
     profiles:
       destroy:
         cannot_remove_self: Vous ne pouvez pas vous enlever de votre compte.

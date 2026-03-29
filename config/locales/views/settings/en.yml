@@ -73,17 +73,6 @@ en:
         hourly_bank_sync_hint: In addition to the server-wide daily sync, enqueue a full family sync every hour. Use with care for provider rate limits.
         auto_sync_on_login_label: Sync when a member logs in
         auto_sync_on_login_hint: When enabled, the family syncs automatically once per day on first visit if there are active accounts.
-        paypal_general_title: PayPal (transaction enrichment)
-        paypal_general_lead: OAuth and API credentials are set per bank account, not here. Open
-        paypal_general_accounts_link: Accounts
-        paypal_general_trail: ", edit the account → Additional details → PayPal to connect. The PayPal action shows when the transaction name or notes contain PayPal (PAYP); you need owner or full control on that account."
-        trade_republic_integration_title: Trade Republic
-        trade_republic_integration_lead: "An integrated connector (SMS login + tr-auth sidecar + WebSocket) is under"
-        trade_republic_providers_link: Sync Providers
-        trade_republic_integration_mid: " Same sidecar pattern as"
-        trade_republic_picsou_link_label: Picsou tr-auth
-        trade_republic_integration_tail: " EUR sub-portfolio balances only; unofficial and fragile. Other options:"
-        trade_republic_bank_sync_link_label: Bank sync
     bank_sync:
       show:
         page_title: Bank Sync
@@ -103,9 +92,6 @@ en:
           enable_banking:
             name: Enable Banking (beta)
             description: European bank connections via open banking APIs across multiple countries.
-          trade_republic:
-            name: Trade Republic
-            description: Native connector (tr-auth sidecar + WebSocket) in Sync Providers, or open banking (e.g. Enable Banking). Unofficial API; may break; EUR sub-portfolio balances only unless you use another provider for activity.
     profiles:
       destroy:
         cannot_remove_self: You cannot remove yourself from the account.

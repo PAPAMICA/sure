@@ -14,16 +14,6 @@ module ApplicationHelper
     form_with(**options, &block)
   end
 
-  # PayPal Transaction Search: name or notes contain PAYPAL/PAYP and account has OAuth tokens.
-  def show_paypal_enrich_for_transaction?(entry)
-    return false unless entry&.transaction?
-    return false unless entry.paypal_enrich_candidate?
-    return false unless entry.account.paypal_connected?
-
-    perm = entry.account.permission_for(Current.user)
-    perm.in?([ :owner, :full_control ])
-  end
-
   def icon(key, size: "md", color: "default", custom: false, as_button: false, **opts)
     extra_classes = opts.delete(:class)
     sizes = { xs: "w-3 h-3", sm: "w-4 h-4", md: "w-5 h-5", lg: "w-6 h-6", xl: "w-7 h-7", "2xl": "w-8 h-8" }
