@@ -29,23 +29,50 @@
 <% end %>
 
 <%= settings_section title: t(".dashboard_title"), subtitle: t(".dashboard_subtitle") do %>
-  <div>
-    <%= form_with url: settings_appearance_path, method: :patch,
-          class: "p-3",
-          data: { controller: "auto-submit-form" } do |f| %>
-      <div class="flex cursor-pointer items-center gap-4 justify-between">
-        <div class="text-sm space-y-1">
-          <h4 class="text-primary"><%= t(".dashboard_two_column_title") %></h4>
-          <p class="text-secondary"><%= t(".dashboard_two_column_description") %></p>
+  <div class="rounded-xl border border-primary divide-y divide-secondary overflow-hidden">
+    <div class="p-3">
+      <%= form_with url: settings_appearance_path, method: :patch,
+            class: "w-full",
+            data: { controller: "auto-submit-form" } do |f| %>
+        <div class="flex cursor-pointer items-center gap-4 justify-between">
+          <div class="text-sm space-y-1">
+            <h4 class="text-primary"><%= t(".dashboard_two_column_title") %></h4>
+            <p class="text-secondary"><%= t(".dashboard_two_column_description") %></p>
+          </div>
+          <%= render DS::Toggle.new(
+                id: "user_dashboard_two_column",
+                name: "user[dashboard_two_column]",
+                checked: @user.dashboard_two_column?,
+                data: { auto_submit_form_target: "auto" }
+          ) %>
         </div>
-        <%= render DS::Toggle.new(
-              id: "user_dashboard_two_column",
-              name: "user[dashboard_two_column]",
-              checked: @user.dashboard_two_column?,
-              data: { auto_submit_form_target: "auto" }
-        ) %>
-      </div>
-    <% end %>
+      <% end %>
+    </div>
+
+    <div class="p-3">
+      <%= form_with url: settings_appearance_path, method: :patch,
+            class: "w-full space-y-3",
+            data: { controller: "auto-submit-form", auto_submit_form_trigger_event_value: "change" } do %>
+        <div class="text-sm space-y-1">
+          <h4 class="text-primary"><%= t(".dashboard_period_selector_title") %></h4>
+          <p class="text-secondary"><%= t(".dashboard_period_selector_description") %></p>
+        </div>
+        <div class="flex flex-col gap-3">
+          <label class="flex items-start gap-3 cursor-pointer">
+            <%= radio_button_tag "user[dashboard_period_selector]", "preset", @user.dashboard_period_selector == "preset",
+                  class: "mt-1 text-primary shrink-0",
+                  data: { auto_submit_form_target: "auto" } %>
+            <span class="text-sm text-primary"><%= t(".dashboard_period_selector_preset") %></span>
+          </label>
+          <label class="flex items-start gap-3 cursor-pointer">
+            <%= radio_button_tag "user[dashboard_period_selector]", "month_year", @user.dashboard_period_selector == "month_year",
+                  class: "mt-1 text-primary shrink-0",
+                  data: { auto_submit_form_target: "auto" } %>
+            <span class="text-sm text-primary"><%= t(".dashboard_period_selector_month_year") %></span>
+          </label>
+        </div>
+      <% end %>
+    </div>
   </div>
 <% end %>
 

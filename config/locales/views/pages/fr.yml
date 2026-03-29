@@ -4,6 +4,8 @@ fr:
     changelog:
       title: Nouveautés
     dashboard:
+      period_selector:
+        aria_label: Période des graphiques
       welcome_back: Content de vous revoir
       happening_with_finance: Voici ce qui se passe avec vos finances
       ledger_usage:

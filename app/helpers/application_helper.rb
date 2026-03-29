@@ -185,6 +185,36 @@ module ApplicationHelper
     { usage: @ledger_usage }
   end
 
+  # Query params for root_path / account_path when linking to the same chart period (Perso/Pro toggle, etc.).
+  def dashboard_period_query_for_path(period)
+    if Current.user.dashboard_month_year_period_selector?
+      {
+        dashboard_month: period.start_date.month,
+        dashboard_year: period.start_date.year
+      }
+    elsif period.key.present?
+      { period: period.key }
+    else
+      {
+        dashboard_month: period.start_date.month,
+        dashboard_year: period.start_date.year
+      }
+    end
+  end
+
+  def dashboard_month_name_options
+    (1..12).map do |m|
+      [ I18n.l(Date.new(2024, m, 15), format: "%B"), m ]
+    end
+  end
+
+  def dashboard_year_range_options
+    oldest_year = Current.family&.oldest_entry_date&.year
+    start_y = [ oldest_year, Date.current.year - 50 ].compact.min
+    start_y = [ [ start_y, 1970 ].max, Date.current.year ].min
+    (start_y..Date.current.year).to_a.reverse
+  end
+
   private
     def calculate_total(item, money_method, negate)
       # Filter out transfer-type transactions from entries

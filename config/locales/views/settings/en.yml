@@ -40,6 +40,10 @@ en:
         dashboard_subtitle: Customize how the dashboard is displayed
         dashboard_two_column_title: Two-column layout
         dashboard_two_column_description: Display dashboard widgets in two columns on large screens. When off, widgets stack in a single column.
+        dashboard_period_selector_title: Dashboard time range control
+        dashboard_period_selector_description: Choose how you pick the period for dashboard charts and the balance chart on account pages.
+        dashboard_period_selector_preset: Preset ranges (1D, MTD, 30D, etc.)
+        dashboard_period_selector_month_year: Month and year
         split_grouped_title: Group split transactions
         split_grouped_description: Show split transactions grouped under their parent in the transaction list. When off, split children appear as individual rows.
     preferences:

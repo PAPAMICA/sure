@@ -7,11 +7,11 @@
   <div class="flex flex-wrap items-center justify-center gap-3 mt-6">
     <% if @dashboard_ledger_usage == "professional" %>
       <%= link_to t("pages.dashboard.ledger_usage.switch_to_personal"),
-            root_path(period: @period.key, usage: "personal"),
+            root_path(**dashboard_period_query_for_path(@period).merge(usage: "personal")),
             class: "text-sm font-medium text-primary underline hover:no-underline" %>
     <% else %>
       <%= link_to t("pages.dashboard.ledger_usage.switch_to_professional"),
-            root_path(period: @period.key, usage: "professional"),
+            root_path(**dashboard_period_query_for_path(@period).merge(usage: "professional")),
             class: "text-sm font-medium text-primary underline hover:no-underline" %>
     <% end %>
     <%= render DS::Link.new(

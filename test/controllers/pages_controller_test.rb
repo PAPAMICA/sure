@@ -24,6 +24,28 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  test "dashboard month and year selector when preference enabled" do
+    prefs = (@user.preferences || {}).dup
+    prefs["dashboard_period_selector"] = "month_year"
+    @user.update!(preferences: prefs)
+
+    get root_path, params: { dashboard_month: 6, dashboard_year: 2023 }
+    assert_response :ok
+    assert_select "select[name=dashboard_month] option[selected][value='6']"
+    assert_select "select[name=dashboard_year] option[selected][value='2023']"
+  end
+
+  test "dashboard preset period selector when month year preference off" do
+    prefs = (@user.preferences || {}).dup
+    prefs["dashboard_period_selector"] = "preset"
+    @user.update!(preferences: prefs)
+
+    get root_path, params: { period: "last_30_days" }
+    assert_response :ok
+    assert_select "select[name=period]"
+    assert_select "select[name=dashboard_month]", count: 0
+  end
+
   test "intro page requires guest role" do
     get intro_path
 

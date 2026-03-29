@@ -25,6 +25,26 @@ fr:
         page_title: Paiement
         subscription_subtitle: Mettez à jour votre abonnement et vos détails de paiement
         subscription_title: Gérer l'abonnement
+    appearances:
+      show:
+        page_title: Apparence
+        theme_title: Thème
+        theme_subtitle: Choisissez un thème pour l’application
+        theme_dark: Sombre
+        theme_light: Clair
+        theme_system: Système
+        transactions_title: Transactions
+        transactions_subtitle: Personnaliser l’affichage des transactions
+        dashboard_title: Tableau de bord
+        dashboard_subtitle: Personnaliser l’affichage du tableau de bord
+        dashboard_two_column_title: Mise en page deux colonnes
+        dashboard_two_column_description: Afficher les widgets du tableau de bord sur deux colonnes sur les grands écrans. Sinon, ils s’empilent sur une seule colonne.
+        dashboard_period_selector_title: Contrôle de la période (tableau de bord)
+        dashboard_period_selector_description: Choisissez comment sélectionner la période pour les graphiques du tableau de bord et le graphique de solde sur les pages compte.
+        dashboard_period_selector_preset: Plages prédéfinies (1J, MTD, 30J, etc.)
+        dashboard_period_selector_month_year: Mois et année
+        split_grouped_title: Regrouper les transactions ventilées
+        split_grouped_description: Afficher les ventilations regroupées sous leur parent dans la liste des transactions. Sinon, chaque ligne enfant apparaît seule.
     preferences:
       show:
         country: Pays

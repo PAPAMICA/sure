@@ -14,6 +14,8 @@ en:
     dashboard:
       welcome: "Welcome back, %{name}"
       subtitle: "Here's what's happening with your finances"
+      period_selector:
+        aria_label: Chart time period
       ledger_usage:
         aria_label: Personal or business accounts
         personal: Personal

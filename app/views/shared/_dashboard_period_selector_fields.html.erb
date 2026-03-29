@@ -1,0 +1,18 @@
+<%# locals: (period:) %>
+<div class="inline-flex flex-wrap items-center gap-2" role="group" aria-label="<%= t("pages.dashboard.period_selector.aria_label") %>">
+  <% if Current.user.dashboard_month_year_period_selector? %>
+    <%= select_tag :dashboard_month,
+          options_for_select(dashboard_month_name_options, period.start_date.month),
+          data: { auto_submit_form_target: "auto" },
+          class: "bg-container border border-secondary font-medium rounded-lg px-3 py-2 text-sm pr-7 cursor-pointer text-primary focus:outline-hidden focus:ring-0" %>
+    <%= select_tag :dashboard_year,
+          options_for_select(dashboard_year_range_options.map { |y| [ y.to_s, y ] }, period.start_date.year),
+          data: { auto_submit_form_target: "auto" },
+          class: "bg-container border border-secondary font-medium rounded-lg px-3 py-2 text-sm pr-7 cursor-pointer text-primary focus:outline-hidden focus:ring-0" %>
+  <% else %>
+    <%= select_tag :period,
+          options_for_select(Period.as_options, period.key),
+          data: { auto_submit_form_target: "auto" },
+          class: "bg-container border border-secondary font-medium rounded-lg px-3 py-2 text-sm pr-7 cursor-pointer text-primary focus:outline-hidden focus:ring-0" %>
+  <% end %>
+</div>

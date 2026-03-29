@@ -42,6 +42,8 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validate :ensure_valid_profile_image
   validates :default_period, inclusion: { in: Period::PERIODS.keys }
+
+  DASHBOARD_PERIOD_SELECTORS = %w[preset month_year].freeze
   validates :default_account_order, inclusion: { in: AccountOrder::ORDERS.keys }
   validates :locale, inclusion: { in: I18n.available_locales.map(&:to_s) }, allow_nil: true
 
@@ -336,6 +338,14 @@ class User < ApplicationRecord
 
   def dashboard_two_column?
     preferences&.dig("dashboard_two_column") != false
+  end
+
+  def dashboard_period_selector
+    preferences&.dig("dashboard_period_selector").presence_in(DASHBOARD_PERIOD_SELECTORS) || "preset"
+  end
+
+  def dashboard_month_year_period_selector?
+    dashboard_period_selector == "month_year"
   end
 
   def update_transactions_preferences(prefs)

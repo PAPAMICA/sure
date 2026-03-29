@@ -13,14 +13,14 @@
       <div class="inline-flex rounded-lg border border-primary p-0.5 bg-container-inset" role="group" aria-label="<%= t("pages.dashboard.ledger_usage.aria_label") %>">
         <% personal_active = @dashboard_ledger_usage == "personal" %>
         <% pro_active = @dashboard_ledger_usage == "professional" %>
-        <%= link_to root_path(period: @period.key, usage: "personal"),
+        <%= link_to root_path(**dashboard_period_query_for_path(@period).merge(usage: "personal")),
               class: [
                 "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
                 personal_active ? "bg-container text-primary shadow-border-xs" : "text-secondary hover:text-primary"
               ].join(" ") do %>
           <%= t("pages.dashboard.ledger_usage.personal") %>
         <% end %>
-        <%= link_to root_path(period: @period.key, usage: "professional"),
+        <%= link_to root_path(**dashboard_period_query_for_path(@period).merge(usage: "professional")),
               class: [
                 "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
                 pro_active ? "bg-container text-primary shadow-border-xs" : "text-secondary hover:text-primary"
