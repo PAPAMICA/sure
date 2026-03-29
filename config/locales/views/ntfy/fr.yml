@@ -11,10 +11,10 @@ fr:
     default_templates:
       transaction_title: Nouvelle transaction
       transaction_body: |
-        %{sign_label} %{amount}
+        [%{rule_name}] %{sign_label} %{amount}
         %{entry_name}
         %{date}
         %{account_name}
         %{category_name}
-      balance_title: "%{account_name}"
+      balance_title: "[%{rule_name}] %{account_name}"
       balance_body: "%{balance}%{balance_change_line}"

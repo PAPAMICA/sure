@@ -13,6 +13,7 @@ export default class extends Controller {
 
   connect() {
     this.updateConditionPrefixes();
+    this.#syncFrequencyFieldVisibility();
   }
 
   addConditionGroup() {
@@ -36,9 +37,27 @@ export default class extends Controller {
   }
 
   deliveryChanged(event) {
-    const show = event.target.value === "scheduled";
-    if (this.hasFrequencyWrapTarget) {
-      this.frequencyWrapTarget.classList.toggle("hidden", !show);
+    this.#setFrequencyWrapVisible(event.target.value === "scheduled");
+  }
+
+  #syncFrequencyFieldVisibility() {
+    const deliverySelect = this.element.querySelector(
+      'select[name*="[delivery]"]',
+    );
+    if (!deliverySelect || !this.hasFrequencyWrapTarget) return;
+
+    this.#setFrequencyWrapVisible(deliverySelect.value === "scheduled");
+  }
+
+  #setFrequencyWrapVisible(show) {
+    if (!this.hasFrequencyWrapTarget) return;
+
+    this.frequencyWrapTarget.classList.toggle("hidden", !show);
+    if (!show) {
+      const select = this.frequencyWrapTarget.querySelector("select");
+      if (select) {
+        select.selectedIndex = 0;
+      }
     }
   }
 

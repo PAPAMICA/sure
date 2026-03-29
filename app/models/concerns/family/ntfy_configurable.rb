@@ -18,8 +18,8 @@ module Family::NtfyConfigurable
     }
   end
 
-  def ntfy_transaction_notification_for(transaction, entry)
-    vars = ntfy_transaction_variables(transaction, entry)
+  def ntfy_transaction_notification_for(transaction, entry, notification_rule: nil)
+    vars = ntfy_transaction_variables(transaction, entry, notification_rule: notification_rule)
     title_tpl = ntfy_transaction_title_template.presence || I18n.t("ntfy.default_templates.transaction_title")
     body_tpl = ntfy_transaction_body_template.presence || I18n.t("ntfy.default_templates.transaction_body")
     [
@@ -28,8 +28,8 @@ module Family::NtfyConfigurable
     ]
   end
 
-  def ntfy_balance_notification_for(account)
-    vars = ntfy_balance_variables(account)
+  def ntfy_balance_notification_for(account, notification_rule: nil)
+    vars = ntfy_balance_variables(account, notification_rule: notification_rule)
     title_tpl = ntfy_balance_title_template.presence || I18n.t("ntfy.default_templates.balance_title")
     body_tpl = ntfy_balance_body_template.presence || I18n.t("ntfy.default_templates.balance_body")
     [
@@ -40,9 +40,10 @@ module Family::NtfyConfigurable
 
   private
 
-    def ntfy_transaction_variables(transaction, entry)
+    def ntfy_transaction_variables(transaction, entry, notification_rule: nil)
       money = Money.new(entry.amount.abs, entry.currency)
       {
+        rule_name: ntfy_rule_display_name(notification_rule),
         sign_label: entry.amount.negative? ? I18n.t("ntfy.new_transaction.income") : I18n.t("ntfy.new_transaction.expense"),
         amount: money.format,
         amount_abs: money.format,
@@ -54,9 +55,10 @@ module Family::NtfyConfigurable
       }
     end
 
-    def ntfy_balance_variables(account)
+    def ntfy_balance_variables(account, notification_rule: nil)
       money = Money.new(account.balance, account.currency)
       base = {
+        rule_name: ntfy_rule_display_name(notification_rule),
         account_name: account.name.to_s,
         balance: money.format,
         currency: account.currency.to_s
@@ -115,5 +117,11 @@ module Family::NtfyConfigurable
         prior_balance_date: prior_bal_date_fmt,
         balance_change_line: line
       }
+    end
+
+    def ntfy_rule_display_name(notification_rule)
+      return "" unless notification_rule
+
+      notification_rule.name.presence || I18n.t("notification_rules.unnamed")
     end
 end

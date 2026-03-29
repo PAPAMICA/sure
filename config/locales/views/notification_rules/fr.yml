@@ -21,6 +21,11 @@ fr:
       no_entry: La transaction correspondante n’a pas d’écriture ; envoi impossible.
       delivery_failed: ntfy n’a pas confirmé l’envoi (HTTP non 2xx ou erreur réseau). Vérifiez l’URL, l’authentification et les journaux serveur.
       failed: Impossible d’envoyer la notification.
+    duplicate:
+      button_title: Dupliquer cette règle
+      name_suffix: "(copie)"
+      success: "Règle dupliquée : %{name}."
+      failure: Impossible de dupliquer cette règle.
     test:
       send_button: Envoyer une notification test
       push_title: Notification test
@@ -72,6 +77,7 @@ fr:
       template_transaction_heading: Notifications de transaction
       template_variables_transaction: |
         Variables disponibles :
+        %{rule_name} — Nom de la règle (ou libellé « Règle sans titre » si le nom est vide)
         %{sign_label} — Libellé revenu / dépense
         %{amount} — Montant formaté (valeur absolue)
         %{entry_name} — Libellé de la transaction
@@ -86,6 +92,7 @@ fr:
       ntfy_balance_prior_days_hint: "Sert pour les variables d’écart et de solde antérieur dans les modèles. Mettez 0 pour masquer la comparaison. Plage : 0–365."
       template_variables_balance: |
         Variables disponibles :
+        %{rule_name} — Nom de la règle (ou libellé « Règle sans titre » si le nom est vide)
         %{account_name} — Nom du compte
         %{balance} — Solde actuel formaté
         %{currency} — Code devise

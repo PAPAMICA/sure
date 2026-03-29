@@ -26,7 +26,9 @@ class TransactionCategoriesController < ApplicationController
         format.html { redirect_to quick_categorize_transactions_path }
         format.turbo_stream do
           next_transaction = Transaction.next_uncategorized_for(Current.user, Current.family)
-          render turbo_stream: turbo_stream.replace(
+          # Use +update+ so the <turbo-frame id="quick_categorize_card"> wrapper stays in the DOM.
+          # +replace+ would remove the frame; later category picks would not target the frame and break the flow.
+          render turbo_stream: turbo_stream.update(
             "quick_categorize_card",
             partial: "transactions/quick_categorize_card",
             locals: {

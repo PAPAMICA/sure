@@ -21,6 +21,11 @@ en:
       no_entry: Matching transaction has no entry; cannot send.
       delivery_failed: ntfy did not confirm delivery (non-2xx HTTP or network error). Check your URL, authentication, and server logs.
       failed: Could not send notification.
+    duplicate:
+      button_title: Duplicate this rule
+      name_suffix: "(copy)"
+      success: "Rule duplicated: %{name}."
+      failure: Could not duplicate this rule.
     test:
       send_button: Send test notification
       push_title: Test notification
@@ -72,6 +77,7 @@ en:
       template_transaction_heading: Transaction notifications
       template_variables_transaction: |
         Available variables:
+        %{rule_name} — Notification rule name (or “Untitled rule” if blank)
         %{sign_label} — Income or expense label
         %{amount} — Formatted absolute amount
         %{entry_name} — Transaction name
@@ -86,6 +92,7 @@ en:
       ntfy_balance_prior_days_hint: "Used for balance change and prior-balance template variables. Set to 0 to hide comparison. Range: 0–365."
       template_variables_balance: |
         Available variables:
+        %{rule_name} — Notification rule name (or “Untitled rule” if blank)
         %{account_name} — Account name
         %{balance} — Formatted current balance
         %{currency} — Currency code

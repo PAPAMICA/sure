@@ -323,6 +323,7 @@ Rails.application.routes.draw do
   resources :notification_rules, except: :show do
     member do
       post :trigger_deliver
+      post :duplicate
     end
     collection do
       patch :update_family_ntfy

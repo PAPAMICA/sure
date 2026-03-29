@@ -3,8 +3,8 @@ class NotificationRulesController < ApplicationController
 
   layout :notification_rules_layout
 
-  before_action :set_notification_rule, only: %i[edit update destroy trigger_deliver]
-  before_action :require_family_admin!, only: %i[update_family_ntfy trigger_deliver]
+  before_action :set_notification_rule, only: %i[edit update destroy trigger_deliver duplicate]
+  before_action :require_family_admin!, only: %i[update_family_ntfy trigger_deliver duplicate]
 
   def index
     @notification_rules = Current.family.notification_rules.includes(conditions: :sub_conditions).order(:name, :created_at)
@@ -102,6 +102,14 @@ class NotificationRulesController < ApplicationController
       [ :alert, t("notification_rules.trigger_deliver.failed") ]
     end
     redirect_to notification_rules_path, flash_key => msg
+  end
+
+  def duplicate
+    copy = @notification_rule.duplicate!
+    redirect_to notification_rules_path,
+      notice: t("notification_rules.duplicate.success", name: copy.name.presence || t("notification_rules.unnamed"))
+  rescue ActiveRecord::RecordInvalid
+    redirect_to notification_rules_path, alert: t("notification_rules.duplicate.failure")
   end
 
   private

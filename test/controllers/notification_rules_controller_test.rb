@@ -152,4 +152,35 @@ class NotificationRulesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to notification_rules_url
     assert_equal I18n.t("users.reset.unauthorized"), flash[:alert]
   end
+
+  test "admin duplicate creates a copy" do
+    rule = @admin.family.notification_rules.create!(
+      name: "To copy",
+      target: :balance,
+      delivery: :on_sync,
+      active: true
+    )
+
+    assert_difference -> { @admin.family.notification_rules.count }, 1 do
+      post duplicate_notification_rule_url(rule)
+    end
+    assert_redirected_to notification_rules_url
+    assert_match(/To copy/, flash[:notice])
+  end
+
+  test "member cannot duplicate" do
+    rule = @admin.family.notification_rules.create!(
+      name: "R",
+      target: :balance,
+      delivery: :on_sync,
+      active: true
+    )
+
+    sign_in users(:family_member)
+    assert_no_difference -> { NotificationRule.count } do
+      post duplicate_notification_rule_url(rule)
+    end
+    assert_redirected_to notification_rules_url
+    assert_equal I18n.t("users.reset.unauthorized"), flash[:alert]
+  end
 end

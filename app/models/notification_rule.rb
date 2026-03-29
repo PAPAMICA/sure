@@ -14,13 +14,13 @@ class NotificationRule < ApplicationRecord
   FREQUENCIES = %w[hourly every_4_hours daily weekly].freeze
 
   validates :name, length: { minimum: 1 }, allow_nil: true
-  validates :frequency, inclusion: { in: FREQUENCIES }, allow_nil: true
+  validates :frequency, inclusion: { in: FREQUENCIES }, allow_nil: true, allow_blank: true
   validate :delivery_matches_target
   validate :frequency_for_scheduled
   validate :no_nested_compound_conditions
   validate :target_immutable_on_update, on: :update
 
-  before_validation :normalize_name, :normalize_minimum_amount
+  before_validation :normalize_name, :normalize_minimum_amount, :clear_frequency_unless_scheduled
 
   def registry
     @registry ||= case target
@@ -93,7 +93,7 @@ class NotificationRule < ApplicationRecord
   def deliver_transaction_message!(transaction, entry)
     return false if family.ntfy_url.blank?
 
-    title, body = family.ntfy_transaction_notification_for(transaction, entry)
+    title, body = family.ntfy_transaction_notification_for(transaction, entry, notification_rule: self)
     response = Notifications::NtfyDelivery.deliver!(
       family.ntfy_url,
       title: title,
@@ -106,7 +106,7 @@ class NotificationRule < ApplicationRecord
   def deliver_balance_message!(account)
     return false if family.ntfy_url.blank?
 
-    title, body = family.ntfy_balance_notification_for(account)
+    title, body = family.ntfy_balance_notification_for(account, notification_rule: self)
     response = Notifications::NtfyDelivery.deliver!(
       family.ntfy_url,
       title: title,
@@ -178,6 +178,25 @@ class NotificationRule < ApplicationRecord
     )
   end
 
+  # Persists a new rule for the same family with the same target, delivery, filters, and thresholds.
+  # Condition tree (including compound groups) is deep-copied. Delivery history is not copied.
+  def duplicate!
+    raise ArgumentError, "duplicate! requires a persisted rule" unless persisted?
+
+    self.class.transaction do
+      copy = dup
+      copy.name = duplicate_suggested_name
+      copy.last_scheduled_run_at = nil
+      copy.save!
+
+      conditions.where(parent_id: nil).order(:created_at, :id).each do |root|
+        duplicate_condition_branch(root, onto: copy)
+      end
+
+      copy.reload
+    end
+  end
+
   private
 
     def normalize_name
@@ -186,6 +205,10 @@ class NotificationRule < ApplicationRecord
 
     def normalize_minimum_amount
       self.minimum_amount = nil if minimum_amount.blank?
+    end
+
+    def clear_frequency_unless_scheduled
+      self.frequency = nil unless scheduled?
     end
 
     def apply_minimum_amount(scope)
@@ -223,5 +246,22 @@ class NotificationRule < ApplicationRecord
 
     def ntfy_response_success?(response)
       response.respond_to?(:code) && response.code.to_i.between?(200, 299)
+    end
+
+    def duplicate_suggested_name
+      base = name.presence || I18n.t("notification_rules.unnamed")
+      "#{base} #{I18n.t("notification_rules.duplicate.name_suffix")}"
+    end
+
+    def duplicate_condition_branch(source, onto:, parent: nil)
+      attrs = source.attributes.slice("condition_type", "operator", "value")
+      attrs[:parent_id] = parent.id if parent
+      new_c = onto.conditions.create!(attrs)
+
+      return unless source.compound?
+
+      source.sub_conditions.order(:created_at, :id).each do |sub|
+        duplicate_condition_branch(sub, onto: onto, parent: new_c)
+      end
     end
 end
