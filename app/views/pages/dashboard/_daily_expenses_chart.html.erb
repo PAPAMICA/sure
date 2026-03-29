@@ -1,0 +1,37 @@
+<%# locals: (chart_data:, period:, dashboard_ledger_usage: nil) %>
+<div id="daily-expenses-chart-section" class="space-y-4">
+  <div class="flex justify-end items-center gap-4 px-4">
+    <%= form_with url: root_path, method: :get, data: { controller: "auto-submit-form", turbo_frame: "_top" } do %>
+      <% if local_assigns[:dashboard_ledger_usage].present? %>
+        <%= hidden_field_tag :usage, dashboard_ledger_usage %>
+      <% end %>
+      <%= render "shared/dashboard_period_selector_fields", period: period %>
+    <% end %>
+  </div>
+
+  <% layers = chart_data["layers"] %>
+  <% dates = chart_data["dates"] %>
+  <% has_data = layers.present? && layers.any? { |l| l["amounts"].sum(&:to_f).positive? } %>
+
+  <% if has_data %>
+    <%= tag.div(
+          class: "w-full min-h-64 px-4 pb-4 privacy-sensitive",
+          data: {
+            controller: "stacked-daily-expenses-chart",
+            stacked_daily_expenses_chart_data_value: chart_data
+          }
+        ) %>
+    <div class="px-4 pb-2 flex flex-wrap gap-x-4 gap-y-2 justify-center">
+      <% layers.each do |layer| %>
+        <div class="flex items-center gap-2 text-xs text-secondary">
+          <span class="h-2.5 w-2.5 rounded-sm shrink-0" style="background-color: <%= layer["color"] %>"></span>
+          <span class="text-primary font-medium"><%= layer["name"] %></span>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="px-4 pb-8 text-center">
+      <p class="text-sm text-secondary"><%= t(".empty") %></p>
+    </div>
+  <% end %>
+</div>

@@ -27,6 +27,10 @@ fr:
       net_worth_chart:
         data_not_available: Données indisponibles pour la période sélectionnée
         title: Valeur nette
+      daily_expenses_chart:
+        title: Dépenses par jour
+        empty: Aucune dépense sur cette période pour les comptes sélectionnés.
+        other: Autres
       no_account_empty_state:
         new_account: Nouveau compte
         no_account_subtitle: Comme aucun compte n'a été ajouté, il n'y a pas de données à afficher. Ajoutez vos premiers comptes pour commencer à consulter les données du tableau de bord.

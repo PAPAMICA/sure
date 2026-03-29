@@ -28,6 +28,13 @@ class PagesController < ApplicationController
     @cashflow_sankey_data = build_cashflow_sankey_data(net_totals, income_totals, expense_totals, family_currency)
     @outflows_data = build_outflows_donut_data(net_totals)
 
+    @daily_expense_chart_data = income_statement.daily_expense_bars_data(period: @period)
+    @daily_expense_chart_data["layers"]&.each do |layer|
+      if layer["key"] == IncomeStatement::DailyExpenseBars::OTHER_KEY
+        layer["name"] = I18n.t("pages.dashboard.daily_expenses_chart.other")
+      end
+    end
+
     @dashboard_sections = build_dashboard_sections
 
     @breadcrumbs = [ [ "Home", root_path ], [ "Dashboard", nil ] ]
@@ -106,10 +113,22 @@ class PagesController < ApplicationController
           collapsible: true
         },
         {
+          key: "daily_expenses_chart",
+          title: "pages.dashboard.daily_expenses_chart.title",
+          partial: "pages/dashboard/daily_expenses_chart",
+          locals: {
+            chart_data: @daily_expense_chart_data,
+            period: @period,
+            dashboard_ledger_usage: @dashboard_ledger_usage
+          },
+          visible: @accounts.any?,
+          collapsible: true
+        },
+        {
           key: "investment_summary",
           title: "pages.dashboard.investment_summary.title",
           partial: "pages/dashboard/investment_summary",
-          locals: { investment_statement: @investment_statement, period: @period },
+          locals: { investment_statement: @investment_statement, period: @period, dashboard_ledger_usage: @dashboard_ledger_usage },
           visible: @accounts.any? && @investment_statement.investment_accounts.any?,
           collapsible: true
         },

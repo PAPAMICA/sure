@@ -97,6 +97,14 @@ class IncomeStatement
     )
   end
 
+  def daily_expense_bars_data(period:)
+    DailyExpenseBars.new(
+      family: family,
+      period: period,
+      included_account_ids: included_account_ids
+    ).as_json
+  end
+
   def median_expense(interval: "month", category: nil)
     if category.present?
       category_stats(interval: interval).find { |stat| stat.classification == "expense" && stat.category_id == category.id }&.median || 0

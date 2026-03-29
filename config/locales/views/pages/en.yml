@@ -55,6 +55,10 @@ en:
         categories: "Categories"
         value: "Value"
         weight: "Weight"
+      daily_expenses_chart:
+        title: "Daily expenses"
+        empty: "No expense transactions in this period for the selected accounts."
+        other: "Other"
       investment_summary:
         title: "Investments"
         total_return: "Total Return"

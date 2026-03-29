@@ -1,9 +1,9 @@
-<%# locals: (investment_statement:, period:, **args) %>
+<%# locals: (investment_statement:, period:, dashboard_ledger_usage: nil, **args) %>
 
 <% if investment_statement.investment_accounts.any? %>
   <div id="investment-summary" class="space-y-4">
-    <div class="flex justify-between gap-4 px-4">
-      <div class="space-y-2">
+    <div class="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-start px-4">
+      <div class="space-y-2 min-w-0">
         <div class="flex items-center gap-2">
           <h2 class="text-lg font-medium"><%= t(".title") %></h2>
         </div>
@@ -21,6 +21,15 @@
               (<%= trend.percent_formatted %>)
             </span>
           </div>
+        <% end %>
+      </div>
+
+      <div class="flex justify-end sm:shrink-0">
+        <%= form_with url: root_path, method: :get, data: { controller: "auto-submit-form", turbo_frame: "_top" } do %>
+          <% if local_assigns[:dashboard_ledger_usage].present? %>
+            <%= hidden_field_tag :usage, dashboard_ledger_usage %>
+          <% end %>
+          <%= render "shared/dashboard_period_selector_fields", period: period %>
         <% end %>
       </div>
     </div>
