@@ -24,22 +24,58 @@
     <%= t("notification_rules.index.intro_before_link") %>
     <%= link_to "ntfy", "https://ntfy.sh", class: "text-primary underline", target: "_blank", rel: "noopener noreferrer" %>.
     <%= t("notification_rules.index.intro_after_link") %>
+    <%= t("notification_rules.index.ntfy_auth_doc_prefix") %>
+    <%= link_to t("notification_rules.index.ntfy_auth_doc_link"), "https://docs.ntfy.sh/publish/#authentication", class: "text-primary underline", target: "_blank", rel: "noopener noreferrer" %>.
   </p>
 
   <% if Current.user.admin? %>
-    <div class="bg-container rounded-xl shadow-border-xs p-4 space-y-3">
+    <div class="bg-container rounded-xl shadow-border-xs p-4 space-y-4">
       <h2 class="text-sm font-medium text-primary"><%= t("notification_rules.index.default_url_heading") %></h2>
       <p class="text-xs text-secondary"><%= t("notification_rules.index.default_url_hint") %></p>
-      <%= styled_form_with model: Current.family, url: update_default_ntfy_url_notification_rules_path, method: :patch, class: "flex flex-col md:flex-row gap-3 md:items-end" do |f| %>
-        <%= f.text_field :ntfy_url, label: t("notification_rules.index.default_url_label"), value: Current.family.ntfy_url, container_class: "grow" %>
+      <%= styled_form_with model: Current.family, url: update_default_ntfy_url_notification_rules_path, method: :patch, class: "space-y-3 max-w-xl" do |f| %>
+        <%= f.text_field :ntfy_url, label: t("notification_rules.index.default_url_label"), value: Current.family.ntfy_url %>
+        <p class="text-xs text-secondary"><%= t("notification_rules.index.ntfy_auth_hint") %></p>
+        <%= f.text_field :ntfy_access_token,
+              label: t("notification_rules.form.ntfy_access_token_label"),
+              value: "",
+              placeholder: t("notification_rules.index.secret_placeholder"),
+              hint: t("notification_rules.index.ntfy_token_family_hint") %>
+        <%= f.text_field :ntfy_basic_username,
+              label: t("notification_rules.form.ntfy_basic_username_label"),
+              value: Current.family.ntfy_basic_username,
+              hint: t("notification_rules.form.ntfy_basic_username_hint") %>
+        <%= f.password_field :ntfy_basic_password,
+              label: t("notification_rules.form.ntfy_basic_password_label"),
+              value: "",
+              placeholder: t("notification_rules.index.secret_placeholder"),
+              hint: t("notification_rules.index.ntfy_password_family_hint") %>
+        <div class="flex items-center gap-2">
+          <%= check_box_tag "family[clear_ntfy_credentials]", "1", false, id: "family_clear_ntfy_credentials" %>
+          <%= label_tag "family_clear_ntfy_credentials", t("notification_rules.index.clear_ntfy_credentials_label"), class: "text-sm text-primary" %>
+        </div>
         <%= f.submit t("notification_rules.index.default_url_save"), variant: "primary" %>
       <% end %>
       <p class="text-xs text-secondary"><%= t("notification_rules.test.form_hint") %></p>
-      <%= styled_form_with url: test_ntfy_notification_rules_path, method: :post, class: "flex flex-col sm:flex-row gap-3 sm:items-end" do |f| %>
+      <%= styled_form_with url: test_ntfy_notification_rules_path, method: :post, class: "flex flex-col gap-3 max-w-xl" do |f| %>
         <%= text_field_tag :ntfy_url, Current.family.ntfy_url,
-              class: "form-field__input w-full grow",
+              class: "form-field__input w-full",
               placeholder: t("notification_rules.index.default_url_label"),
               aria: { label: t("notification_rules.test.url_field_label") } %>
+        <%= text_field_tag :ntfy_access_token, "",
+              class: "form-field__input w-full",
+              placeholder: t("notification_rules.form.ntfy_access_token_label"),
+              autocomplete: "off",
+              aria: { label: t("notification_rules.form.ntfy_access_token_label") } %>
+        <%= text_field_tag :ntfy_basic_username, Current.family.ntfy_basic_username.to_s,
+              class: "form-field__input w-full",
+              placeholder: t("notification_rules.form.ntfy_basic_username_label"),
+              autocomplete: "off",
+              aria: { label: t("notification_rules.form.ntfy_basic_username_label") } %>
+        <%= password_field_tag :ntfy_basic_password, "",
+              class: "form-field__input w-full",
+              placeholder: t("notification_rules.form.ntfy_basic_password_label"),
+              autocomplete: "new-password",
+              aria: { label: t("notification_rules.form.ntfy_basic_password_label") } %>
         <%= f.submit t("notification_rules.test.send_button"), variant: "secondary" %>
       <% end %>
     </div>

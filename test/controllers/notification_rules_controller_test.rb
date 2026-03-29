@@ -55,6 +55,34 @@ class NotificationRulesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to notification_rules_url
   end
 
+  test "admin test_ntfy passes bearer token to NtfyDelivery" do
+    fake = Struct.new(:code).new("200")
+    Notifications::NtfyDelivery.expects(:deliver!).with(
+      "https://ntfy.sh/topic",
+      title: anything,
+      body: anything,
+      access_token: "tk_abc",
+      basic_username: nil,
+      basic_password: nil
+    ).returns(fake)
+
+    post test_ntfy_notification_rules_url, params: {
+      ntfy_url: "https://ntfy.sh/topic",
+      ntfy_access_token: "tk_abc"
+    }
+    assert_redirected_to notification_rules_url
+  end
+
+  test "admin can set family ntfy access token" do
+    patch update_default_ntfy_url_notification_rules_url, params: {
+      family: { ntfy_url: "https://ntfy.example.com/Bank", ntfy_access_token: "tk_family" }
+    }
+    assert_redirected_to notification_rules_url
+    family = @admin.family.reload
+    assert_equal "https://ntfy.example.com/Bank", family.ntfy_url
+    assert_equal "tk_family", family.ntfy_access_token
+  end
+
   test "member cannot post test_ntfy" do
     sign_in users(:family_member)
     post test_ntfy_notification_rules_url, params: { ntfy_url: "https://ntfy.sh/topic" }

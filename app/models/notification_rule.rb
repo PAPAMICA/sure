@@ -41,6 +41,14 @@ class NotificationRule < ApplicationRecord
     ntfy_url.presence || family.ntfy_url
   end
 
+  def resolve_ntfy_credentials
+    {
+      access_token: ntfy_access_token.presence || family.ntfy_access_token.presence,
+      basic_username: ntfy_basic_username.presence || family.ntfy_basic_username.presence,
+      basic_password: ntfy_basic_password.presence || family.ntfy_basic_password.presence
+    }
+  end
+
   def due_for_scheduled_run?
     return false unless scheduled?
     return true if last_scheduled_run_at.nil?
@@ -110,7 +118,8 @@ class NotificationRule < ApplicationRecord
     Notifications::NtfyDelivery.deliver!(
       url,
       title: I18n.t("ntfy.new_transaction.title"),
-      body: body
+      body: body,
+      **resolve_ntfy_credentials
     )
   end
 
@@ -124,7 +133,8 @@ class NotificationRule < ApplicationRecord
     Notifications::NtfyDelivery.deliver!(
       url,
       title: I18n.t("ntfy.balance.title"),
-      body: body
+      body: body,
+      **resolve_ntfy_credentials
     )
   end
 

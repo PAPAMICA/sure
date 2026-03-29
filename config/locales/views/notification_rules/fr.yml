@@ -46,6 +46,13 @@ fr:
       new_balance_rule: Nouvelle règle (soldes)
       intro_before_link: Envoyez des alertes via
       intro_after_link: Créez des règles avec des conditions SI (comme la catégorisation automatique), un montant minimum optionnel et une fréquence de vérification.
+      ntfy_auth_doc_prefix: "Les serveurs avec contrôle d’accès exigent une authentification — voir "
+      ntfy_auth_doc_link: authentification ntfy
+      ntfy_auth_hint: "Jeton Bearer (recommandé) ou HTTP Basic. Laissez jeton et mot de passe vides pour conserver les valeurs enregistrées."
+      secret_placeholder: Laisser vide pour conserver l’actuel
+      ntfy_token_family_hint: Collez un nouveau jeton pour remplacer celui enregistré. Laissez vide pour ne pas changer.
+      ntfy_password_family_hint: Collez un nouveau mot de passe pour remplacer celui enregistré. Laissez vide pour ne pas changer.
+      clear_ntfy_credentials_label: Effacer tous les identifiants ntfy enregistrés (jeton, utilisateur, mot de passe)
       default_url_heading: URL du topic ntfy par défaut
       default_url_hint: Utilisée lorsqu’une règle ne définit pas d’URL. Seuls les administrateurs de la famille peuvent la modifier. URL complète du topic (ex. https://ntfy.sh/votre-topic-secret).
       default_url_label: URL du topic
@@ -70,6 +77,15 @@ fr:
       ntfy_heading: ntfy
       ntfy_url_label: URL du topic (facultatif)
       ntfy_url_hint: URL complète en POST (ex. https://ntfy.sh/mon-topic). Remplace l’URL par défaut de la famille pour cette règle uniquement.
+      ntfy_auth_doc_prefix: "Si votre serveur exige une connexion, voir "
+      ntfy_auth_doc_link: authentification ntfy
+      ntfy_access_token_label: Jeton d’accès (Bearer)
+      ntfy_access_token_hint: Facultatif. Remplace le défaut de la famille pour cette règle. Vide efface le jeton de la règle (défaut famille appliqué).
+      ntfy_basic_username_label: Utilisateur Basic auth
+      ntfy_basic_username_hint: Facultatif avec mot de passe. Laissez vide pour n’utiliser qu’un jeton comme mot de passe Basic (style curl -u :token).
+      ntfy_basic_password_label: Mot de passe Basic auth
+      ntfy_basic_password_hint: Facultatif. Vide conserve le mot de passe de la règle.
+      ntfy_secret_placeholder: Laisser vide pour conserver la valeur enregistrée
       amount_heading: Filtre sur le montant
       minimum_amount_label: Montant minimum (valeur absolue)
       minimum_amount_hint: S’applique uniquement aux règles sur les transactions. Laisser vide pour tous les montants.

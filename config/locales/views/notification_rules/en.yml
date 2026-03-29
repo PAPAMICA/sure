@@ -46,6 +46,13 @@ en:
       new_balance_rule: New balance rule
       intro_before_link: Send alerts through
       intro_after_link: Create rules with IF conditions (like auto-categorization), optional minimum amount, and how often to check.
+      ntfy_auth_doc_prefix: "Servers with access control need authentication — see "
+      ntfy_auth_doc_link: ntfy authentication
+      ntfy_auth_hint: "Bearer token (recommended) or HTTP Basic. Leave token and password empty to keep saved values."
+      secret_placeholder: Leave blank to keep current
+      ntfy_token_family_hint: Paste a new token to replace the stored one. Leave empty to keep the current token.
+      ntfy_password_family_hint: Paste a new password to replace the stored one. Leave empty to keep the current password.
+      clear_ntfy_credentials_label: Clear all saved ntfy credentials (token, username, password)
       default_url_heading: Default ntfy topic URL
       default_url_hint: Used when a rule leaves the URL empty. Only family admins can change this. Use your full topic URL (e.g. https://ntfy.sh/your-secret-topic).
       default_url_label: Topic URL
@@ -70,6 +77,15 @@ en:
       ntfy_heading: ntfy
       ntfy_url_label: Topic URL (optional)
       ntfy_url_hint: Full URL to POST to (e.g. https://ntfy.sh/your-topic). Overrides the family default for this rule only.
+      ntfy_auth_doc_prefix: "If your server requires login, see "
+      ntfy_auth_doc_link: ntfy authentication
+      ntfy_access_token_label: Access token (Bearer)
+      ntfy_access_token_hint: Optional. Overrides the family default for this rule. Empty clears the rule token (family default applies).
+      ntfy_basic_username_label: Basic auth username
+      ntfy_basic_username_hint: Optional with password. Leave empty to use only a token as Basic password (ntfy curl -u :token style).
+      ntfy_basic_password_label: Basic auth password
+      ntfy_basic_password_hint: Optional. Empty keeps the current rule password.
+      ntfy_secret_placeholder: Leave blank to keep stored value
       amount_heading: Amount filter
       minimum_amount_label: Minimum absolute amount
       minimum_amount_hint: Only applies to transaction rules. Leave blank to include all amounts.

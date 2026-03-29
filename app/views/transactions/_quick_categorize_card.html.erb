@@ -82,9 +82,7 @@
 
       <div class="flex flex-wrap gap-1.5">
         <% categories.each do |category| %>
-          <div class="inline-block"
-               data-quick-categorize-target="categoryRow"
-               data-category-name="<%= h(category.name.to_s.downcase) %>">
+          <%= tag.div class: "inline-block", data: { qc_category: category.name.to_s.downcase } do %>
             <%= button_to transaction_category_path(
                   entry,
                   quick_categorize: "1",
@@ -103,7 +101,7 @@
               <% end %>
               <span style="color: <%= category.color %>"><%= category.name %></span>
             <% end %>
-          </div>
+          <% end %>
         <% end %>
       </div>
     </div>

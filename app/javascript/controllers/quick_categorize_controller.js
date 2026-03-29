@@ -1,8 +1,9 @@
 import { Controller } from "@hotwired/stimulus";
 
 // Quick categorize: search/filter categories, Enter picks first match, debounced autosave for text fields.
+// Category rows use [data-qc-category] so filtering does not rely on Stimulus multi-target registration.
 export default class extends Controller {
-  static targets = ["search", "categoryRow", "name", "notes"];
+  static targets = ["search", "name", "notes"];
   static values = {
     autosaveUrl: String,
     transactionId: String,
@@ -10,18 +11,33 @@ export default class extends Controller {
 
   connect() {
     if (this.hasSearchTarget) {
-      requestAnimationFrame(() => this.searchTarget.focus());
+      requestAnimationFrame(() => {
+        try {
+          this.searchTarget.focus();
+        } catch (_) {
+          /* ignore */
+        }
+      });
     }
     this.filter();
   }
 
   filter() {
-    const q = (this.searchTarget?.value || "").toLowerCase().trim();
-    this.categoryRowTargets.forEach((row) => {
-      const name = (row.dataset.categoryName || "").toLowerCase();
-      const show = q === "" || name.includes(q);
+    const q = this.normalizeForSearch(this.searchTarget?.value || "");
+    this.categoryRowElements.forEach((row) => {
+      const raw = row.getAttribute("data-qc-category") || "";
+      const name = this.normalizeForSearch(raw);
+      const show = q.length === 0 || name.includes(q);
       row.classList.toggle("hidden", !show);
     });
+  }
+
+  normalizeForSearch(str) {
+    return str
+      .toLowerCase()
+      .trim()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
   }
 
   searchKeydown(event) {
@@ -30,8 +46,12 @@ export default class extends Controller {
     this.pickFirstVisibleCategory();
   }
 
+  get categoryRowElements() {
+    return Array.from(this.element.querySelectorAll("[data-qc-category]"));
+  }
+
   pickFirstVisibleCategory() {
-    const row = this.categoryRowTargets.find((r) => !r.classList.contains("hidden"));
+    const row = this.categoryRowElements.find((r) => !r.classList.contains("hidden"));
     if (!row) return;
     const btn =
       row.querySelector("button[type='submit']") ||
