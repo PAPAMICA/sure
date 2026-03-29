@@ -38,12 +38,6 @@ class PagesController < ApplicationController
 
     @dashboard_sections = build_dashboard_sections
 
-    @quick_categorize_uncategorized_count = Transaction.quick_categorize_uncategorized_count(
-      Current.user,
-      Current.family,
-      ledger_usage: @dashboard_ledger_usage
-    )
-
     @breadcrumbs = [ [ "Home", root_path ], [ "Dashboard", nil ] ]
   end
 

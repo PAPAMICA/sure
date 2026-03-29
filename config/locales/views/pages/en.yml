@@ -21,8 +21,10 @@ en:
         granularity_year: Year
         quarter_ordinal: "Q%{quarter}"
       quick_categorize_badge:
-        title: "%{count} transactions to categorize"
-        aria_label: "Quick categorize — %{count} transactions pending"
+        title_pending: "%{count} transactions to categorize"
+        aria_pending: "Quick categorize — %{count} transactions pending"
+        title_done: "All transactions categorized"
+        aria_done: "Quick categorize — all clear"
       ledger_usage:
         aria_label: Personal or business accounts
         personal: Personal

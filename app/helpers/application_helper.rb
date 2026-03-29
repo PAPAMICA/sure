@@ -205,11 +205,16 @@ module ApplicationHelper
     "#{request.path}?#{qp.to_query}"
   end
 
-  # Uncategorized count for dashboard chrome (Perso/Pro badge next to ledger switch).
+  # Uncategorized count for quick-categorize badge (next to Perso/Pro switch, same ledger context).
   def layout_quick_categorize_remaining_for_badge
-    return 0 unless controller_name == "pages" && action_name == "dashboard"
+    return 0 unless show_ledger_usage_switch?
+    return 0 unless Current.user && Current.family
 
-    (@quick_categorize_uncategorized_count || 0).to_i
+    Transaction.quick_categorize_uncategorized_count(
+      Current.user,
+      Current.family,
+      ledger_usage: ledger_usage_switch_current
+    )
   end
 
   # Query params for root_path / account_path when linking to the same chart period (Perso/Pro toggle, etc.).

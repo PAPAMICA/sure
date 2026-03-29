@@ -25,14 +25,22 @@
       <%= icon "briefcase", size: "sm", color: "current" %>
     <% end %>
   </div>
-  <% if qc_left.positive? %>
-    <%= link_to quick_categorize_transactions_path(usage: current_usage),
-          class: "inline-flex items-center gap-1 rounded-lg border border-primary bg-container-inset px-2 py-1.5 text-xs font-semibold tabular-nums text-primary hover:bg-surface-hover transition-colors",
-          title: t("pages.dashboard.quick_categorize_badge.title", count: qc_left),
-          data: { turbo_frame: "_top" },
-          aria: { label: t("pages.dashboard.quick_categorize_badge.aria_label", count: qc_left) } do %>
-      <%= icon "layout-grid", size: "sm", class: "shrink-0 text-secondary", color: "current" %>
+  <% qc_pending = qc_left.positive? %>
+  <%= link_to quick_categorize_transactions_path(usage: current_usage),
+        class: class_names(
+          "inline-flex items-center justify-center gap-1 rounded-lg border text-xs font-semibold tabular-nums transition-colors shrink-0",
+          qc_pending ? "min-h-9 px-2 py-1.5 border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/15" : "h-9 w-9 border-success/25 bg-success/10 text-success hover:bg-success/15"
+        ),
+        title: qc_pending ? t("pages.dashboard.quick_categorize_badge.title_pending", count: qc_left) : t("pages.dashboard.quick_categorize_badge.title_done"),
+        data: { turbo_frame: "_top" },
+        aria: {
+          label: qc_pending ? t("pages.dashboard.quick_categorize_badge.aria_pending", count: qc_left) : t("pages.dashboard.quick_categorize_badge.aria_done")
+        } do %>
+    <% if qc_pending %>
+      <%= icon "layout-grid", size: "sm", class: "shrink-0", color: "current" %>
       <span><%= qc_left %></span>
+    <% else %>
+      <%= icon "check", size: "sm", class: "shrink-0", color: "current" %>
     <% end %>
   <% end %>
 </div>
