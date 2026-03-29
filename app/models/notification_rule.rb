@@ -116,17 +116,13 @@ class NotificationRule < ApplicationRecord
     ntfy_response_success?(response)
   end
 
-  # Manual trigger from UI: first matching transaction/account, or a symbol reason if impossible.
+  # Manual trigger from UI: latest matching transaction (by entry date) or deterministic account sample.
   def trigger_sample_deliver!
     return :no_ntfy if family.ntfy_url.blank?
 
     case target
     when "transaction"
-      tx = matching_transactions_scope
-        .with_entry
-        .merge(Entry.reverse_chronological)
-        .includes(:category, :merchant, entry: :account)
-        .first
+      tx = sample_matching_transaction_for_deliver
       return :no_match unless tx
       entry = tx.entry
       return :no_entry unless entry
@@ -246,6 +242,18 @@ class NotificationRule < ApplicationRecord
 
     def ntfy_response_success?(response)
       response.respond_to?(:code) && response.code.to_i.between?(200, 299)
+    end
+
+    # PG requires ORDER BY columns to appear in SELECT when using DISTINCT on the same query level.
+    # We DISTINCT matching ids in a subquery, then order the outer query by entry (most recent first).
+    def sample_matching_transaction_for_deliver
+      id_scope = matching_transactions_scope.unscope(:order).distinct.select(:id)
+      Transaction
+        .where(id: id_scope)
+        .with_entry
+        .merge(Entry.reverse_chronological)
+        .includes(:category, :merchant, entry: :account)
+        .first
     end
 
     def duplicate_suggested_name

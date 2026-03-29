@@ -14,7 +14,7 @@ en:
       success: Notification rule deleted.
     ntfy_settings_updated: Notification settings saved.
     trigger_deliver:
-      button_title: Send one notification now (first matching transaction or account)
+      button_title: Send test notification (latest matching transaction or account)
       success: Notification sent.
       no_ntfy: Set an ntfy topic URL in notification settings first.
       no_match: No transaction or account matches this rule yet.

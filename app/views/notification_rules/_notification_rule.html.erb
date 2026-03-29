@@ -31,7 +31,16 @@
         <%= icon "copy", size: "sm" %>
       <% end %>
     <% end %>
-    <%= render DS::Link.new(text: t("notification_rules.edit"), href: edit_notification_rule_path(notification_rule), variant: "ghost", size: :sm, icon: "pencil", frame: :modal) %>
+    <%= render DS::Link.new(
+          text: nil,
+          href: edit_notification_rule_path(notification_rule),
+          variant: "ghost",
+          size: :sm,
+          icon: "pencil",
+          frame: :modal,
+          class: "inline-flex items-center justify-center rounded-lg p-2 text-secondary hover:bg-surface-hover hover:text-primary",
+          aria: { label: t("notification_rules.edit") }
+        ) %>
     <%= button_to notification_rule_path(notification_rule), method: :delete, class: "inline-flex items-center gap-1 text-sm text-destructive hover:opacity-80", data: { turbo_confirm: t("notification_rules.confirm_destroy") } do %>
       <%= icon("trash-2", size: "sm") %>
     <% end %>

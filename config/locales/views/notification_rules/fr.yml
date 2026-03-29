@@ -14,7 +14,7 @@ fr:
       success: Règle de notification supprimée.
     ntfy_settings_updated: Paramètres de notification enregistrés.
     trigger_deliver:
-      button_title: Envoyer une notification maintenant (première transaction ou compte correspondant)
+      button_title: Notification de test (dernière transaction ou compte correspondant)
       success: Notification envoyée.
       no_ntfy: Définissez d’abord l’URL du topic ntfy dans les paramètres de notification.
       no_match: Aucune transaction ou compte ne correspond encore à cette règle.
