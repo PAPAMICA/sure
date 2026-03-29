@@ -123,8 +123,10 @@ class User < ApplicationRecord
     family.accounts.accessible_by(self)
   end
 
-  def finance_accounts
-    family.accounts.included_in_finances_for(self)
+  def finance_accounts(ledger_usage: nil)
+    scope = family.accounts.included_in_finances_for(self)
+    scope = scope.with_ledger_usage(ledger_usage) if ledger_usage.present?
+    scope
   end
 
   def display_name

@@ -5,11 +5,12 @@ class InvestmentStatement
 
   monetize :total_contributions, :total_dividends, :total_interest, :unrealized_gains
 
-  attr_reader :family, :user
+  attr_reader :family, :user, :ledger_usage
 
-  def initialize(family, user: nil)
+  def initialize(family, user: nil, ledger_usage: nil)
     @family = family
     @user = user || Current.user
+    @ledger_usage = ledger_usage
   end
 
   # Get totals for a specific period
@@ -165,6 +166,7 @@ class InvestmentStatement
     @investment_accounts ||= begin
       scope = family.accounts.visible.where(accountable_type: %w[Investment Crypto])
       scope = scope.included_in_finances_for(user) if user
+      scope = scope.with_ledger_usage(ledger_usage) if ledger_usage.present?
       scope
     end
   end
@@ -194,7 +196,7 @@ class InvestmentStatement
       sql_hash = Digest::MD5.hexdigest(trades_scope.to_sql)
 
       Rails.cache.fetch([
-        "investment_statement", "totals_query", family.id, user&.id, sql_hash, family.entries_cache_version
+        "investment_statement", "totals_query", family.id, user&.id, ledger_usage, sql_hash, family.entries_cache_version
       ]) { Totals.new(family, trades_scope: trades_scope).call }
     end
 

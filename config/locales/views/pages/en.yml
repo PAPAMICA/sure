@@ -14,6 +14,16 @@ en:
     dashboard:
       welcome: "Welcome back, %{name}"
       subtitle: "Here's what's happening with your finances"
+      ledger_usage:
+        aria_label: Personal or business accounts
+        personal: Personal
+        professional: Business
+        empty_title: No accounts in this view
+        empty_description_personal: You have no accounts marked as personal, or none are included in your finances. Switch to business or edit an account.
+        empty_description_professional: You have no accounts marked as business. Switch to personal or label accounts in settings.
+        switch_to_personal: Show personal accounts
+        switch_to_professional: Show business accounts
+        edit_accounts: Manage accounts
       new: "New"
       drag_to_reorder: "Drag to reorder section"
       toggle_section: "Toggle section visibility"

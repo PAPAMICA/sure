@@ -7,6 +7,7 @@ json.accounts @accounts do |account|
   json.currency account.currency
   json.classification account.classification
   json.account_type account.accountable_type.underscore
+  json.ledger_usage account.ledger_usage
 end
 
 json.pagination do

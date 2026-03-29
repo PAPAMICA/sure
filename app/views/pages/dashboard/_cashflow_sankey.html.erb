@@ -1,7 +1,10 @@
-<%# locals: (sankey_data:, period:) %>
+<%# locals: (sankey_data:, period:, dashboard_ledger_usage: nil) %>
 <div id="cashflow-sankey-chart">
   <div class="flex justify-end items-center gap-4 px-4 mb-4">
     <%= form_with url: root_path, method: :get, data: { controller: "auto-submit-form", turbo_frame: "_top" } do |form| %>
+      <% if local_assigns[:dashboard_ledger_usage].present? %>
+        <%= hidden_field_tag :usage, local_assigns[:dashboard_ledger_usage] %>
+      <% end %>
       <%= form.select :period,
                 Period.as_options,
                 { selected: period.key },

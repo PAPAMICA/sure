@@ -24,6 +24,10 @@
 
     <%= yield form %>
 
+    <%= form.select :ledger_usage,
+          Account.ledger_usages.values.map { |v| [ t("accounts.form.ledger_usage.#{v}"), v ] },
+          { label: t("accounts.form.ledger_usage_label"), hint: t("accounts.form.ledger_usage_hint") } %>
+
     <details class="group">
       <summary class="cursor-pointer text-sm text-secondary hover:text-primary flex items-center gap-1 py-2">
         <%= icon "chevron-right", size: "sm", class: "group-open:rotate-90 transition-transform" %>

@@ -92,6 +92,7 @@ class Family::DataImporter
           institution_name: data["institution_name"],
           institution_domain: data["institution_domain"],
           notes: data["notes"],
+          ledger_usage: data["ledger_usage"].presence_in(Account.ledger_usages.values) || "personal",
           status: "active"
         )
 

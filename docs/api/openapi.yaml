@@ -239,6 +239,7 @@ components:
       - currency
       - classification
       - account_type
+      - ledger_usage
       properties:
         id:
           type: string
@@ -253,6 +254,11 @@ components:
           type: string
         account_type:
           type: string
+        ledger_usage:
+          type: string
+          enum:
+          - personal
+          - professional
     AccountCollection:
       type: object
       required:

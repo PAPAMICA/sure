@@ -28,6 +28,11 @@ fr:
       no_accounts: Aucun compte pour l'instant
     form:
       balance: Solde actuel
+      ledger_usage_label: Type de compte
+      ledger_usage_hint: Sert à filtrer le tableau de bord. « Perso » par défaut.
+      ledger_usage:
+        personal: Perso
+        professional: Pro
       name_label: Nom du compte
       name_placeholder: Nom de compte d'exemple
       additional_details: Détails supplémentaires

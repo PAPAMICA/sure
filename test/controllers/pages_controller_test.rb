@@ -14,6 +14,16 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  test "dashboard accepts ledger usage filter" do
+    get root_path, params: { usage: "professional" }
+    assert_response :ok
+  end
+
+  test "dashboard ignores invalid usage param" do
+    get root_path, params: { usage: "invalid" }
+    assert_response :ok
+  end
+
   test "intro page requires guest role" do
     get intro_path
 

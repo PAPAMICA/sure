@@ -5,11 +5,12 @@ class IncomeStatement
 
   monetize :median_expense, :median_income
 
-  attr_reader :family, :user
+  attr_reader :family, :user, :ledger_usage
 
-  def initialize(family, user: nil)
+  def initialize(family, user: nil, ledger_usage: nil)
     @family = family
     @user = user || Current.user
+    @ledger_usage = ledger_usage
   end
 
   def totals(transactions_scope: nil, date_range:)
@@ -188,7 +189,7 @@ class IncomeStatement
     end
 
     def included_account_ids
-      @included_account_ids ||= user ? user.finance_accounts.pluck(:id) : nil
+      @included_account_ids ||= user ? user.finance_accounts(ledger_usage: ledger_usage).pluck(:id) : nil
     end
 
     def included_account_ids_hash

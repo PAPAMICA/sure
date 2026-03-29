@@ -1,4 +1,4 @@
-<%# locals: (balance_sheet:, period:, **args) %>
+<%# locals: (balance_sheet:, period:, dashboard_ledger_usage: nil, **args) %>
 
 <div id="net-worth-chart">
   <% series = balance_sheet.net_worth_series(period: period) %>
@@ -15,6 +15,9 @@
     </div>
 
     <%= form_with url: root_path, method: :get, data: { controller: "auto-submit-form", turbo_frame: "_top" } do |form| %>
+      <% if local_assigns[:dashboard_ledger_usage].present? %>
+        <%= hidden_field_tag :usage, local_assigns[:dashboard_ledger_usage] %>
+      <% end %>
       <%= form.select :period,
                     Period.as_options,
                     { selected: period.key },

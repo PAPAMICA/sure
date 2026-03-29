@@ -180,14 +180,15 @@ RSpec.configure do |config|
           },
           AccountDetail: {
             type: :object,
-            required: %w[id name balance currency classification account_type],
+            required: %w[id name balance currency classification account_type ledger_usage],
             properties: {
               id: { type: :string, format: :uuid },
               name: { type: :string },
               balance: { type: :string },
               currency: { type: :string },
               classification: { type: :string },
-              account_type: { type: :string }
+              account_type: { type: :string },
+              ledger_usage: { type: :string, enum: %w[personal professional] }
             }
           },
           AccountCollection: {

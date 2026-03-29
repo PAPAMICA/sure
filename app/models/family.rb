@@ -148,12 +148,12 @@ class Family < ApplicationRecord
     AutoMerchantDetector.new(self, transaction_ids: transaction_ids).auto_detect
   end
 
-  def balance_sheet(user: Current.user)
-    BalanceSheet.new(self, user: user)
+  def balance_sheet(user: Current.user, ledger_usage: nil)
+    BalanceSheet.new(self, user: user, ledger_usage: ledger_usage)
   end
 
-  def income_statement(user: Current.user)
-    IncomeStatement.new(self, user: user)
+  def income_statement(user: Current.user, ledger_usage: nil)
+    IncomeStatement.new(self, user: user, ledger_usage: ledger_usage)
   end
 
   # Returns the Investment Contributions category for this family, creating it if it doesn't exist.
@@ -223,8 +223,8 @@ class Family < ApplicationRecord
     end
   end
 
-  def investment_statement(user: Current.user)
-    InvestmentStatement.new(self, user: user)
+  def investment_statement(user: Current.user, ledger_usage: nil)
+    InvestmentStatement.new(self, user: user, ledger_usage: ledger_usage)
   end
 
   def eu?

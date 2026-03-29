@@ -9,14 +9,18 @@ class PagesController < ApplicationController
       redirect_to chats_path and return
     end
 
-    @balance_sheet = Current.family.balance_sheet
-    @investment_statement = Current.family.investment_statement
-    @accounts = Current.user.accessible_accounts.visible.with_attached_logo
+    @dashboard_ledger_usage = params[:usage].presence_in(Account.ledger_usages.values) || "personal"
+
+    @balance_sheet = Current.family.balance_sheet(user: Current.user, ledger_usage: @dashboard_ledger_usage)
+    @investment_statement = Current.family.investment_statement(user: Current.user, ledger_usage: @dashboard_ledger_usage)
+    accessible_visible = Current.user.accessible_accounts.visible.with_attached_logo
+    @accounts = accessible_visible.with_ledger_usage(@dashboard_ledger_usage)
+    @any_accounts_visible = accessible_visible.any?
 
     family_currency = Current.family.currency
 
     # Use IncomeStatement for all cashflow data (now includes categorized trades)
-    income_statement = Current.family.income_statement
+    income_statement = Current.family.income_statement(user: Current.user, ledger_usage: @dashboard_ledger_usage)
     income_totals = income_statement.income_totals(period: @period)
     expense_totals = income_statement.expense_totals(period: @period)
     net_totals = income_statement.net_category_totals(period: @period)
@@ -89,7 +93,7 @@ class PagesController < ApplicationController
           key: "cashflow_sankey",
           title: "pages.dashboard.cashflow_sankey.title",
           partial: "pages/dashboard/cashflow_sankey",
-          locals: { sankey_data: @cashflow_sankey_data, period: @period },
+          locals: { sankey_data: @cashflow_sankey_data, period: @period, dashboard_ledger_usage: @dashboard_ledger_usage },
           visible: @accounts.any?,
           collapsible: true
         },
@@ -97,7 +101,7 @@ class PagesController < ApplicationController
           key: "outflows_donut",
           title: "pages.dashboard.outflows_donut.title",
           partial: "pages/dashboard/outflows_donut",
-          locals: { outflows_data: @outflows_data, period: @period },
+          locals: { outflows_data: @outflows_data, period: @period, dashboard_ledger_usage: @dashboard_ledger_usage },
           visible: @accounts.any? && @outflows_data[:categories].present?,
           collapsible: true
         },
@@ -113,7 +117,7 @@ class PagesController < ApplicationController
           key: "net_worth_chart",
           title: "pages.dashboard.net_worth_chart.title",
           partial: "pages/dashboard/net_worth_chart",
-          locals: { balance_sheet: @balance_sheet, period: @period },
+          locals: { balance_sheet: @balance_sheet, period: @period, dashboard_ledger_usage: @dashboard_ledger_usage },
           visible: @accounts.any?,
           collapsible: true
         },

@@ -97,6 +97,7 @@ class PropertiesController < ApplicationController
               :institution_name,
               :institution_domain,
               :notes,
+              :ledger_usage,
               accountable_attributes: [ :id, :subtype, :year_built, :area_unit, :area_value ]
             )
     end

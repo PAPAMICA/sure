@@ -31,6 +31,11 @@ en:
     form:
       balance: "Balance on date:"
       opening_balance_date_label: Opening balance date
+      ledger_usage_label: Account type
+      ledger_usage_hint: Used to filter the dashboard. Personal is the default.
+      ledger_usage:
+        personal: Personal
+        professional: Business
       name_label: Account name
       name_placeholder: Example account name
       additional_details: Additional details

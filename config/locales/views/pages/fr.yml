@@ -6,6 +6,16 @@ fr:
     dashboard:
       welcome_back: Content de vous revoir
       happening_with_finance: Voici ce qui se passe avec vos finances
+      ledger_usage:
+        aria_label: Comptes personnels ou professionnels
+        personal: Perso
+        professional: Pro
+        empty_title: Aucun compte dans cette vue
+        empty_description_personal: Aucun compte marqué personnel, ou aucun n’est inclus dans vos finances. Passez en vue Pro ou modifiez un compte.
+        empty_description_professional: Aucun compte marqué professionnel. Passez en vue Perso ou indiquez le type sur chaque compte.
+        switch_to_personal: Afficher les comptes perso
+        switch_to_professional: Afficher les comptes pro
+        edit_accounts: Gérer les comptes
       new: Nouveau
       cashflow:
         title: Flux de trésorerie

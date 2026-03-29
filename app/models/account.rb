@@ -23,9 +23,20 @@ class Account < ApplicationRecord
 
   monetize :balance, :cash_balance
 
+  # personal = household / perso; professional = business / pro (dashboard filter)
+  enum :ledger_usage, { personal: "personal", professional: "professional" }, validate: true
+
   enum :classification, { asset: "asset", liability: "liability" }, validate: { allow_nil: true }
 
   scope :visible, -> { where(status: [ "draft", "active" ]) }
+  scope :with_ledger_usage, ->(usage) {
+    u = usage.to_s
+    if u.in?(ledger_usages.values)
+      where(ledger_usage: u)
+    else
+      all
+    end
+  }
   scope :assets, -> { where(classification: "asset") }
   scope :liabilities, -> { where(classification: "liability") }
   scope :alphabetically, -> { order(:name) }

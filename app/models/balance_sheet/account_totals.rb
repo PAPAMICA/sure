@@ -1,7 +1,8 @@
 class BalanceSheet::AccountTotals
-  def initialize(family, user: nil, sync_status_monitor:)
+  def initialize(family, user: nil, ledger_usage: nil, sync_status_monitor:)
     @family = family
     @user = user
+    @ledger_usage = ledger_usage
     @sync_status_monitor = sync_status_monitor
   end
 
@@ -14,7 +15,7 @@ class BalanceSheet::AccountTotals
   end
 
   private
-    attr_reader :family, :user, :sync_status_monitor
+    attr_reader :family, :user, :ledger_usage, :sync_status_monitor
 
     AccountRow = Data.define(:account, :converted_balance, :is_syncing, :included_in_finances) do
       def syncing? = is_syncing
@@ -29,13 +30,14 @@ class BalanceSheet::AccountTotals
       @visible_accounts ||= begin
         scope = family.accounts.visible.with_attached_logo.includes(:account_shares)
         scope = scope.accessible_by(user) if user
+        scope = scope.with_ledger_usage(ledger_usage) if ledger_usage.present?
         scope
       end
     end
 
     def finance_account_ids
       @finance_account_ids ||= if user
-        family.accounts.included_in_finances_for(user).pluck(:id).to_set
+        user.finance_accounts(ledger_usage: ledger_usage).pluck(:id).to_set
       else
         nil
       end
@@ -57,7 +59,7 @@ class BalanceSheet::AccountTotals
     def cache_key
       shares_version = user ? AccountShare.where(user: user).maximum(:updated_at)&.to_i : nil
       family.build_cache_key(
-        [ "balance_sheet_account_ids", user&.id, shares_version ].compact.join("_"),
+        [ "balance_sheet_account_ids", user&.id, shares_version, ledger_usage ].compact.join("_"),
         invalidate_on_data_updates: true
       )
     end

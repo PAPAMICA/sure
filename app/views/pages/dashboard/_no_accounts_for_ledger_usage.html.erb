@@ -1,0 +1,24 @@
+<div class="bg-container shadow-border-xs rounded-xl py-12 px-4 flex flex-col items-center justify-center text-center max-w-lg mx-auto">
+  <%= render DS::FilledIcon.new(variant: :container, icon: "layers") %>
+  <p class="text-sm font-medium text-primary mt-4"><%= t("pages.dashboard.ledger_usage.empty_title") %></p>
+  <p class="text-secondary text-sm mt-2">
+    <%= t("pages.dashboard.ledger_usage.empty_description_#{@dashboard_ledger_usage}") %>
+  </p>
+  <div class="flex flex-wrap items-center justify-center gap-3 mt-6">
+    <% if @dashboard_ledger_usage == "professional" %>
+      <%= link_to t("pages.dashboard.ledger_usage.switch_to_personal"),
+            root_path(period: @period.key, usage: "personal"),
+            class: "text-sm font-medium text-primary underline hover:no-underline" %>
+    <% else %>
+      <%= link_to t("pages.dashboard.ledger_usage.switch_to_professional"),
+            root_path(period: @period.key, usage: "professional"),
+            class: "text-sm font-medium text-primary underline hover:no-underline" %>
+    <% end %>
+    <%= render DS::Link.new(
+          text: t("pages.dashboard.ledger_usage.edit_accounts"),
+          icon: "pencil",
+          href: accounts_path,
+          variant: "secondary"
+        ) %>
+  </div>
+</div>
