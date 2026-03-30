@@ -3,7 +3,8 @@ class TransactionsController < ApplicationController
   include LedgerUsageFromParams
 
   before_action :set_entry_for_unlock, only: :unlock
-  prepend_before_action :apply_quick_categorize_ledger_usage_from_transaction, only: :quick_categorize
+  # Must run after authenticate_user! (needs Current.family). Do not use prepend_before_action here.
+  before_action :apply_quick_categorize_ledger_usage_from_transaction, only: :quick_categorize
   before_action :set_ledger_usage_from_params, only: %i[index clear_filter quick_categorize update]
   before_action :store_params!, only: :index # runs after set_ledger_usage on index
 
@@ -408,6 +409,7 @@ class TransactionsController < ApplicationController
     # When opening quick categorize from a deep link (e.g. ntfy), align Perso/Pro ledger with the transaction's account.
     def apply_quick_categorize_ledger_usage_from_transaction
       return unless params[:transaction_id].present?
+      return if Current.family.blank? || Current.user.blank?
 
       tx = Transaction.joins(entry: :account)
         .where(accounts: { family_id: Current.family.id })
