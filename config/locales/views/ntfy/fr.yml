@@ -12,6 +12,8 @@ fr:
       no_accounts: Aucun compte inclus dans ce résumé.
     transaction:
       uncategorized_display: "⚠️ À catégoriser"
+    actions:
+      open_quick_categorize: Ouvrir dans l’app
     default_templates:
       transaction_title: Nouvelle transaction
       transaction_body: |

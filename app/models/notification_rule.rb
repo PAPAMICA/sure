@@ -110,6 +110,7 @@ class NotificationRule < ApplicationRecord
       family.ntfy_url,
       title: title,
       body: body,
+      **family.ntfy_transaction_push_extras(transaction, entry),
       **family.ntfy_delivery_credentials
     )
     ntfy_response_success?(response)

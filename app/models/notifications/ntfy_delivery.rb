@@ -3,10 +3,22 @@ require "uri"
 
 # Delivers a notification via [ntfy](https://ntfy.sh/) (or a self-hosted instance).
 # Auth: Bearer token and/or Basic auth per https://docs.ntfy.sh/publish/#authentication
+# Enriched payloads: https://docs.ntfy.sh/publish/ (Click, Actions, Tags, Markdown, Icon, …)
 class Notifications::NtfyDelivery
   class << self
+    # ntfy short format: view, <label>, <url>[, clear=true]
+    # Commas/semicolons in +label+ require double-quoting per ntfy docs.
+    def view_action_header(label, url, clear: true)
+      lab = label.to_s.strip
+      lab = %("#{lab.gsub('"', '\"')}") if lab.include?(",") || lab.include?(";")
+      u = url.to_s.strip
+      suffix = clear ? ", clear=true" : ""
+      "view, #{lab}, #{u}#{suffix}"
+    end
+
     # access_token: raw token (Bearer added automatically) or full "Bearer ..." header value
-    def deliver!(topic_url, title:, body:, priority: "default", access_token: nil, basic_username: nil, basic_password: nil)
+    def deliver!(topic_url, title:, body:, priority: "default", access_token: nil, basic_username: nil, basic_password: nil,
+                 click: nil, actions: nil, tags: nil, icon: nil, markdown: false)
       return if topic_url.blank?
 
       uri = URI.parse(topic_url.strip)
@@ -18,8 +30,30 @@ class Notifications::NtfyDelivery
       request = Net::HTTP::Post.new(uri.request_uri.presence || "/")
       request["Title"] = title.to_s.truncate(250)
       request["Priority"] = normalize_priority(priority)
-      request["Content-Type"] = "text/plain; charset=utf-8"
+
+      if markdown
+        request["Markdown"] = "yes"
+        request["Content-Type"] = "text/markdown; charset=utf-8"
+      else
+        request["Content-Type"] = "text/plain; charset=utf-8"
+      end
+
       request.body = body.to_s.truncate(4000)
+
+      c = click.to_s.strip
+      request["Click"] = c.truncate(2048) if c.present? && c.match?(/\Ahttps?:\/\//i)
+
+      if actions.present?
+        request["Actions"] = actions.to_s.truncate(2048)
+      end
+
+      if tags.present?
+        tag_str = tags.is_a?(Array) ? tags.map(&:to_s).join(",") : tags.to_s
+        request["Tags"] = tag_str.truncate(512)
+      end
+
+      ic = icon.to_s.strip
+      request["Icon"] = ic.truncate(2048) if ic.present? && ic.match?(/\Ahttps?:\/\//i)
 
       apply_auth!(request, access_token: access_token, basic_username: basic_username, basic_password: basic_password)
 

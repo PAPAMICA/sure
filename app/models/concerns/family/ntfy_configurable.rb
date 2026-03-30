@@ -48,6 +48,21 @@ module Family::NtfyConfigurable
     ]
   end
 
+  # Extra ntfy headers for transaction pushes (Click, Actions, Tags); see https://docs.ntfy.sh/publish/
+  def ntfy_transaction_push_extras(transaction, entry)
+    url = ntfy_transaction_quick_categorize_url(transaction, entry).to_s.strip
+    return {} unless ntfy_http_url?(url)
+
+    actions = Notifications::NtfyDelivery.view_action_header(
+      I18n.t("ntfy.actions.open_quick_categorize"),
+      url,
+      clear: true
+    )
+    out = { click: url, actions: actions }
+    out[:tags] = "warning" if ntfy_transaction_uncategorized?(transaction)
+    out
+  end
+
   private
 
     def ntfy_transaction_variables(transaction, entry, notification_rule: nil)
@@ -74,6 +89,16 @@ module Family::NtfyConfigurable
       end
 
       name
+    end
+
+    def ntfy_transaction_uncategorized?(transaction)
+      cat = transaction.category
+      name = cat&.name.to_s.strip
+      name.blank? || Category.all_uncategorized_names.include?(name)
+    end
+
+    def ntfy_http_url?(str)
+      str.to_s.match?(/\Ahttps?:\/\//i)
     end
 
     # Absolute URL to quick-categorize with this transaction focused (when still uncategorized).
