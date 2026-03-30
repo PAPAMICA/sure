@@ -79,7 +79,7 @@ fr:
       clear_ntfy_credentials_label: Effacer tous les identifiants ntfy enregistrés (jeton, utilisateur, mot de passe)
       default_url_label: URL du topic
       ntfy_public_app_url_label: URL publique de l’app (pour les liens dans les notifications)
-      ntfy_public_app_url_hint: "Facultatif. URL de base de cette instance Sure (ex. https://app.exemple.fr). Sert à construire la variable quick_categorize_url dans les modèles de transaction. Si vide, on utilise le même hôte que les liens e-mail (APP_DOMAIN / paramètres mailer)."
+      ntfy_public_app_url_hint: "Fortement recommandé. URL de base de cette instance Sure (ex. https://banque.exemple.fr). Sert aux liens de catégorisation, aux cibles « toucher » et aux variables de modèle. Si vide, l’app utilise default_url_options du mailer (en production : APP_DOMAIN doit être défini) ou les valeurs des routes ; sinon la génération d’URL peut échouer."
       templates_heading: Modèles de message
       templates_intro: "Utilisez des variables %{nom}. Laissez un champ vide pour le modèle par défaut. Les sauts de ligne sont conservés dans le corps du message."
       template_variables_toggle: Variables disponibles pour le modèle
@@ -102,6 +102,8 @@ fr:
       ntfy_transaction_push_markdown_hint: Active le Markdown dans le corps du message (gras, listes, liens dans le texte).
       ntfy_transaction_push_extra_tags_label: Tags supplémentaires (toujours)
       ntfy_transaction_push_priority_label: Priorité de la notification
+      ntfy_transaction_push_click_url_template_label: URL personnalisée au toucher (facultatif)
+      ntfy_transaction_push_click_url_template_hint: "Si renseigné, cette URL exacte est utilisée pour l’en-tête Click ntfy et le bouton d’action (doit commencer par http/https). Mêmes variables %{…} que les modèles de message, ex. %{quick_categorize_url}. Laisser vide pour l’URL de catégorisation rapide intégrée."
       ntfy_balance_push_intro: "Les liens optionnels ouvrent la fiche du compte dans l’app. Même URL de base publique que pour les transactions."
       ntfy_balance_push_click_label: Ouvrir le compte au toucher
       ntfy_balance_push_click_hint: Ouvre la page du compte (URL publique ou mailer requis).
@@ -111,6 +113,8 @@ fr:
       ntfy_balance_push_markdown_hint: S’applique au corps du message de solde uniquement.
       ntfy_balance_push_extra_tags_label: Tags supplémentaires
       ntfy_balance_push_priority_label: Priorité de la notification
+      ntfy_balance_push_click_url_template_label: URL personnalisée au toucher (facultatif)
+      ntfy_balance_push_click_url_template_hint: "Si renseigné, utilisé pour Click et l’action « ouvrir le compte ». Variables : %{account_url} et toutes celles du modèle de solde. Laisser vide pour l’URL de la fiche compte."
       ntfy_summary_push_intro: "Les liens optionnels ouvrent le tableau de bord (racine de l’app). À activer pour un raccourci depuis le résumé."
       ntfy_summary_push_click_label: Ouvrir le tableau de bord au toucher
       ntfy_summary_push_click_hint: Ouvre l’accueil de l’app (chemin racine) via l’URL publique configurée.
@@ -120,6 +124,8 @@ fr:
       ntfy_summary_push_markdown_hint: S’applique au corps du résumé uniquement.
       ntfy_summary_push_extra_tags_label: Tags supplémentaires
       ntfy_summary_push_priority_label: Priorité de la notification
+      ntfy_summary_push_click_url_template_label: URL personnalisée au toucher (facultatif)
+      ntfy_summary_push_click_url_template_hint: "Si renseigné, utilisé pour Click et l’action tableau de bord. Variables : %{dashboard_url}, %{root_url} et toutes celles du résumé. Laisser vide pour l’URL racine de l’app."
       template_transaction_heading: Notifications de transaction
       template_variables_transaction: |
         Variables disponibles :
@@ -141,6 +147,7 @@ fr:
         Variables disponibles :
         %{rule_name} — Nom de la règle (ou libellé « Règle sans titre » si le nom est vide)
         %{account_name} — Nom du compte
+        %{account_url} — URL absolue vers ce compte (liens personnalisés)
         %{balance} — Solde actuel formaté
         %{currency} — Code devise
         %{balance_change} — Écart formaté (solde actuel − solde au plus tard à cette date)
@@ -168,6 +175,8 @@ fr:
         %{accounts_breakdown} — Une ligne par compte avec le total converti
         %{asset_accounts_breakdown} — Une ligne par compte d’actif
         %{liability_accounts_breakdown} — Une ligne par compte de passif
+        %{dashboard_url} — URL absolue vers l’accueil de l’app (identique à root)
+        %{root_url} — Identique à dashboard_url
       template_summary_title_label: Modèle du titre du résumé
       template_summary_body_label: Modèle du corps du résumé
       template_leave_blank_hint: Laisser vide pour utiliser le modèle par défaut.

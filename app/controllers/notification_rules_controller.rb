@@ -66,6 +66,7 @@ class NotificationRulesController < ApplicationController
     end
 
     push_attrs = family_ntfy_push_option_attrs(p)
+    click_url_templates = family_ntfy_click_url_template_attrs(p)
 
     if p[:clear_ntfy_credentials] == "1"
       Current.family.assign_attributes(
@@ -81,7 +82,8 @@ class NotificationRulesController < ApplicationController
         ntfy_summary_body_template: p[:ntfy_summary_body_template].presence,
         ntfy_public_app_url: p[:ntfy_public_app_url].presence,
         ntfy_balance_prior_days: family_ntfy_prior_days_param(p),
-        **push_attrs
+        **push_attrs,
+        **click_url_templates
       )
     else
       attrs = {
@@ -95,7 +97,8 @@ class NotificationRulesController < ApplicationController
         ntfy_summary_body_template: p[:ntfy_summary_body_template].presence,
         ntfy_public_app_url: p[:ntfy_public_app_url].presence,
         ntfy_balance_prior_days: family_ntfy_prior_days_param(p),
-        **push_attrs
+        **push_attrs,
+        **click_url_templates
       }
       attrs[:ntfy_access_token] = p[:ntfy_access_token] if p[:ntfy_access_token].present?
       attrs[:ntfy_basic_password] = p[:ntfy_basic_password] if p[:ntfy_basic_password].present?
@@ -177,8 +180,18 @@ class NotificationRulesController < ApplicationController
         :ntfy_balance_push_click_enabled, :ntfy_balance_push_actions_enabled,
         :ntfy_balance_push_markdown, :ntfy_balance_push_extra_tags, :ntfy_balance_push_priority,
         :ntfy_summary_push_click_enabled, :ntfy_summary_push_actions_enabled,
-        :ntfy_summary_push_markdown, :ntfy_summary_push_extra_tags, :ntfy_summary_push_priority
+        :ntfy_summary_push_markdown, :ntfy_summary_push_extra_tags, :ntfy_summary_push_priority,
+        :ntfy_transaction_push_click_url_template, :ntfy_balance_push_click_url_template,
+        :ntfy_summary_push_click_url_template
       )
+    end
+
+    def family_ntfy_click_url_template_attrs(p)
+      {
+        ntfy_transaction_push_click_url_template: p[:ntfy_transaction_push_click_url_template].to_s.strip.presence&.truncate(4096),
+        ntfy_balance_push_click_url_template: p[:ntfy_balance_push_click_url_template].to_s.strip.presence&.truncate(4096),
+        ntfy_summary_push_click_url_template: p[:ntfy_summary_push_click_url_template].to_s.strip.presence&.truncate(4096)
+      }
     end
 
     def family_ntfy_push_option_attrs(p)

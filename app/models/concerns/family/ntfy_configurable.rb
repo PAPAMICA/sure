@@ -49,8 +49,8 @@ module Family::NtfyConfigurable
   end
 
   # Extra ntfy headers (Click, Actions, Tags); see https://docs.ntfy.sh/publish/
-  def ntfy_transaction_push_extras(transaction, entry)
-    url = ntfy_transaction_quick_categorize_url(transaction, entry).to_s.strip
+  def ntfy_transaction_push_extras(transaction, entry, notification_rule: nil)
+    url = ntfy_transaction_effective_click_url(transaction, entry, notification_rule: notification_rule).to_s.strip
     ok = ntfy_http_url?(url)
 
     out = {}
@@ -75,9 +75,9 @@ module Family::NtfyConfigurable
     out
   end
 
-  def ntfy_balance_push_extras(account)
+  def ntfy_balance_push_extras(account, notification_rule: nil)
     out = {}
-    url = ntfy_absolute_account_url(account)
+    url = ntfy_balance_effective_click_url(account, notification_rule: notification_rule).to_s.strip
     ok = ntfy_http_url?(url)
 
     out[:click] = url if ok && ntfy_balance_push_click_enabled
@@ -96,9 +96,9 @@ module Family::NtfyConfigurable
     out
   end
 
-  def ntfy_summary_push_extras(_accounts)
+  def ntfy_summary_push_extras(accounts, notification_rule: nil)
     out = {}
-    url = ntfy_absolute_root_url
+    url = ntfy_summary_effective_click_url(accounts, notification_rule: notification_rule).to_s.strip
     ok = ntfy_http_url?(url)
 
     out[:click] = url if ok && ntfy_summary_push_click_enabled
@@ -164,25 +164,69 @@ module Family::NtfyConfigurable
       end
     end
 
-    def ntfy_absolute_account_url(account)
-      Rails.application.routes.url_helpers.account_url(account, **ntfy_url_options_for_public_links).to_s.strip
+    def ntfy_safe_url
+      yield
     rescue ArgumentError, ActionController::UrlGenerationError
       ""
     end
 
+    def ntfy_absolute_account_url(account)
+      ntfy_safe_url do
+        Rails.application.routes.url_helpers.account_url(account, **ntfy_url_options_for_public_links).to_s.strip
+      end
+    end
+
     def ntfy_absolute_root_url
-      Rails.application.routes.url_helpers.root_url(**ntfy_url_options_for_public_links).to_s.strip
-    rescue ArgumentError, ActionController::UrlGenerationError
-      ""
+      ntfy_safe_url do
+        Rails.application.routes.url_helpers.root_url(**ntfy_url_options_for_public_links).to_s.strip
+      end
+    end
+
+    def ntfy_transaction_effective_click_url(transaction, entry, notification_rule: nil)
+      tpl = ntfy_transaction_push_click_url_template.to_s.strip
+      if tpl.present?
+        vars = ntfy_transaction_variables(transaction, entry, notification_rule: notification_rule)
+        u = self.class.format_ntfy_template(tpl, vars).strip
+        return u if ntfy_http_url?(u)
+
+        return ""
+      end
+      ntfy_transaction_quick_categorize_url(transaction, entry)
+    end
+
+    def ntfy_balance_effective_click_url(account, notification_rule: nil)
+      tpl = ntfy_balance_push_click_url_template.to_s.strip
+      if tpl.present?
+        vars = ntfy_balance_variables(account, notification_rule: notification_rule)
+        u = self.class.format_ntfy_template(tpl, vars).strip
+        return u if ntfy_http_url?(u)
+
+        return ""
+      end
+      ntfy_absolute_account_url(account)
+    end
+
+    def ntfy_summary_effective_click_url(accounts, notification_rule: nil)
+      tpl = ntfy_summary_push_click_url_template.to_s.strip
+      if tpl.present?
+        vars = ntfy_summary_variables(accounts, notification_rule: notification_rule)
+        u = self.class.format_ntfy_template(tpl, vars).strip
+        return u if ntfy_http_url?(u)
+
+        return ""
+      end
+      ntfy_absolute_root_url
     end
 
     # Absolute URL to quick-categorize with this transaction focused (when still uncategorized).
     # Uses +ntfy_public_app_url+ when set (e.g. https://app.example.com or https://host/subpath),
-    # otherwise +config.action_mailer.default_url_options+ (e.g. +APP_DOMAIN+ in production).
+    # otherwise +config.action_mailer.default_url_options+ (requires :host), then route defaults, then localhost.
     def ntfy_transaction_quick_categorize_url(transaction, entry)
-      Rails.application.routes.url_helpers.quick_categorize_transactions_url(
-        { transaction_id: transaction.id, usage: entry.account.ledger_usage }.merge(ntfy_url_options_for_public_links)
-      )
+      ntfy_safe_url do
+        Rails.application.routes.url_helpers.quick_categorize_transactions_url(
+          { transaction_id: transaction.id, usage: entry.account.ledger_usage }.merge(ntfy_url_options_for_public_links)
+        )
+      end
     end
 
     def ntfy_url_options_for_public_links
@@ -195,15 +239,28 @@ module Family::NtfyConfigurable
         end
         path = uri.path.to_s
         opts[:script_name] = path if path.present? && path != "/"
-        opts.compact
-      else
-        fallback = Rails.application.config.action_mailer.default_url_options
-        return fallback.dup if fallback.present?
-
-        { host: "localhost", port: 3000 }
+        merged = opts.compact
+        return merged if merged[:host].present?
       end
+      ntfy_fallback_url_options
     rescue URI::InvalidURIError
-      Rails.application.config.action_mailer.default_url_options.presence || { host: "localhost", port: 3000 }
+      ntfy_fallback_url_options
+    end
+
+    def ntfy_fallback_url_options
+      mail_opts = Rails.application.config.action_mailer.default_url_options
+      if mail_opts.is_a?(Hash)
+        h = mail_opts.symbolize_keys
+        return h if h[:host].present?
+      end
+
+      route_opts = Rails.application.routes.default_url_options
+      if route_opts.is_a?(Hash)
+        h = route_opts.symbolize_keys
+        return h if h[:host].present?
+      end
+
+      { host: "localhost", port: 3000 }
     end
 
     def ntfy_balance_variables(account, notification_rule: nil)
@@ -212,7 +269,8 @@ module Family::NtfyConfigurable
         rule_name: ntfy_rule_display_name(notification_rule),
         account_name: account.name.to_s,
         balance: money.format,
-        currency: account.currency.to_s
+        currency: account.currency.to_s,
+        account_url: ntfy_absolute_account_url(account)
       }
       base.merge(ntfy_balance_comparison_template_vars(account))
     end
@@ -278,6 +336,7 @@ module Family::NtfyConfigurable
       liabilities_money = Money.new(totals[:liabilities], currency)
       net_worth_money = Money.new(totals[:assets] - totals[:liabilities], currency)
 
+      root = ntfy_absolute_root_url
       {
         rule_name: ntfy_rule_display_name(notification_rule),
         family_name: name.to_s,
@@ -291,7 +350,9 @@ module Family::NtfyConfigurable
         net_worth: net_worth_money.format,
         accounts_breakdown: ntfy_summary_account_lines(account_list, rates: rates),
         asset_accounts_breakdown: ntfy_summary_account_lines(account_list.select { |a| a.classification == "asset" }, rates: rates),
-        liability_accounts_breakdown: ntfy_summary_account_lines(account_list.select { |a| a.classification == "liability" }, rates: rates)
+        liability_accounts_breakdown: ntfy_summary_account_lines(account_list.select { |a| a.classification == "liability" }, rates: rates),
+        dashboard_url: root,
+        root_url: root
       }
     end
 

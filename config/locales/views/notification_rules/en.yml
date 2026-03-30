@@ -79,7 +79,7 @@ en:
       clear_ntfy_credentials_label: Clear all saved ntfy credentials (token, username, password)
       default_url_label: Topic URL
       ntfy_public_app_url_label: Public app URL (for links in notifications)
-      ntfy_public_app_url_hint: "Optional. Base URL of this Sure instance (e.g. https://app.example.com). Used to build quick_categorize_url in transaction templates. If empty, the same host as email links (APP_DOMAIN / mailer settings) is used."
+      ntfy_public_app_url_hint: "Strongly recommended. Base URL of this Sure instance (e.g. https://bank.example.com). Used for quick-categorize links, tap targets, and template variables. If empty, the app uses mailer default_url_options (production: APP_DOMAIN must be set) or route defaults; otherwise link generation can fail."
       templates_heading: Message templates
       templates_intro: "Use %{variable} placeholders. Leave a field empty to use the built-in default. New lines are preserved in the message body."
       template_variables_toggle: Available template variables
@@ -102,6 +102,8 @@ en:
       ntfy_transaction_push_markdown_hint: "Enables Markdown in the message body (bold, lists, links in body text). Title stays plain unless your client supports otherwise."
       ntfy_transaction_push_extra_tags_label: Extra tags (always)
       ntfy_transaction_push_priority_label: Notification priority
+      ntfy_transaction_push_click_url_template_label: Custom tap / click URL (optional)
+      ntfy_transaction_push_click_url_template_hint: "If set, this exact URL is used for the ntfy Click header and action button (must start with http/https). Same %{variables} as message templates, e.g. %{quick_categorize_url}. Leave blank to use the built-in quick-categorize URL."
       ntfy_balance_push_intro: "Optional links open the account page in your app. Uses the same public base URL as transaction links."
       ntfy_balance_push_click_label: Open account when notification is tapped
       ntfy_balance_push_click_hint: Tap opens this account’s page (requires correct public app URL or mailer host).
@@ -111,6 +113,8 @@ en:
       ntfy_balance_push_markdown_hint: Same as for transactions — applies to the balance message body only.
       ntfy_balance_push_extra_tags_label: Extra tags
       ntfy_balance_push_priority_label: Notification priority
+      ntfy_balance_push_click_url_template_label: Custom tap / click URL (optional)
+      ntfy_balance_push_click_url_template_hint: "If set, used for Click and the open-account action. Variables include %{account_url} plus all balance template variables. Leave blank to use the account page URL."
       ntfy_summary_push_intro: "Optional links open your app dashboard (root URL). Enable if you want a quick shortcut from the summary notification."
       ntfy_summary_push_click_label: Open dashboard when notification is tapped
       ntfy_summary_push_click_hint: Tap opens the app home (root path) using your public base URL.
@@ -120,6 +124,8 @@ en:
       ntfy_summary_push_markdown_hint: Applies to the summary message body only.
       ntfy_summary_push_extra_tags_label: Extra tags
       ntfy_summary_push_priority_label: Notification priority
+      ntfy_summary_push_click_url_template_label: Custom tap / click URL (optional)
+      ntfy_summary_push_click_url_template_hint: "If set, used for Click and the dashboard action. Variables include %{dashboard_url} and %{root_url} plus all summary template variables. Leave blank to use the app root URL."
       template_transaction_heading: Transaction notifications
       template_variables_transaction: |
         Available variables:
@@ -141,6 +147,7 @@ en:
         Available variables:
         %{rule_name} — Notification rule name (or “Untitled rule” if blank)
         %{account_name} — Account name
+        %{account_url} — Absolute URL to this account (for custom tap links)
         %{balance} — Formatted current balance
         %{currency} — Currency code
         %{balance_change} — Formatted difference (current − balance on or before that day)
@@ -168,6 +175,8 @@ en:
         %{accounts_breakdown} — One line per account with converted total
         %{asset_accounts_breakdown} — One line per asset account
         %{liability_accounts_breakdown} — One line per liability account
+        %{dashboard_url} — Absolute URL to the app home (same as root)
+        %{root_url} — Same as dashboard_url
       template_summary_title_label: Summary title template
       template_summary_body_label: Summary body template
       template_leave_blank_hint: Leave empty to use the default template.

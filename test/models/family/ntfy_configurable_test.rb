@@ -64,4 +64,26 @@ class Family::NtfyConfigurableTest < ActiveSupport::TestCase
       end
     end
   end
+
+  test "custom transaction click url template is used for ntfy click header" do
+    family = families(:dylan_family)
+    family.update_columns(ntfy_transaction_push_click_url_template: "https://example.com/x?name=%{entry_name}")
+    tx = transactions(:one)
+    entry = entries(:transaction)
+
+    extras = family.ntfy_transaction_push_extras(tx, entry)
+    assert_equal "https://example.com/x?name=Starbucks", extras[:click]
+  end
+
+  test "ntfy_url_options_for_public_links falls back to localhost when mailer host is blank" do
+    family = families(:dylan_family)
+    family.update_columns(ntfy_public_app_url: "")
+
+    Rails.application.config.action_mailer.stub :default_url_options, { host: nil } do
+      Rails.application.routes.stub :default_url_options, {} do
+        opts = family.send(:ntfy_url_options_for_public_links)
+        assert_equal "localhost", opts[:host]
+      end
+    end
+  end
 end

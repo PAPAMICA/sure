@@ -112,7 +112,7 @@ class NotificationRule < ApplicationRecord
       body: body,
       priority: family.ntfy_transaction_push_priority,
       markdown: family.ntfy_transaction_push_markdown,
-      **family.ntfy_transaction_push_extras(transaction, entry),
+      **family.ntfy_transaction_push_extras(transaction, entry, notification_rule: self),
       **family.ntfy_delivery_credentials
     )
     ntfy_response_success?(response)
@@ -126,6 +126,9 @@ class NotificationRule < ApplicationRecord
       family.ntfy_url,
       title: title,
       body: body,
+      priority: family.ntfy_balance_push_priority,
+      markdown: family.ntfy_balance_push_markdown,
+      **family.ntfy_balance_push_extras(account, notification_rule: self),
       **family.ntfy_delivery_credentials
     )
     ntfy_response_success?(response)
@@ -141,7 +144,7 @@ class NotificationRule < ApplicationRecord
       body: body,
       priority: family.ntfy_summary_push_priority,
       markdown: family.ntfy_summary_push_markdown,
-      **family.ntfy_summary_push_extras(accounts),
+      **family.ntfy_summary_push_extras(accounts, notification_rule: self),
       **family.ntfy_delivery_credentials
     )
     ntfy_response_success?(response)

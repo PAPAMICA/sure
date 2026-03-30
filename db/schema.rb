@@ -561,6 +561,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_30_200000) do
     t.boolean "ntfy_summary_push_markdown", default: false, null: false
     t.string "ntfy_summary_push_extra_tags", default: "", null: false
     t.string "ntfy_summary_push_priority", default: "default", null: false
+    t.text "ntfy_transaction_push_click_url_template"
+    t.text "ntfy_balance_push_click_url_template"
+    t.text "ntfy_summary_push_click_url_template"
     t.jsonb "apprise_rules", default: {}, null: false
     t.datetime "latest_sync_activity_at", default: -> { "CURRENT_TIMESTAMP" }
     t.datetime "latest_sync_completed_at", default: -> { "CURRENT_TIMESTAMP" }

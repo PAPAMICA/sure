@@ -65,5 +65,12 @@
           ntfy_push_priority_choices,
           { label: t("notification_rules.index.ntfy_balance_push_priority_label") },
           { class: "form-field__input w-full max-w-md" } %>
+
+    <%= f.text_area :ntfy_balance_push_click_url_template,
+          label: t("notification_rules.index.ntfy_balance_push_click_url_template_label"),
+          value: Current.family.ntfy_balance_push_click_url_template,
+          rows: 2,
+          class: "form-field__input w-full font-mono text-sm",
+          hint: t("notification_rules.index.ntfy_balance_push_click_url_template_hint") %>
   </div>
 </div>
