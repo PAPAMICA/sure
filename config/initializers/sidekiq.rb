@@ -65,27 +65,17 @@ Sidekiq.configure_server do |config|
     if schedule_path.file?
       schedule = YAML.safe_load(ERB.new(schedule_path.read).result, aliases: true) || {}
       if schedule.is_a?(Hash) && schedule.present?
-        loaded_jobs = []
-        failed_jobs = {}
+        # IMPORTANT: call load_from_hash! once with the full hash.
+        # sidekiq-cron's load_from_hash! runs destroy_removed_jobs(keys) against *all* schedule-sourced
+        # jobs in Redis. If we pass a one-key hash per job, each call deletes every other schedule job,
+        # leaving only the last entry — breaking sync_hourly, notification_rules_scheduler, etc.
+        errors = Sidekiq::Cron::Job.load_from_hash!(schedule, { "source" => "schedule" })
+        failed = errors&.reject { |_, err| err.blank? }
 
-        # Load each schedule job independently so one malformed entry does not block all cron jobs.
-        schedule.each do |job_name, job_config|
-          begin
-            errors = Sidekiq::Cron::Job.load_from_hash!({ job_name => job_config }, source: "schedule")
-            error_message = errors&.dig(job_name)
-            if error_message.present?
-              failed_jobs[job_name] = error_message
-            else
-              loaded_jobs << job_name
-            end
-          rescue => e
-            failed_jobs[job_name] = e.message
-          end
-        end
-
-        Rails.logger.info("[Sidekiq::Cron] Loaded #{loaded_jobs.size}/#{schedule.size} job(s): #{loaded_jobs.sort.join(', ')}")
-        if failed_jobs.present?
-          Rails.logger.error("[Sidekiq::Cron] Failed jobs: #{failed_jobs.inspect}")
+        if failed.present?
+          Rails.logger.error("[Sidekiq::Cron] Some jobs failed to save: #{failed.inspect}")
+        else
+          Rails.logger.info("[Sidekiq::Cron] Loaded #{schedule.size} job(s) from config/schedule.yml")
         end
 
         %w[sync_hourly notification_rules_scheduler].each do |critical_job_name|
