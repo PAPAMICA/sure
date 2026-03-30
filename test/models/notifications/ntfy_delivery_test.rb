@@ -2,12 +2,16 @@ require "test_helper"
 
 class Notifications::NtfyDeliveryTest < ActiveSupport::TestCase
   test "deliver! sets Click, Actions, Tags, and Markdown headers per ntfy publish API" do
-    stub_request(:post, "https://ntfy.example.com/foo")
+    stub_request(:post, %r{\Ahttps://ntfy\.example\.com/foo})
       .with { |req|
         h = req.headers.transform_values { |v| Array(v).first }
+        u = URI(req.uri)
+        qtags = URI.decode_www_form(u.query.to_s).to_h["tags"]
+        tag_hdr_ok = h["X-Tags"] == "warning,cd" && h["Tags"] == "warning,cd"
+        tag_q_ok = qtags == "warning,cd"
         h["Click"] == "https://my.app/deep" &&
           h["Actions"] == "view, Open, https://my.app/deep, clear=true" &&
-          h["Tags"] == "warning,cd" &&
+          tag_hdr_ok && tag_q_ok &&
           h["Markdown"] == "yes" &&
           h["Content-Type"] == "text/markdown; charset=utf-8"
       }

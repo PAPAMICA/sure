@@ -16,7 +16,7 @@ class Family::NtfyConfigurableTest < ActiveSupport::TestCase
     tx = transactions(:one)
     entry = entries(:transaction)
 
-    family.stub :ntfy_transaction_quick_categorize_url, "https://app.example.com/quick?usage=personal" do
+    family.stub :ntfy_transaction_in_app_link_url, "https://app.example.com/quick?usage=personal" do
       extras = family.ntfy_transaction_push_extras(tx, entry)
       assert_equal "https://app.example.com/quick?usage=personal", extras[:click]
       assert_match(/\Aview, .+, https:\/\/app\.example\.com\/quick\?usage=personal, clear=true\z/, extras[:actions])
@@ -43,7 +43,7 @@ class Family::NtfyConfigurableTest < ActiveSupport::TestCase
     tx = transactions(:one)
     entry = entries(:transaction)
 
-    family.stub :ntfy_transaction_quick_categorize_url, "https://app.example.com/q" do
+    family.stub :ntfy_transaction_in_app_link_url, "https://app.example.com/q" do
       extras = family.ntfy_transaction_push_extras(tx, entry)
       assert_nil extras[:click]
       assert extras[:actions].present?
@@ -57,7 +57,7 @@ class Family::NtfyConfigurableTest < ActiveSupport::TestCase
     entry = entries(:transaction)
 
     tx.stub :category, nil do
-      family.stub :ntfy_transaction_quick_categorize_url, "https://app.example.com/q" do
+      family.stub :ntfy_transaction_in_app_link_url, "https://app.example.com/q" do
         extras = family.ntfy_transaction_push_extras(tx, entry)
         assert_includes extras[:tags].split(","), "warning"
         assert_includes extras[:tags].split(","), "cd"
@@ -75,14 +75,27 @@ class Family::NtfyConfigurableTest < ActiveSupport::TestCase
     assert_equal "https://example.com/x?name=Starbucks", extras[:click]
   end
 
-  test "ntfy_url_options_for_public_links falls back to localhost when mailer host is blank" do
+  test "ntfy_url_options_for_public_links uses APP_URL when family URL blank" do
     family = families(:dylan_family)
     family.update_columns(ntfy_public_app_url: "")
 
-    Rails.application.config.action_mailer.stub :default_url_options, { host: nil } do
-      Rails.application.routes.stub :default_url_options, {} do
-        opts = family.send(:ntfy_url_options_for_public_links)
-        assert_equal "localhost", opts[:host]
+    with_env_overrides("APP_URL" => "https://bank.example.com", "PUBLIC_APP_URL" => "", "APP_DOMAIN" => "") do
+      opts = family.send(:ntfy_url_options_for_public_links)
+      assert_equal "bank.example.com", opts[:host]
+      assert_equal "https", opts[:protocol]
+    end
+  end
+
+  test "ntfy_url_options_for_public_links falls back to localhost when no host sources" do
+    family = families(:dylan_family)
+    family.update_columns(ntfy_public_app_url: "")
+
+    with_env_overrides("APP_URL" => "", "PUBLIC_APP_URL" => "", "APP_DOMAIN" => "") do
+      Rails.application.config.action_mailer.stub :default_url_options, { host: nil } do
+        Rails.application.routes.stub :default_url_options, {} do
+          opts = family.send(:ntfy_url_options_for_public_links)
+          assert_equal "localhost", opts[:host]
+        end
       end
     end
   end

@@ -79,7 +79,7 @@ en:
       clear_ntfy_credentials_label: Clear all saved ntfy credentials (token, username, password)
       default_url_label: Topic URL
       ntfy_public_app_url_label: Public app URL (for links in notifications)
-      ntfy_public_app_url_hint: "Strongly recommended. Base URL of this Sure instance (e.g. https://bank.example.com). Used for quick-categorize links, tap targets, and template variables. If empty, the app uses mailer default_url_options (production: APP_DOMAIN must be set) or route defaults; otherwise link generation can fail."
+      ntfy_public_app_url_hint: "Strongly recommended. Base URL of this Sure instance (e.g. https://bank.example.com). Used for notification links and templates. If empty, the app tries APP_URL, PUBLIC_APP_URL, then APP_DOMAIN (see .env.example), then mailer default_url_options; if none have a host, links fall back to localhost."
       templates_heading: Message templates
       templates_intro: "Use %{variable} placeholders. Leave a field empty to use the built-in default. New lines are preserved in the message body."
       template_variables_toggle: Available template variables
@@ -137,7 +137,8 @@ en:
         %{account_name} — Account name
         %{category_name} — Category, or a localized “needs categorization” label when none / uncategorized
         %{merchant_name} — Merchant (may be empty)
-        %{quick_categorize_url} — Link to quick-categorize this transaction (must be logged in)
+        %{quick_categorize_url} — Smart link: quick-categorize if the transaction still needs a category, otherwise the transaction detail page (same host as below)
+        %{transaction_detail_url} — Always the transaction detail page (with usage= Perso/Pro)
       template_transaction_title_label: Title template
       template_transaction_body_label: Body template
       template_balance_heading: Balance notifications (after sync / scheduled)

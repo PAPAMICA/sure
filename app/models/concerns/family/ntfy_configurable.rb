@@ -131,7 +131,8 @@ module Family::NtfyConfigurable
         account_name: entry.account.name.to_s,
         category_name: ntfy_transaction_category_display(transaction),
         merchant_name: transaction.merchant&.name.to_s,
-        quick_categorize_url: ntfy_transaction_quick_categorize_url(transaction, entry)
+        quick_categorize_url: ntfy_transaction_in_app_link_url(transaction, entry),
+        transaction_detail_url: ntfy_transaction_show_url(transaction, entry)
       }
     end
 
@@ -191,7 +192,7 @@ module Family::NtfyConfigurable
 
         return ""
       end
-      ntfy_transaction_quick_categorize_url(transaction, entry)
+      ntfy_transaction_in_app_link_url(transaction, entry)
     end
 
     def ntfy_balance_effective_click_url(account, notification_rule: nil)
@@ -218,9 +219,17 @@ module Family::NtfyConfigurable
       ntfy_absolute_root_url
     end
 
-    # Absolute URL to quick-categorize with this transaction focused (when still uncategorized).
-    # Uses +ntfy_public_app_url+ when set (e.g. https://app.example.com or https://host/subpath),
-    # otherwise +config.action_mailer.default_url_options+ (requires :host), then route defaults, then localhost.
+    # Opens quick-categorize when the transaction needs a category; otherwise the transaction detail page.
+    # Template variable %{quick_categorize_url} uses this (name kept for backward compatibility).
+    def ntfy_transaction_in_app_link_url(transaction, entry)
+      if ntfy_transaction_uncategorized?(transaction)
+        ntfy_transaction_quick_categorize_url(transaction, entry)
+      else
+        ntfy_transaction_show_url(transaction, entry)
+      end
+    end
+
+    # Absolute URL to quick-categorize with this transaction focused.
     def ntfy_transaction_quick_categorize_url(transaction, entry)
       ntfy_safe_url do
         Rails.application.routes.url_helpers.quick_categorize_transactions_url(
@@ -229,25 +238,28 @@ module Family::NtfyConfigurable
       end
     end
 
-    def ntfy_url_options_for_public_links
-      raw = ntfy_public_app_url.to_s.strip.presence
-      if raw.present?
-        uri = URI.parse(raw)
-        opts = { host: uri.host, protocol: uri.scheme }
-        if uri.port && ![ 80, 443 ].include?(uri.port.to_i)
-          opts[:port] = uri.port
-        end
-        path = uri.path.to_s
-        opts[:script_name] = path if path.present? && path != "/"
-        merged = opts.compact
-        return merged if merged[:host].present?
+    def ntfy_transaction_show_url(transaction, entry)
+      ntfy_safe_url do
+        Rails.application.routes.url_helpers.transaction_url(
+          transaction,
+          { usage: entry.account.ledger_usage }.merge(ntfy_url_options_for_public_links)
+        )
       end
-      ntfy_fallback_url_options
-    rescue URI::InvalidURIError
+    end
+
+    def ntfy_url_options_for_public_links
+      opts = ntfy_url_options_from_base_url_string(ntfy_public_app_url)
+      return opts if opts.present?
+
       ntfy_fallback_url_options
     end
 
     def ntfy_fallback_url_options
+      %w[APP_URL PUBLIC_APP_URL APP_DOMAIN].each do |key|
+        opts = ntfy_url_options_from_base_url_string(ENV[key])
+        return opts if opts.present?
+      end
+
       mail_opts = Rails.application.config.action_mailer.default_url_options
       if mail_opts.is_a?(Hash)
         h = mail_opts.symbolize_keys
@@ -261,6 +273,34 @@ module Family::NtfyConfigurable
       end
 
       { host: "localhost", port: 3000 }
+    end
+
+    # Parses "https://host", "host", or "https://host/subpath" into url_for options (+script_name+ for path prefix).
+    def ntfy_url_options_from_base_url_string(raw)
+      str = raw.to_s.strip
+      return nil if str.blank?
+
+      with_scheme = str.match?(/\Ahttps?:\/\//i) ? str : "#{ntfy_infer_default_scheme}://#{str}"
+      uri = URI.parse(with_scheme)
+      return nil if uri.host.blank?
+
+      opts = { host: uri.host, protocol: uri.scheme }
+      if uri.port && ![ 80, 443 ].include?(uri.port.to_i)
+        opts[:port] = uri.port
+      end
+      path = uri.path.to_s
+      opts[:script_name] = path if path.present? && path != "/"
+      opts.compact
+    rescue URI::InvalidURIError
+      nil
+    end
+
+    def ntfy_infer_default_scheme
+      if Rails.env.production?
+        ActiveModel::Type::Boolean.new.cast(ENV.fetch("RAILS_FORCE_SSL", "true")) ? "https" : "http"
+      else
+        "http"
+      end
     end
 
     def ntfy_balance_variables(account, notification_rule: nil)

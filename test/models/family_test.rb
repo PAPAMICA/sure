@@ -317,6 +317,25 @@ class FamilyTest < ActiveSupport::TestCase
     assert_match(/\Ahttps?:\/\//, url)
     assert_includes url, txn.id.to_s
     assert_includes url, "transaction_id"
+
+    smart = family.send(:ntfy_transaction_in_app_link_url, txn, txn.entry)
+    assert_includes smart, "quick_categorize"
+  end
+
+  test "ntfy transaction in app link uses show URL when categorized" do
+    family = families(:dylan_family)
+    family.update_columns(ntfy_public_app_url: "https://bank.example.com")
+    txn = transactions(:one)
+    txn.update!(category: categories(:food_and_drink))
+
+    url = family.send(:ntfy_transaction_in_app_link_url, txn.reload, txn.entry)
+    assert_includes url, "bank.example.com"
+    assert_includes url, "/transactions/#{txn.id}"
+    assert_no_match(/quick_categorize/, url)
+
+    vars = family.send(:ntfy_transaction_variables, txn, txn.entry, notification_rule: nil)
+    assert_equal url, vars[:quick_categorize_url]
+    assert_includes vars[:transaction_detail_url], "/transactions/#{txn.id}"
   end
 
   test "ntfy transaction category_name is real category when not uncategorized" do

@@ -27,7 +27,9 @@ class Notifications::NtfyDelivery
       http.open_timeout = 5
       http.read_timeout = 10
 
-      request = Net::HTTP::Post.new(uri.request_uri.presence || "/")
+      tag_str = normalized_ntfy_tag_string(tags)
+      post_path = ntfy_post_path_with_tags(uri, tag_str)
+      request = Net::HTTP::Post.new(post_path)
       request["Title"] = title.to_s.truncate(250)
       request["Priority"] = normalize_priority(priority)
 
@@ -47,9 +49,12 @@ class Notifications::NtfyDelivery
         request["Actions"] = actions.to_s.truncate(2048)
       end
 
-      if tags.present?
-        tag_str = tags.is_a?(Array) ? tags.map(&:to_s).join(",") : tags.to_s
-        request["Tags"] = tag_str.truncate(512)
+      if tag_str.present?
+        # X-Tags is the documented primary name; Tags is an alias. Some reverse proxies strip
+        # custom headers, so we also pass tags= on the query string (ntfy reads both).
+        tag_hdr = tag_str.truncate(512)
+        request["X-Tags"] = tag_hdr
+        request["Tags"] = tag_hdr
       end
 
       ic = icon.to_s.strip
@@ -74,6 +79,32 @@ class Notifications::NtfyDelivery
     end
 
     private
+
+      def normalized_ntfy_tag_string(tags)
+        return "" if tags.blank?
+
+        s = tags.is_a?(Array) ? tags.map(&:to_s).join(",") : tags.to_s
+        s.strip.truncate(512)
+      end
+
+      # Path + optional query, with tags merged into query when present (survives header stripping).
+      def ntfy_post_path_with_tags(uri, tag_str)
+        path = uri.path
+        path = "/" if path.blank?
+        pairs = URI.decode_www_form(uri.query.to_s)
+        if tag_str.present?
+          i = pairs.find_index { |(k, _)| k == "tags" }
+          if i
+            merged = [ pairs[i][1], tag_str ].reject(&:blank?).join(",")
+            pairs[i] = [ "tags", merged.truncate(512) ]
+          else
+            pairs << [ "tags", tag_str.truncate(512) ]
+          end
+        end
+        return path if pairs.empty?
+
+        "#{path}?#{URI.encode_www_form(pairs)}"
+      end
 
       def normalize_priority(priority)
         p = priority.to_s

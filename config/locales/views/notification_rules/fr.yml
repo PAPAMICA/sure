@@ -79,7 +79,7 @@ fr:
       clear_ntfy_credentials_label: Effacer tous les identifiants ntfy enregistrés (jeton, utilisateur, mot de passe)
       default_url_label: URL du topic
       ntfy_public_app_url_label: URL publique de l’app (pour les liens dans les notifications)
-      ntfy_public_app_url_hint: "Fortement recommandé. URL de base de cette instance Sure (ex. https://banque.exemple.fr). Sert aux liens de catégorisation, aux cibles « toucher » et aux variables de modèle. Si vide, l’app utilise default_url_options du mailer (en production : APP_DOMAIN doit être défini) ou les valeurs des routes ; sinon la génération d’URL peut échouer."
+      ntfy_public_app_url_hint: "Fortement recommandé. URL de base de cette instance Sure (ex. https://banque.exemple.fr). Si vide, l’app essaie APP_URL, PUBLIC_APP_URL puis APP_DOMAIN (voir .env.example), puis le mailer ; sans hôte valide les liens retombent sur localhost."
       templates_heading: Modèles de message
       templates_intro: "Utilisez des variables %{nom}. Laissez un champ vide pour le modèle par défaut. Les sauts de ligne sont conservés dans le corps du message."
       template_variables_toggle: Variables disponibles pour le modèle
@@ -137,7 +137,8 @@ fr:
         %{account_name} — Nom du compte
         %{category_name} — Catégorie, ou libellé « à catégoriser » si aucune / non classée
         %{merchant_name} — Commerçant (peut être vide)
-        %{quick_categorize_url} — Lien vers la catégorisation rapide pour cette transaction (connexion requise)
+        %{quick_categorize_url} — Lien intelligent : catégorisation rapide si la transaction est encore à classer, sinon fiche détail (même hôte que ci-dessous)
+        %{transaction_detail_url} — Toujours la fiche détail de la transaction (usage= Perso/Pro)
       template_transaction_title_label: Modèle du titre
       template_transaction_body_label: Modèle du corps
       template_balance_heading: Notifications de solde (après sync / planifié)
