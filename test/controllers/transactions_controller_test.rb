@@ -13,6 +13,22 @@ class TransactionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "quick categorize focuses transaction_id when it is uncategorized" do
+    txn = transactions(:one)
+    uncat = Category.find_or_create_by!(
+      family: @user.family,
+      ledger_usage: "personal",
+      name: Category.uncategorized_name
+    ) do |c|
+      c.color = "#888888"
+    end
+    txn.update!(category: uncat)
+
+    get quick_categorize_transactions_url(transaction_id: txn.id)
+    assert_response :success
+    assert_includes response.body, @entry.name
+  end
+
   test "creates with transaction details" do
     assert_difference [ "Entry.count", "Transaction.count" ], 1 do
       post transactions_url, params: {

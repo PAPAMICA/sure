@@ -10,6 +10,8 @@ en:
       change_line: "Δ %{prior_days}d: %{balance_change} (was %{prior_balance})"
     summary:
       no_accounts: No accounts included in this summary.
+    transaction:
+      uncategorized_display: "⚠️ To categorize"
     default_templates:
       transaction_title: New transaction
       transaction_body: |
@@ -18,6 +20,7 @@ en:
         %{date}
         %{account_name}
         %{category_name}
+        %{quick_categorize_url}
       balance_title: "[%{rule_name}] %{account_name}"
       balance_body: "%{balance}%{balance_change_line}"
       summary_title: "[%{rule_name}] Financial summary"

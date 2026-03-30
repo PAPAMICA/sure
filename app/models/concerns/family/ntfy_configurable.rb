@@ -60,9 +60,50 @@ module Family::NtfyConfigurable
         entry_name: entry.name.to_s,
         date: I18n.l(entry.date, format: :long),
         account_name: entry.account.name.to_s,
-        category_name: transaction.category&.name.to_s,
-        merchant_name: transaction.merchant&.name.to_s
+        category_name: ntfy_transaction_category_display(transaction),
+        merchant_name: transaction.merchant&.name.to_s,
+        quick_categorize_url: ntfy_transaction_quick_categorize_url(transaction, entry)
       }
+    end
+
+    def ntfy_transaction_category_display(transaction)
+      cat = transaction.category
+      name = cat&.name.to_s.strip
+      if name.blank? || Category.all_uncategorized_names.include?(name)
+        return I18n.t("ntfy.transaction.uncategorized_display")
+      end
+
+      name
+    end
+
+    # Absolute URL to quick-categorize with this transaction focused (when still uncategorized).
+    # Uses +ntfy_public_app_url+ when set (e.g. https://app.example.com or https://host/subpath),
+    # otherwise +config.action_mailer.default_url_options+ (e.g. +APP_DOMAIN+ in production).
+    def ntfy_transaction_quick_categorize_url(transaction, entry)
+      Rails.application.routes.url_helpers.quick_categorize_transactions_url(
+        { transaction_id: transaction.id, usage: entry.account.ledger_usage }.merge(ntfy_url_options_for_public_links)
+      )
+    end
+
+    def ntfy_url_options_for_public_links
+      raw = ntfy_public_app_url.to_s.strip.presence
+      if raw.present?
+        uri = URI.parse(raw)
+        opts = { host: uri.host, protocol: uri.scheme }
+        if uri.port && ![ 80, 443 ].include?(uri.port.to_i)
+          opts[:port] = uri.port
+        end
+        path = uri.path.to_s
+        opts[:script_name] = path if path.present? && path != "/"
+        opts.compact
+      else
+        fallback = Rails.application.config.action_mailer.default_url_options
+        return fallback.dup if fallback.present?
+
+        { host: "localhost", port: 3000 }
+      end
+    rescue URI::InvalidURIError
+      Rails.application.config.action_mailer.default_url_options.presence || { host: "localhost", port: 3000 }
     end
 
     def ntfy_balance_variables(account, notification_rule: nil)

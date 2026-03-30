@@ -3,12 +3,20 @@ class TransactionsController < ApplicationController
   include LedgerUsageFromParams
 
   before_action :set_entry_for_unlock, only: :unlock
+  prepend_before_action :apply_quick_categorize_ledger_usage_from_transaction, only: :quick_categorize
   before_action :set_ledger_usage_from_params, only: %i[index clear_filter quick_categorize update]
   before_action :store_params!, only: :index # runs after set_ledger_usage on index
 
   def quick_categorize
     @uncategorized_count = Transaction.quick_categorize_uncategorized_count(Current.user, Current.family, ledger_usage: @ledger_usage)
-    transaction = Transaction.next_uncategorized_for(Current.user, Current.family, ledger_usage: @ledger_usage)
+
+    scope = Transaction.quick_categorize_uncategorized_scope(Current.user, Current.family, ledger_usage: @ledger_usage)
+    transaction = nil
+    if params[:transaction_id].present?
+      transaction = scope.where(id: params[:transaction_id]).first
+    end
+    transaction ||= Transaction.next_uncategorized_for(Current.user, Current.family, ledger_usage: @ledger_usage)
+
     @entry = transaction&.entry
     @transaction = transaction
 
@@ -394,6 +402,21 @@ class TransactionsController < ApplicationController
   end
 
   private
+    # When opening quick categorize from a deep link (e.g. ntfy), align Perso/Pro ledger with the transaction's account.
+    def apply_quick_categorize_ledger_usage_from_transaction
+      return unless params[:transaction_id].present?
+
+      tx = Transaction.joins(entry: :account)
+        .where(accounts: { family_id: Current.family.id })
+        .includes(entry: :account)
+        .find_by(id: params[:transaction_id])
+      return unless tx&.entry&.account
+
+      return unless tx.entry.account.permission_for(Current.user).in?(%i[owner full_control read_write])
+
+      params[:usage] = tx.entry.account.ledger_usage
+    end
+
     def accessible_transactions
       Current.family.transactions
         .joins(entry: :account)

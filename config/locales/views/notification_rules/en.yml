@@ -77,6 +77,8 @@ en:
       ntfy_password_family_hint: Paste a new password to replace the stored one. Leave empty to keep the current password.
       clear_ntfy_credentials_label: Clear all saved ntfy credentials (token, username, password)
       default_url_label: Topic URL
+      ntfy_public_app_url_label: Public app URL (for links in notifications)
+      ntfy_public_app_url_hint: "Optional. Base URL of this Sure instance (e.g. https://app.example.com). Used to build quick_categorize_url in transaction templates. If empty, the same host as email links (APP_DOMAIN / mailer settings) is used."
       templates_heading: Message templates
       templates_intro: "Use %{variable} placeholders. Leave a field empty to use the built-in default. New lines are preserved in the message body."
       template_transaction_heading: Transaction notifications
@@ -88,8 +90,9 @@ en:
         %{entry_name} — Transaction name
         %{date} — Entry date (long format)
         %{account_name} — Account name
-        %{category_name} — Category (may be empty)
+        %{category_name} — Category, or a localized “needs categorization” label when none / uncategorized
         %{merchant_name} — Merchant (may be empty)
+        %{quick_categorize_url} — Link to quick-categorize this transaction (must be logged in)
       template_transaction_title_label: Title template
       template_transaction_body_label: Body template
       template_balance_heading: Balance notifications (after sync / scheduled)

@@ -46,6 +46,10 @@
         <div class="space-y-3">
           <h3 class="text-xs font-medium text-secondary uppercase tracking-wide"><%= t("notification_rules.index.ntfy_connection_heading") %></h3>
           <%= f.text_field :ntfy_url, label: t("notification_rules.index.default_url_label"), value: Current.family.ntfy_url %>
+          <%= f.text_field :ntfy_public_app_url,
+                label: t("notification_rules.index.ntfy_public_app_url_label"),
+                value: Current.family.ntfy_public_app_url,
+                hint: t("notification_rules.index.ntfy_public_app_url_hint") %>
           <p class="text-xs text-secondary"><%= t("notification_rules.index.ntfy_auth_hint") %></p>
           <%= f.text_field :ntfy_access_token,
                 label: t("notification_rules.index.ntfy_access_token_label"),

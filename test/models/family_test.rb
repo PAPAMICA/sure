@@ -294,4 +294,37 @@ class FamilyTest < ActiveSupport::TestCase
     assert vars[:total_liabilities].present?
     assert vars[:net_worth].present?
   end
+
+  test "ntfy transaction notification uses uncategorized label and quick categorize url" do
+    family = families(:dylan_family)
+    txn = transactions(:one)
+    uncat = Category.find_or_create_by!(
+      family: family,
+      ledger_usage: "personal",
+      name: Category.uncategorized_name
+    ) do |c|
+      c.color = "#888888"
+    end
+    txn.update!(category: uncat)
+    txn.reload
+
+    I18n.with_locale(:fr) do
+      _title, body = family.ntfy_transaction_notification_for(txn, txn.entry, notification_rule: nil)
+      assert_includes body, I18n.t("ntfy.transaction.uncategorized_display")
+    end
+
+    url = family.send(:ntfy_transaction_quick_categorize_url, txn, txn.entry)
+    assert_match(/\Ahttps?:\/\//, url)
+    assert_includes url, txn.id.to_s
+    assert_includes url, "transaction_id"
+  end
+
+  test "ntfy transaction category_name is real category when not uncategorized" do
+    family = families(:dylan_family)
+    txn = transactions(:one)
+    txn.update!(category: categories(:food_and_drink))
+
+    vars = family.send(:ntfy_transaction_variables, txn.reload, txn.entry, notification_rule: nil)
+    assert_equal "Food & Drink", vars[:category_name]
+  end
 end

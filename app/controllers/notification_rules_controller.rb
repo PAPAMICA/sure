@@ -67,6 +67,7 @@ class NotificationRulesController < ApplicationController
         ntfy_balance_body_template: p[:ntfy_balance_body_template].presence,
         ntfy_summary_title_template: p[:ntfy_summary_title_template].presence,
         ntfy_summary_body_template: p[:ntfy_summary_body_template].presence,
+        ntfy_public_app_url: p[:ntfy_public_app_url].presence,
         ntfy_balance_prior_days: family_ntfy_prior_days_param(p)
       )
     else
@@ -79,6 +80,7 @@ class NotificationRulesController < ApplicationController
         ntfy_balance_body_template: p[:ntfy_balance_body_template].presence,
         ntfy_summary_title_template: p[:ntfy_summary_title_template].presence,
         ntfy_summary_body_template: p[:ntfy_summary_body_template].presence,
+        ntfy_public_app_url: p[:ntfy_public_app_url].presence,
         ntfy_balance_prior_days: family_ntfy_prior_days_param(p)
       }
       attrs[:ntfy_access_token] = p[:ntfy_access_token] if p[:ntfy_access_token].present?
@@ -153,7 +155,8 @@ class NotificationRulesController < ApplicationController
         :ntfy_url, :ntfy_access_token, :ntfy_basic_username, :ntfy_basic_password, :clear_ntfy_credentials,
         :ntfy_transaction_title_template, :ntfy_transaction_body_template,
         :ntfy_balance_title_template, :ntfy_balance_body_template, :ntfy_balance_prior_days,
-        :ntfy_summary_title_template, :ntfy_summary_body_template
+        :ntfy_summary_title_template, :ntfy_summary_body_template,
+        :ntfy_public_app_url
       )
     end
 

@@ -77,6 +77,8 @@ fr:
       ntfy_password_family_hint: Collez un nouveau mot de passe pour remplacer celui enregistré. Laissez vide pour ne pas changer.
       clear_ntfy_credentials_label: Effacer tous les identifiants ntfy enregistrés (jeton, utilisateur, mot de passe)
       default_url_label: URL du topic
+      ntfy_public_app_url_label: URL publique de l’app (pour les liens dans les notifications)
+      ntfy_public_app_url_hint: "Facultatif. URL de base de cette instance Sure (ex. https://app.exemple.fr). Sert à construire la variable quick_categorize_url dans les modèles de transaction. Si vide, on utilise le même hôte que les liens e-mail (APP_DOMAIN / paramètres mailer)."
       templates_heading: Modèles de message
       templates_intro: "Utilisez des variables %{nom}. Laissez un champ vide pour le modèle par défaut. Les sauts de ligne sont conservés dans le corps du message."
       template_transaction_heading: Notifications de transaction
@@ -88,8 +90,9 @@ fr:
         %{entry_name} — Libellé de la transaction
         %{date} — Date de l’écriture (format long)
         %{account_name} — Nom du compte
-        %{category_name} — Catégorie (peut être vide)
+        %{category_name} — Catégorie, ou libellé « à catégoriser » si aucune / non classée
         %{merchant_name} — Commerçant (peut être vide)
+        %{quick_categorize_url} — Lien vers la catégorisation rapide pour cette transaction (connexion requise)
       template_transaction_title_label: Modèle du titre
       template_transaction_body_label: Modèle du corps
       template_balance_heading: Notifications de solde (après sync / planifié)
