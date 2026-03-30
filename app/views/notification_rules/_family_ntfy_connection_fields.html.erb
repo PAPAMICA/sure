@@ -1,0 +1,29 @@
+<%# locals: (f:) %>
+<div class="space-y-4">
+  <%= f.text_field :ntfy_url,
+        label: t("notification_rules.index.default_url_label"),
+        value: Current.family.ntfy_url %>
+  <%= f.text_field :ntfy_public_app_url,
+        label: t("notification_rules.index.ntfy_public_app_url_label"),
+        value: Current.family.ntfy_public_app_url,
+        hint: t("notification_rules.index.ntfy_public_app_url_hint") %>
+  <p class="text-xs text-secondary"><%= t("notification_rules.index.ntfy_auth_hint") %></p>
+  <%= f.text_field :ntfy_access_token,
+        label: t("notification_rules.index.ntfy_access_token_label"),
+        value: "",
+        placeholder: t("notification_rules.index.secret_placeholder"),
+        hint: t("notification_rules.index.ntfy_token_family_hint") %>
+  <%= f.text_field :ntfy_basic_username,
+        label: t("notification_rules.index.ntfy_basic_username_label"),
+        value: Current.family.ntfy_basic_username,
+        hint: t("notification_rules.index.ntfy_basic_username_hint") %>
+  <%= f.password_field :ntfy_basic_password,
+        label: t("notification_rules.index.ntfy_basic_password_label"),
+        value: "",
+        placeholder: t("notification_rules.index.secret_placeholder"),
+        hint: t("notification_rules.index.ntfy_password_family_hint") %>
+  <div class="flex items-center gap-2">
+    <%= check_box_tag "family[clear_ntfy_credentials]", "1", false, id: "family_clear_ntfy_credentials" %>
+    <%= label_tag "family_clear_ntfy_credentials", t("notification_rules.index.clear_ntfy_credentials_label"), class: "text-sm text-primary" %>
+  </div>
+</div>

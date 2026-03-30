@@ -36,4 +36,32 @@ class Family::NtfyConfigurableTest < ActiveSupport::TestCase
       end
     end
   end
+
+  test "ntfy_transaction_push_extras omits click when push click is disabled" do
+    family = families(:dylan_family)
+    family.update_columns(ntfy_transaction_push_click_enabled: false)
+    tx = transactions(:one)
+    entry = entries(:transaction)
+
+    family.stub :ntfy_transaction_quick_categorize_url, "https://app.example.com/q" do
+      extras = family.ntfy_transaction_push_extras(tx, entry)
+      assert_nil extras[:click]
+      assert extras[:actions].present?
+    end
+  end
+
+  test "ntfy_transaction_push_extras merges extra tags with warning" do
+    family = families(:dylan_family)
+    family.update_columns(ntfy_transaction_push_extra_tags: "cd, backup")
+    tx = transactions(:one)
+    entry = entries(:transaction)
+
+    tx.stub :category, nil do
+      family.stub :ntfy_transaction_quick_categorize_url, "https://app.example.com/q" do
+        extras = family.ntfy_transaction_push_extras(tx, entry)
+        assert_includes extras[:tags].split(","), "warning"
+        assert_includes extras[:tags].split(","), "cd"
+      end
+    end
+  end
 end

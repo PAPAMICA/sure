@@ -14,6 +14,8 @@ en:
       uncategorized_display: "⚠️ To categorize"
     actions:
       open_quick_categorize: Open in app
+      open_account: Open account
+      open_dashboard: Open dashboard
     default_templates:
       transaction_title: New transaction
       transaction_body: |

@@ -545,6 +545,22 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_30_200000) do
     t.text "ntfy_summary_title_template"
     t.text "ntfy_summary_body_template"
     t.text "ntfy_public_app_url"
+    t.boolean "ntfy_transaction_push_click_enabled", default: true, null: false
+    t.boolean "ntfy_transaction_push_actions_enabled", default: true, null: false
+    t.boolean "ntfy_transaction_push_uncategorized_tag_enabled", default: true, null: false
+    t.boolean "ntfy_transaction_push_markdown", default: false, null: false
+    t.string "ntfy_transaction_push_extra_tags", default: "", null: false
+    t.string "ntfy_transaction_push_priority", default: "default", null: false
+    t.boolean "ntfy_balance_push_click_enabled", default: false, null: false
+    t.boolean "ntfy_balance_push_actions_enabled", default: false, null: false
+    t.boolean "ntfy_balance_push_markdown", default: false, null: false
+    t.string "ntfy_balance_push_extra_tags", default: "", null: false
+    t.string "ntfy_balance_push_priority", default: "default", null: false
+    t.boolean "ntfy_summary_push_click_enabled", default: false, null: false
+    t.boolean "ntfy_summary_push_actions_enabled", default: false, null: false
+    t.boolean "ntfy_summary_push_markdown", default: false, null: false
+    t.string "ntfy_summary_push_extra_tags", default: "", null: false
+    t.string "ntfy_summary_push_priority", default: "default", null: false
     t.jsonb "apprise_rules", default: {}, null: false
     t.datetime "latest_sync_activity_at", default: -> { "CURRENT_TIMESTAMP" }
     t.datetime "latest_sync_completed_at", default: -> { "CURRENT_TIMESTAMP" }

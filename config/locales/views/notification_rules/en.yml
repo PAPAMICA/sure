@@ -64,8 +64,9 @@ en:
       intro_after_link: Create rules with IF conditions (like auto-categorization), optional minimum amount, and how often to check.
       ntfy_auth_doc_prefix: "Servers with access control need authentication — see "
       ntfy_auth_doc_link: ntfy authentication
-      ntfy_settings_heading: Notification settings (ntfy)
-      ntfy_settings_intro: "Connection, credentials, and message templates apply to all rules. Only family admins can edit this section."
+      ntfy_publish_doc_link: Publishing (titles, links, tags, Markdown…)
+      ntfy_settings_heading: ntfy connection & message formats
+      ntfy_settings_intro: "Configure your topic URL, optional authentication, text templates, and optional enriched notification options (tap-to-open links, action buttons, tags, Markdown). These settings apply to every rule. Only family admins can edit this section."
       ntfy_connection_heading: Connection
       ntfy_auth_hint: "Bearer token (recommended) or HTTP Basic. Leave token and password empty to keep saved values."
       secret_placeholder: Leave blank to keep current
@@ -81,6 +82,44 @@ en:
       ntfy_public_app_url_hint: "Optional. Base URL of this Sure instance (e.g. https://app.example.com). Used to build quick_categorize_url in transaction templates. If empty, the same host as email links (APP_DOMAIN / mailer settings) is used."
       templates_heading: Message templates
       templates_intro: "Use %{variable} placeholders. Leave a field empty to use the built-in default. New lines are preserved in the message body."
+      template_variables_toggle: Available template variables
+      ntfy_push_enriched_heading: ntfy display options
+      ntfy_push_enriched_intro: "These options map to HTTP headers when sending to ntfy (click URL, action button, tags, Markdown body, priority). See"
+      ntfy_push_extra_tags_hint: "Optional. Comma-separated tags (letters, numbers, underscores, hyphens only), e.g. warning,cd,backup. See ntfy tag docs."
+      ntfy_push_priority:
+        default: Normal (default)
+        min: Minimum
+        low: Low
+        high: High
+        urgent: Urgent
+      ntfy_transaction_push_click_label: Open link when notification is tapped
+      ntfy_transaction_push_click_hint: Uses the quick-categorize URL (same variable as in your body template). Requires a valid public app URL or mailer host.
+      ntfy_transaction_push_actions_label: Show “open in app” action button
+      ntfy_transaction_push_actions_hint: Adds an ntfy action that opens the same URL as the tap target.
+      ntfy_transaction_push_uncategorized_tag_label: Add warning tag if transaction needs categorization
+      ntfy_transaction_push_uncategorized_tag_hint: Sends the warning tag so clients can show a ⚠️ style badge when the category is missing or uncategorized.
+      ntfy_transaction_push_markdown_label: Render body as Markdown
+      ntfy_transaction_push_markdown_hint: "Enables Markdown in the message body (bold, lists, links in body text). Title stays plain unless your client supports otherwise."
+      ntfy_transaction_push_extra_tags_label: Extra tags (always)
+      ntfy_transaction_push_priority_label: Notification priority
+      ntfy_balance_push_intro: "Optional links open the account page in your app. Uses the same public base URL as transaction links."
+      ntfy_balance_push_click_label: Open account when notification is tapped
+      ntfy_balance_push_click_hint: Tap opens this account’s page (requires correct public app URL or mailer host).
+      ntfy_balance_push_actions_label: Show “open account” action button
+      ntfy_balance_push_actions_hint: Adds a button that opens the same account URL.
+      ntfy_balance_push_markdown_label: Render body as Markdown
+      ntfy_balance_push_markdown_hint: Same as for transactions — applies to the balance message body only.
+      ntfy_balance_push_extra_tags_label: Extra tags
+      ntfy_balance_push_priority_label: Notification priority
+      ntfy_summary_push_intro: "Optional links open your app dashboard (root URL). Enable if you want a quick shortcut from the summary notification."
+      ntfy_summary_push_click_label: Open dashboard when notification is tapped
+      ntfy_summary_push_click_hint: Tap opens the app home (root path) using your public base URL.
+      ntfy_summary_push_actions_label: Show “open dashboard” action button
+      ntfy_summary_push_actions_hint: Adds a button that opens the same dashboard URL.
+      ntfy_summary_push_markdown_label: Render body as Markdown
+      ntfy_summary_push_markdown_hint: Applies to the summary message body only.
+      ntfy_summary_push_extra_tags_label: Extra tags
+      ntfy_summary_push_priority_label: Notification priority
       template_transaction_heading: Transaction notifications
       template_variables_transaction: |
         Available variables:
@@ -151,7 +190,7 @@ en:
       frequency_prompt: Select frequency
       frequency_hint: The scheduler runs every hour (e.g. at five past the hour). Daily and weekly times use your family timezone (in settings).
       active_label: Rule active
-      ntfy_config_moved_hint: "ntfy URL, credentials, and message templates are configured in the notification settings above (not per rule)."
+      ntfy_config_moved_hint: "The ntfy topic URL, credentials, templates, and display options (links, tags, Markdown) are configured in the notification settings on this page (not per rule)."
       amount_heading: Amount filter
       minimum_amount_label: Minimum absolute amount
       minimum_amount_hint: Only applies to transaction rules. Leave blank to include all amounts.

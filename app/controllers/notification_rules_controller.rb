@@ -1,6 +1,16 @@
 class NotificationRulesController < ApplicationController
   include StreamExtensions
 
+  FAMILY_NTFY_PUSH_PARAM_KEYS = %i[
+    ntfy_transaction_push_click_enabled ntfy_transaction_push_actions_enabled
+    ntfy_transaction_push_uncategorized_tag_enabled ntfy_transaction_push_markdown
+    ntfy_transaction_push_extra_tags ntfy_transaction_push_priority
+    ntfy_balance_push_click_enabled ntfy_balance_push_actions_enabled
+    ntfy_balance_push_markdown ntfy_balance_push_extra_tags ntfy_balance_push_priority
+    ntfy_summary_push_click_enabled ntfy_summary_push_actions_enabled
+    ntfy_summary_push_markdown ntfy_summary_push_extra_tags ntfy_summary_push_priority
+  ].freeze
+
   layout :notification_rules_layout
 
   before_action :set_notification_rule, only: %i[edit update destroy trigger_deliver duplicate]
@@ -55,6 +65,8 @@ class NotificationRulesController < ApplicationController
       return
     end
 
+    push_attrs = family_ntfy_push_option_attrs(p)
+
     if p[:clear_ntfy_credentials] == "1"
       Current.family.assign_attributes(
         ntfy_url: p[:ntfy_url].to_s.presence,
@@ -68,7 +80,8 @@ class NotificationRulesController < ApplicationController
         ntfy_summary_title_template: p[:ntfy_summary_title_template].presence,
         ntfy_summary_body_template: p[:ntfy_summary_body_template].presence,
         ntfy_public_app_url: p[:ntfy_public_app_url].presence,
-        ntfy_balance_prior_days: family_ntfy_prior_days_param(p)
+        ntfy_balance_prior_days: family_ntfy_prior_days_param(p),
+        **push_attrs
       )
     else
       attrs = {
@@ -81,7 +94,8 @@ class NotificationRulesController < ApplicationController
         ntfy_summary_title_template: p[:ntfy_summary_title_template].presence,
         ntfy_summary_body_template: p[:ntfy_summary_body_template].presence,
         ntfy_public_app_url: p[:ntfy_public_app_url].presence,
-        ntfy_balance_prior_days: family_ntfy_prior_days_param(p)
+        ntfy_balance_prior_days: family_ntfy_prior_days_param(p),
+        **push_attrs
       }
       attrs[:ntfy_access_token] = p[:ntfy_access_token] if p[:ntfy_access_token].present?
       attrs[:ntfy_basic_password] = p[:ntfy_basic_password] if p[:ntfy_basic_password].present?
@@ -156,8 +170,46 @@ class NotificationRulesController < ApplicationController
         :ntfy_transaction_title_template, :ntfy_transaction_body_template,
         :ntfy_balance_title_template, :ntfy_balance_body_template, :ntfy_balance_prior_days,
         :ntfy_summary_title_template, :ntfy_summary_body_template,
-        :ntfy_public_app_url
+        :ntfy_public_app_url,
+        :ntfy_transaction_push_click_enabled, :ntfy_transaction_push_actions_enabled,
+        :ntfy_transaction_push_uncategorized_tag_enabled, :ntfy_transaction_push_markdown,
+        :ntfy_transaction_push_extra_tags, :ntfy_transaction_push_priority,
+        :ntfy_balance_push_click_enabled, :ntfy_balance_push_actions_enabled,
+        :ntfy_balance_push_markdown, :ntfy_balance_push_extra_tags, :ntfy_balance_push_priority,
+        :ntfy_summary_push_click_enabled, :ntfy_summary_push_actions_enabled,
+        :ntfy_summary_push_markdown, :ntfy_summary_push_extra_tags, :ntfy_summary_push_priority
       )
+    end
+
+    def family_ntfy_push_option_attrs(p)
+      return {} unless FAMILY_NTFY_PUSH_PARAM_KEYS.any? { |k| p.key?(k) }
+
+      bool = ActiveModel::Type::Boolean.new
+      {
+        ntfy_transaction_push_click_enabled: bool.cast(p[:ntfy_transaction_push_click_enabled]),
+        ntfy_transaction_push_actions_enabled: bool.cast(p[:ntfy_transaction_push_actions_enabled]),
+        ntfy_transaction_push_uncategorized_tag_enabled: bool.cast(p[:ntfy_transaction_push_uncategorized_tag_enabled]),
+        ntfy_transaction_push_markdown: bool.cast(p[:ntfy_transaction_push_markdown]),
+        ntfy_transaction_push_extra_tags: p[:ntfy_transaction_push_extra_tags].to_s.strip.truncate(500),
+        ntfy_transaction_push_priority: family_ntfy_priority_param(p[:ntfy_transaction_push_priority]),
+        ntfy_balance_push_click_enabled: bool.cast(p[:ntfy_balance_push_click_enabled]),
+        ntfy_balance_push_actions_enabled: bool.cast(p[:ntfy_balance_push_actions_enabled]),
+        ntfy_balance_push_markdown: bool.cast(p[:ntfy_balance_push_markdown]),
+        ntfy_balance_push_extra_tags: p[:ntfy_balance_push_extra_tags].to_s.strip.truncate(500),
+        ntfy_balance_push_priority: family_ntfy_priority_param(p[:ntfy_balance_push_priority]),
+        ntfy_summary_push_click_enabled: bool.cast(p[:ntfy_summary_push_click_enabled]),
+        ntfy_summary_push_actions_enabled: bool.cast(p[:ntfy_summary_push_actions_enabled]),
+        ntfy_summary_push_markdown: bool.cast(p[:ntfy_summary_push_markdown]),
+        ntfy_summary_push_extra_tags: p[:ntfy_summary_push_extra_tags].to_s.strip.truncate(500),
+        ntfy_summary_push_priority: family_ntfy_priority_param(p[:ntfy_summary_push_priority])
+      }
+    end
+
+    def family_ntfy_priority_param(raw)
+      v = raw.to_s.presence
+      return "default" if v.blank? || Family::NTFY_PUSH_PRIORITIES.exclude?(v)
+
+      v
     end
 
     def family_ntfy_prior_days_param(p)

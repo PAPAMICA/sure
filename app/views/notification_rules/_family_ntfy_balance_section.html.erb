@@ -1,0 +1,69 @@
+<%# locals: (f:) %>
+<div class="space-y-4">
+  <%= f.number_field :ntfy_balance_prior_days,
+        label: t("notification_rules.index.ntfy_balance_prior_days_label"),
+        min: 0,
+        max: 365,
+        step: 1,
+        class: "form-field__input w-full max-w-xs",
+        hint: t("notification_rules.index.ntfy_balance_prior_days_hint") %>
+
+  <details class="group rounded-xl border border-primary">
+    <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-primary bg-container-inset rounded-t-xl list-none flex items-center justify-between gap-2">
+      <span><%= t("notification_rules.index.template_variables_toggle") %></span>
+      <%= icon "chevron-down", class: "size-4 shrink-0 text-secondary group-open:rotate-180 transition-transform" %>
+    </summary>
+    <div class="px-4 py-3 border-t border-primary">
+      <pre class="text-xs text-secondary whitespace-pre-wrap font-mono"><%= t("notification_rules.index.template_variables_balance") %></pre>
+    </div>
+  </details>
+
+  <div class="space-y-3">
+    <%= f.text_area :ntfy_balance_title_template,
+          label: t("notification_rules.index.template_balance_title_label"),
+          value: Current.family.ntfy_balance_title_template,
+          rows: 2,
+          class: "form-field__input w-full font-mono text-sm",
+          hint: t("notification_rules.index.template_leave_blank_hint") %>
+    <%= f.text_area :ntfy_balance_body_template,
+          label: t("notification_rules.index.template_balance_body_label"),
+          value: Current.family.ntfy_balance_body_template,
+          rows: 5,
+          class: "form-field__input w-full font-mono text-sm" %>
+  </div>
+
+  <div class="rounded-xl border border-primary p-4 space-y-1 bg-container-inset">
+    <h4 class="text-sm font-medium text-primary"><%= t("notification_rules.index.ntfy_push_enriched_heading") %></h4>
+    <p class="text-xs text-secondary mb-3">
+      <%= t("notification_rules.index.ntfy_balance_push_intro") %>
+      <%= link_to t("notification_rules.index.ntfy_publish_doc_link"), "https://docs.ntfy.sh/publish/", class: "text-primary underline", target: "_blank", rel: "noopener noreferrer" %>.
+    </p>
+
+    <%= render "notification_rules/ntfy_push_toggle_row",
+          f: f,
+          field: :ntfy_balance_push_click_enabled,
+          label: t("notification_rules.index.ntfy_balance_push_click_label"),
+          hint: t("notification_rules.index.ntfy_balance_push_click_hint") %>
+    <%= render "notification_rules/ntfy_push_toggle_row",
+          f: f,
+          field: :ntfy_balance_push_actions_enabled,
+          label: t("notification_rules.index.ntfy_balance_push_actions_label"),
+          hint: t("notification_rules.index.ntfy_balance_push_actions_hint") %>
+    <%= render "notification_rules/ntfy_push_toggle_row",
+          f: f,
+          field: :ntfy_balance_push_markdown,
+          label: t("notification_rules.index.ntfy_balance_push_markdown_label"),
+          hint: t("notification_rules.index.ntfy_balance_push_markdown_hint") %>
+
+    <%= f.text_field :ntfy_balance_push_extra_tags,
+          label: t("notification_rules.index.ntfy_balance_push_extra_tags_label"),
+          value: Current.family.ntfy_balance_push_extra_tags,
+          hint: t("notification_rules.index.ntfy_push_extra_tags_hint"),
+          class: "form-field__input w-full font-mono text-sm" %>
+
+    <%= f.select :ntfy_balance_push_priority,
+          ntfy_push_priority_choices,
+          { label: t("notification_rules.index.ntfy_balance_push_priority_label") },
+          { class: "form-field__input w-full max-w-md" } %>
+  </div>
+</div>

@@ -14,6 +14,8 @@ fr:
       uncategorized_display: "⚠️ À catégoriser"
     actions:
       open_quick_categorize: Ouvrir dans l’app
+      open_account: Ouvrir le compte
+      open_dashboard: Ouvrir le tableau de bord
     default_templates:
       transaction_title: Nouvelle transaction
       transaction_body: |

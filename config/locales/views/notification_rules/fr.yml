@@ -64,8 +64,9 @@ fr:
       intro_after_link: Créez des règles avec des conditions SI (comme la catégorisation automatique), un montant minimum optionnel et une fréquence de vérification.
       ntfy_auth_doc_prefix: "Les serveurs avec contrôle d’accès exigent une authentification — voir "
       ntfy_auth_doc_link: authentification ntfy
-      ntfy_settings_heading: Paramètres de notification (ntfy)
-      ntfy_settings_intro: "Connexion, identifiants et modèles de message s’appliquent à toutes les règles. Seuls les administrateurs de la famille peuvent modifier cette section."
+      ntfy_publish_doc_link: Publication (titres, liens, tags, Markdown…)
+      ntfy_settings_heading: Connexion ntfy et formats de messages
+      ntfy_settings_intro: "URL du topic, authentification optionnelle, modèles de texte et options de notification enrichie (lien au toucher, bouton d’action, tags, Markdown, priorité). Ces réglages s’appliquent à toutes les règles. Seuls les administrateurs de la famille peuvent modifier cette section."
       ntfy_connection_heading: Connexion
       ntfy_auth_hint: "Jeton Bearer (recommandé) ou HTTP Basic. Laissez jeton et mot de passe vides pour conserver les valeurs enregistrées."
       secret_placeholder: Laisser vide pour conserver l’actuel
@@ -81,6 +82,44 @@ fr:
       ntfy_public_app_url_hint: "Facultatif. URL de base de cette instance Sure (ex. https://app.exemple.fr). Sert à construire la variable quick_categorize_url dans les modèles de transaction. Si vide, on utilise le même hôte que les liens e-mail (APP_DOMAIN / paramètres mailer)."
       templates_heading: Modèles de message
       templates_intro: "Utilisez des variables %{nom}. Laissez un champ vide pour le modèle par défaut. Les sauts de ligne sont conservés dans le corps du message."
+      template_variables_toggle: Variables disponibles pour le modèle
+      ntfy_push_enriched_heading: Options d’affichage ntfy
+      ntfy_push_enriched_intro: "Ces options correspondent aux en-têtes HTTP envoyés à ntfy (lien au toucher, bouton d’action, tags, corps en Markdown, priorité). Voir"
+      ntfy_push_extra_tags_hint: "Facultatif. Tags séparés par des virgules (lettres, chiffres, tirets et underscores uniquement), ex. warning,cd,backup. Voir la doc ntfy sur les tags."
+      ntfy_push_priority:
+        default: Normale (défaut)
+        min: Minimale
+        low: Basse
+        high: Haute
+        urgent: Urgente
+      ntfy_transaction_push_click_label: Ouvrir un lien quand on touche la notification
+      ntfy_transaction_push_click_hint: Utilise l’URL de catégorisation rapide (même cible que la variable du modèle). Nécessite une URL publique d’app ou les paramètres mailer corrects.
+      ntfy_transaction_push_actions_label: Afficher le bouton « ouvrir dans l’app »
+      ntfy_transaction_push_actions_hint: Ajoute une action ntfy qui ouvre la même URL que le lien au toucher.
+      ntfy_transaction_push_uncategorized_tag_label: Tag d’avertissement si la transaction est à catégoriser
+      ntfy_transaction_push_uncategorized_tag_hint: Envoie le tag warning pour un style ⚠️ côté client lorsque la catégorie manque ou est « non classée ».
+      ntfy_transaction_push_markdown_label: Interpréter le corps en Markdown
+      ntfy_transaction_push_markdown_hint: Active le Markdown dans le corps du message (gras, listes, liens dans le texte).
+      ntfy_transaction_push_extra_tags_label: Tags supplémentaires (toujours)
+      ntfy_transaction_push_priority_label: Priorité de la notification
+      ntfy_balance_push_intro: "Les liens optionnels ouvrent la fiche du compte dans l’app. Même URL de base publique que pour les transactions."
+      ntfy_balance_push_click_label: Ouvrir le compte au toucher
+      ntfy_balance_push_click_hint: Ouvre la page du compte (URL publique ou mailer requis).
+      ntfy_balance_push_actions_label: Afficher le bouton « ouvrir le compte »
+      ntfy_balance_push_actions_hint: Bouton d’action vers la même URL que le lien au toucher.
+      ntfy_balance_push_markdown_label: Interpréter le corps en Markdown
+      ntfy_balance_push_markdown_hint: S’applique au corps du message de solde uniquement.
+      ntfy_balance_push_extra_tags_label: Tags supplémentaires
+      ntfy_balance_push_priority_label: Priorité de la notification
+      ntfy_summary_push_intro: "Les liens optionnels ouvrent le tableau de bord (racine de l’app). À activer pour un raccourci depuis le résumé."
+      ntfy_summary_push_click_label: Ouvrir le tableau de bord au toucher
+      ntfy_summary_push_click_hint: Ouvre l’accueil de l’app (chemin racine) via l’URL publique configurée.
+      ntfy_summary_push_actions_label: Afficher le bouton « ouvrir le tableau de bord »
+      ntfy_summary_push_actions_hint: Bouton d’action vers la même URL que le lien au toucher.
+      ntfy_summary_push_markdown_label: Interpréter le corps en Markdown
+      ntfy_summary_push_markdown_hint: S’applique au corps du résumé uniquement.
+      ntfy_summary_push_extra_tags_label: Tags supplémentaires
+      ntfy_summary_push_priority_label: Priorité de la notification
       template_transaction_heading: Notifications de transaction
       template_variables_transaction: |
         Variables disponibles :
@@ -151,7 +190,7 @@ fr:
       frequency_prompt: Choisir la fréquence
       frequency_hint: Le planificateur s’exécute chaque heure (par ex. à :05). Les heures des modes quotidien et hebdomadaire utilisent le fuseau horaire de la famille (dans les paramètres).
       active_label: Règle active
-      ntfy_config_moved_hint: "L’URL ntfy, les identifiants et les modèles de message se configurent dans les paramètres de notification ci-dessus (pas par règle)."
+      ntfy_config_moved_hint: "L’URL du topic ntfy, les identifiants, les modèles et les options d’affichage (liens, tags, Markdown) se configurent dans les paramètres sur cette page (pas par règle)."
       amount_heading: Filtre sur le montant
       minimum_amount_label: Montant minimum (valeur absolue)
       minimum_amount_hint: S’applique uniquement aux règles sur les transactions. Laisser vide pour tous les montants.

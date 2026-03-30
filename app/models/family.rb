@@ -56,6 +56,11 @@ class Family < ApplicationRecord
   validates :ntfy_balance_prior_days,
     numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 365 }
 
+  NTFY_PUSH_PRIORITIES = %w[default min low high urgent].freeze
+  validates :ntfy_transaction_push_priority, inclusion: { in: NTFY_PUSH_PRIORITIES }
+  validates :ntfy_balance_push_priority, inclusion: { in: NTFY_PUSH_PRIORITIES }
+  validates :ntfy_summary_push_priority, inclusion: { in: NTFY_PUSH_PRIORITIES }
+
   validates :hourly_bank_sync_window_start,
     numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 23 }
   validates :hourly_bank_sync_window_end,

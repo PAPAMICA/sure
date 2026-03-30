@@ -48,18 +48,72 @@ module Family::NtfyConfigurable
     ]
   end
 
-  # Extra ntfy headers for transaction pushes (Click, Actions, Tags); see https://docs.ntfy.sh/publish/
+  # Extra ntfy headers (Click, Actions, Tags); see https://docs.ntfy.sh/publish/
   def ntfy_transaction_push_extras(transaction, entry)
     url = ntfy_transaction_quick_categorize_url(transaction, entry).to_s.strip
-    return {} unless ntfy_http_url?(url)
+    ok = ntfy_http_url?(url)
 
-    actions = Notifications::NtfyDelivery.view_action_header(
-      I18n.t("ntfy.actions.open_quick_categorize"),
-      url,
-      clear: true
-    )
-    out = { click: url, actions: actions }
-    out[:tags] = "warning" if ntfy_transaction_uncategorized?(transaction)
+    out = {}
+    out[:click] = url if ok && ntfy_transaction_push_click_enabled
+
+    if ok && ntfy_transaction_push_actions_enabled
+      out[:actions] = Notifications::NtfyDelivery.view_action_header(
+        I18n.t("ntfy.actions.open_quick_categorize"),
+        url,
+        clear: true
+      )
+    end
+
+    tags = []
+    if ntfy_transaction_push_uncategorized_tag_enabled && ntfy_transaction_uncategorized?(transaction)
+      tags << "warning"
+    end
+    tags.concat(ntfy_sanitized_extra_tags(ntfy_transaction_push_extra_tags))
+    tags = tags.uniq
+    out[:tags] = tags.join(",") if tags.any?
+
+    out
+  end
+
+  def ntfy_balance_push_extras(account)
+    out = {}
+    url = ntfy_absolute_account_url(account)
+    ok = ntfy_http_url?(url)
+
+    out[:click] = url if ok && ntfy_balance_push_click_enabled
+
+    if ok && ntfy_balance_push_actions_enabled
+      out[:actions] = Notifications::NtfyDelivery.view_action_header(
+        I18n.t("ntfy.actions.open_account"),
+        url,
+        clear: true
+      )
+    end
+
+    tags = ntfy_sanitized_extra_tags(ntfy_balance_push_extra_tags)
+    out[:tags] = tags.join(",") if tags.any?
+
+    out
+  end
+
+  def ntfy_summary_push_extras(_accounts)
+    out = {}
+    url = ntfy_absolute_root_url
+    ok = ntfy_http_url?(url)
+
+    out[:click] = url if ok && ntfy_summary_push_click_enabled
+
+    if ok && ntfy_summary_push_actions_enabled
+      out[:actions] = Notifications::NtfyDelivery.view_action_header(
+        I18n.t("ntfy.actions.open_dashboard"),
+        url,
+        clear: true
+      )
+    end
+
+    tags = ntfy_sanitized_extra_tags(ntfy_summary_push_extra_tags)
+    out[:tags] = tags.join(",") if tags.any?
+
     out
   end
 
@@ -99,6 +153,27 @@ module Family::NtfyConfigurable
 
     def ntfy_http_url?(str)
       str.to_s.match?(/\Ahttps?:\/\//i)
+    end
+
+    def ntfy_sanitized_extra_tags(raw)
+      raw.to_s.split(",").map(&:strip).filter_map do |tag|
+        next if tag.blank?
+
+        t = tag.downcase
+        t if t.match?(/\A[a-z0-9_-]+\z/)
+      end
+    end
+
+    def ntfy_absolute_account_url(account)
+      Rails.application.routes.url_helpers.account_url(account, **ntfy_url_options_for_public_links).to_s.strip
+    rescue ArgumentError, ActionController::UrlGenerationError
+      ""
+    end
+
+    def ntfy_absolute_root_url
+      Rails.application.routes.url_helpers.root_url(**ntfy_url_options_for_public_links).to_s.strip
+    rescue ArgumentError, ActionController::UrlGenerationError
+      ""
     end
 
     # Absolute URL to quick-categorize with this transaction focused (when still uncategorized).

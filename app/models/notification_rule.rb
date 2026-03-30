@@ -110,6 +110,8 @@ class NotificationRule < ApplicationRecord
       family.ntfy_url,
       title: title,
       body: body,
+      priority: family.ntfy_transaction_push_priority,
+      markdown: family.ntfy_transaction_push_markdown,
       **family.ntfy_transaction_push_extras(transaction, entry),
       **family.ntfy_delivery_credentials
     )
@@ -137,6 +139,9 @@ class NotificationRule < ApplicationRecord
       family.ntfy_url,
       title: title,
       body: body,
+      priority: family.ntfy_summary_push_priority,
+      markdown: family.ntfy_summary_push_markdown,
+      **family.ntfy_summary_push_extras(accounts),
       **family.ntfy_delivery_credentials
     )
     ntfy_response_success?(response)
