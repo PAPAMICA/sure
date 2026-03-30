@@ -12,6 +12,8 @@ module NotificationRules
           process_scheduled_transactions(rule)
         when "balance"
           process_scheduled_balances(rule)
+        when "summary"
+          process_scheduled_summary(rule)
         end
 
         rule.update_column(:last_scheduled_run_at, Time.current)
@@ -44,6 +46,18 @@ module NotificationRules
           rule.deliver_balance_message!(account)
           rule.mark_delivered!(reference_type: "Account", reference_id: account.id)
         end
+      end
+
+      def process_scheduled_summary(rule)
+        reference_type = "Family"
+        reference_id = rule.family_id
+        return if rule.already_delivered?(reference_type: reference_type, reference_id: reference_id)
+
+        accounts = rule.matching_accounts_scope.to_a
+        return if accounts.empty?
+
+        rule.deliver_summary_message!(accounts)
+        rule.mark_delivered!(reference_type: reference_type, reference_id: reference_id)
       end
   end
 end

@@ -25,9 +25,13 @@
     </div>
     <div class="ml-6 space-y-3">
       <%= f.select :delivery,
-            notification_rule.target_transaction? ?
-              [ [ t("notification_rules.form.delivery_immediate_tx"), "immediate" ], [ t("notification_rules.form.delivery_scheduled"), "scheduled" ] ] :
-              [ [ t("notification_rules.form.delivery_on_sync"), "on_sync" ], [ t("notification_rules.form.delivery_scheduled"), "scheduled" ] ],
+            if notification_rule.target_transaction?
+              [ [ t("notification_rules.form.delivery_immediate_tx"), "immediate" ], [ t("notification_rules.form.delivery_scheduled"), "scheduled" ] ]
+            elsif notification_rule.target_balance?
+              [ [ t("notification_rules.form.delivery_on_sync"), "on_sync" ], [ t("notification_rules.form.delivery_scheduled"), "scheduled" ] ]
+            else
+              [ [ t("notification_rules.form.delivery_scheduled"), "scheduled" ] ]
+            end,
             {},
             data: { action: "change->notification-rules#deliveryChanged" } %>
 

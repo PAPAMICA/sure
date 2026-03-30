@@ -38,6 +38,16 @@ module Family::NtfyConfigurable
     ]
   end
 
+  def ntfy_summary_notification_for(accounts, notification_rule: nil)
+    vars = ntfy_summary_variables(accounts, notification_rule: notification_rule)
+    title_tpl = ntfy_summary_title_template.presence || I18n.t("ntfy.default_templates.summary_title")
+    body_tpl = ntfy_summary_body_template.presence || I18n.t("ntfy.default_templates.summary_body")
+    [
+      self.class.format_ntfy_template(title_tpl, vars),
+      self.class.format_ntfy_template(body_tpl, vars)
+    ]
+  end
+
   private
 
     def ntfy_transaction_variables(transaction, entry, notification_rule: nil)
@@ -117,6 +127,65 @@ module Family::NtfyConfigurable
         prior_balance_date: prior_bal_date_fmt,
         balance_change_line: line
       }
+    end
+
+    def ntfy_summary_variables(accounts, notification_rule: nil)
+      account_list = Array(accounts).compact
+      totals, rates = ntfy_summary_totals_and_rates(account_list)
+
+      assets_money = Money.new(totals[:assets], currency)
+      liabilities_money = Money.new(totals[:liabilities], currency)
+      net_worth_money = Money.new(totals[:assets] - totals[:liabilities], currency)
+
+      {
+        rule_name: ntfy_rule_display_name(notification_rule),
+        family_name: name.to_s,
+        family_currency: currency.to_s,
+        generated_at: I18n.l(Time.current.in_time_zone(ActiveSupport::TimeZone[timezone] || Time.zone), format: :long),
+        accounts_count: account_list.size.to_s,
+        asset_accounts_count: account_list.count { |a| a.classification == "asset" }.to_s,
+        liability_accounts_count: account_list.count { |a| a.classification == "liability" }.to_s,
+        total_assets: assets_money.format,
+        total_liabilities: liabilities_money.format,
+        net_worth: net_worth_money.format,
+        accounts_breakdown: ntfy_summary_account_lines(account_list, rates: rates),
+        asset_accounts_breakdown: ntfy_summary_account_lines(account_list.select { |a| a.classification == "asset" }, rates: rates),
+        liability_accounts_breakdown: ntfy_summary_account_lines(account_list.select { |a| a.classification == "liability" }, rates: rates)
+      }
+    end
+
+    def ntfy_summary_totals_and_rates(accounts)
+      foreign_currencies = accounts.filter_map { |a| a.currency if a.currency != currency }.uniq
+      rates = ExchangeRate.rates_for(foreign_currencies, to: currency, date: Date.current)
+
+      totals = accounts.each_with_object({ assets: BigDecimal(0), liabilities: BigDecimal(0) }) do |account, acc|
+        converted = ntfy_summary_converted_balance(account, rates: rates)
+        if account.classification == "liability"
+          acc[:liabilities] += converted
+        else
+          acc[:assets] += converted
+        end
+      end
+
+      [ totals, rates ]
+    end
+
+    def ntfy_summary_account_lines(accounts, rates:)
+      return I18n.t("ntfy.summary.no_accounts") if accounts.empty?
+
+      accounts.sort_by { |a| [ a.name.to_s.downcase, a.id.to_s ] }.map do |account|
+        converted_money = Money.new(ntfy_summary_converted_balance(account, rates: rates), currency)
+        original_money = Money.new(account.balance, account.currency)
+        original_suffix = account.currency == currency ? "" : " (#{original_money.format})"
+        "#{account.name}: #{converted_money.format}#{original_suffix}"
+      end.join("\n")
+    end
+
+    def ntfy_summary_converted_balance(account, rates:)
+      return account.balance.to_d if account.currency == currency
+
+      rate = rates[account.currency] || 1
+      account.balance.to_d * rate.to_d
     end
 
     def ntfy_rule_display_name(notification_rule)

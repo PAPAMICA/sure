@@ -264,4 +264,34 @@ class FamilyTest < ActiveSupport::TestCase
     assert_not family.valid?
     assert family.errors[:hourly_bank_sync_window_end].present?
   end
+
+  test "ntfy summary variables include totals and account breakdown" do
+    family = families(:dylan_family)
+    account_struct = Struct.new(:id, :name, :balance, :currency, :classification, keyword_init: true)
+    account_one = account_struct.new(
+      id: "a1",
+      name: "Checking",
+      balance: BigDecimal("1000"),
+      currency: family.currency,
+      classification: "asset"
+    )
+    account_two = account_struct.new(
+      id: "a2",
+      name: "Credit Card",
+      balance: BigDecimal("250"),
+      currency: family.currency,
+      classification: "liability"
+    )
+
+    vars = family.send(:ntfy_summary_variables, [ account_one, account_two ], notification_rule: nil)
+
+    assert_equal "2", vars[:accounts_count]
+    assert_equal "1", vars[:asset_accounts_count]
+    assert_equal "1", vars[:liability_accounts_count]
+    assert_includes vars[:accounts_breakdown], "Checking"
+    assert_includes vars[:accounts_breakdown], "Credit Card"
+    assert vars[:total_assets].present?
+    assert vars[:total_liabilities].present?
+    assert vars[:net_worth].present?
+  end
 end

@@ -38,10 +38,13 @@ fr:
     errors:
       transaction_on_sync: Les règles sur les transactions ne peuvent pas utiliser la livraison « après synchronisation du compte ». Utilisez immédiat ou planifié.
       balance_immediate: Les règles sur les soldes ne peuvent pas utiliser la livraison immédiate. Utilisez après synchronisation ou planifié.
+      summary_immediate: Les règles de résumé ne peuvent pas utiliser la livraison immédiate. Utilisez planifié.
+      summary_on_sync: Les règles de résumé ne peuvent pas utiliser la livraison « après synchronisation du compte ». Utilisez planifié.
       scheduled_weekday_required_with_hour: Choisissez un jour de la semaine lorsque vous définissez une heure pour une règle hebdomadaire.
     badges:
       target_transaction: Transactions
       target_balance: Soldes
+      target_summary: Résumé
       delivery_immediate: Immédiat
       delivery_scheduled: Planifié
       delivery_on_sync: Après sync du compte
@@ -56,6 +59,7 @@ fr:
       title: Règles de notification
       new_transaction_rule: Nouvelle règle (transactions)
       new_balance_rule: Nouvelle règle (soldes)
+      new_summary_rule: Nouvelle règle (résumé)
       intro_before_link: Envoyez des alertes via
       intro_after_link: Créez des règles avec des conditions SI (comme la catégorisation automatique), un montant minimum optionnel et une fréquence de vérification.
       ntfy_auth_doc_prefix: "Les serveurs avec contrôle d’accès exigent une authentification — voir "
@@ -106,6 +110,24 @@ fr:
         %{balance_change_line} — Résumé sur une ligne, localisé (saut de ligne en tête si présent ; vide si pas de données)
       template_balance_title_label: Modèle du titre
       template_balance_body_label: Modèle du corps
+      template_summary_heading: Notifications de résumé (planifié)
+      template_variables_summary: |
+        Variables disponibles :
+        %{rule_name} — Nom de la règle (ou libellé « Règle sans titre » si le nom est vide)
+        %{family_name} — Nom de la famille
+        %{family_currency} — Code devise de la famille
+        %{generated_at} — Date/heure de génération du résumé (fuseau famille, format long)
+        %{accounts_count} — Nombre de comptes inclus dans le résumé
+        %{asset_accounts_count} — Nombre de comptes d’actif inclus
+        %{liability_accounts_count} — Nombre de comptes de passif inclus
+        %{total_assets} — Total des actifs dans la devise de la famille
+        %{total_liabilities} — Total des passifs dans la devise de la famille
+        %{net_worth} — Patrimoine net (= actifs − passifs) dans la devise de la famille
+        %{accounts_breakdown} — Une ligne par compte avec le total converti
+        %{asset_accounts_breakdown} — Une ligne par compte d’actif
+        %{liability_accounts_breakdown} — Une ligne par compte de passif
+      template_summary_title_label: Modèle du titre du résumé
+      template_summary_body_label: Modèle du corps du résumé
       template_leave_blank_hint: Laisser vide pour utiliser le modèle par défaut.
       save_ntfy_settings: Enregistrer les paramètres
       list_heading: Règles
@@ -113,6 +135,7 @@ fr:
     new:
       title_transaction: Nouvelle règle — transactions
       title_balance: Nouvelle règle — soldes
+      title_summary: Nouvelle règle — résumé
     edit_page:
       title: Modifier la règle de notification
     form:

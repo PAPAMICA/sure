@@ -8,6 +8,8 @@ fr:
     balance:
       title: Solde du compte (après sync)
       change_line: "Δ %{prior_days} j : %{balance_change} (était %{prior_balance})"
+    summary:
+      no_accounts: Aucun compte inclus dans ce résumé.
     default_templates:
       transaction_title: Nouvelle transaction
       transaction_body: |
@@ -18,3 +20,13 @@ fr:
         %{category_name}
       balance_title: "[%{rule_name}] %{account_name}"
       balance_body: "%{balance}%{balance_change_line}"
+      summary_title: "[%{rule_name}] Résumé financier"
+      summary_body: |
+        %{family_name} · %{generated_at}
+        Comptes : %{accounts_count} (actifs : %{asset_accounts_count}, passifs : %{liability_accounts_count})
+        Actifs : %{total_assets}
+        Passifs : %{total_liabilities}
+        Patrimoine net : %{net_worth}
+
+        Comptes
+        %{accounts_breakdown}

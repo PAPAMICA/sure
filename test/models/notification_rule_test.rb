@@ -93,6 +93,26 @@ class NotificationRuleTest < ActiveSupport::TestCase
     assert_nil rule.scheduled_day_of_week
   end
 
+  test "summary rules are scheduled-only" do
+    immediate_rule = @family.notification_rules.build(
+      name: "Immediate summary",
+      target: :summary,
+      delivery: :immediate,
+      active: true
+    )
+    assert_not immediate_rule.valid?
+    assert_includes immediate_rule.errors[:base], I18n.t("notification_rules.errors.summary_immediate")
+
+    on_sync_rule = @family.notification_rules.build(
+      name: "On-sync summary",
+      target: :summary,
+      delivery: :on_sync,
+      active: true
+    )
+    assert_not on_sync_rule.valid?
+    assert_includes on_sync_rule.errors[:base], I18n.t("notification_rules.errors.summary_on_sync")
+  end
+
   test "duplicate! persists a copy with conditions" do
     account = accounts(:depository)
     rule = @family.notification_rules.create!(

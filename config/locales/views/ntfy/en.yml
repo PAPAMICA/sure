@@ -8,6 +8,8 @@ en:
     balance:
       title: Account balance (after sync)
       change_line: "Δ %{prior_days}d: %{balance_change} (was %{prior_balance})"
+    summary:
+      no_accounts: No accounts included in this summary.
     default_templates:
       transaction_title: New transaction
       transaction_body: |
@@ -18,3 +20,13 @@ en:
         %{category_name}
       balance_title: "[%{rule_name}] %{account_name}"
       balance_body: "%{balance}%{balance_change_line}"
+      summary_title: "[%{rule_name}] Financial summary"
+      summary_body: |
+        %{family_name} · %{generated_at}
+        Accounts: %{accounts_count} (assets: %{asset_accounts_count}, liabilities: %{liability_accounts_count})
+        Assets: %{total_assets}
+        Liabilities: %{total_liabilities}
+        Net worth: %{net_worth}
+
+        Accounts
+        %{accounts_breakdown}

@@ -38,10 +38,13 @@ en:
     errors:
       transaction_on_sync: Transaction rules cannot use “after account sync” delivery. Use immediate or scheduled.
       balance_immediate: Balance rules cannot use immediate delivery. Use after sync or scheduled.
+      summary_immediate: Summary rules cannot use immediate delivery. Use scheduled.
+      summary_on_sync: Summary rules cannot use “after account sync” delivery. Use scheduled.
       scheduled_weekday_required_with_hour: Choose a weekday when you set a time of day for a weekly rule.
     badges:
       target_transaction: Transactions
       target_balance: Balances
+      target_summary: Summary
       delivery_immediate: Immediate
       delivery_scheduled: Scheduled
       delivery_on_sync: After account sync
@@ -56,6 +59,7 @@ en:
       title: Notification rules
       new_transaction_rule: New transaction rule
       new_balance_rule: New balance rule
+      new_summary_rule: New summary rule
       intro_before_link: Send alerts through
       intro_after_link: Create rules with IF conditions (like auto-categorization), optional minimum amount, and how often to check.
       ntfy_auth_doc_prefix: "Servers with access control need authentication — see "
@@ -106,6 +110,24 @@ en:
         %{balance_change_line} — Localized one-line summary (leading newline when present; empty if no data)
       template_balance_title_label: Title template
       template_balance_body_label: Body template
+      template_summary_heading: Summary notifications (scheduled)
+      template_variables_summary: |
+        Available variables:
+        %{rule_name} — Notification rule name (or “Untitled rule” if blank)
+        %{family_name} — Family name
+        %{family_currency} — Family currency code
+        %{generated_at} — Summary generation date/time (family timezone, long format)
+        %{accounts_count} — Number of accounts included in summary
+        %{asset_accounts_count} — Number of asset accounts included
+        %{liability_accounts_count} — Number of liability accounts included
+        %{total_assets} — Total assets in family currency
+        %{total_liabilities} — Total liabilities in family currency
+        %{net_worth} — Net worth (= assets − liabilities) in family currency
+        %{accounts_breakdown} — One line per account with converted total
+        %{asset_accounts_breakdown} — One line per asset account
+        %{liability_accounts_breakdown} — One line per liability account
+      template_summary_title_label: Summary title template
+      template_summary_body_label: Summary body template
       template_leave_blank_hint: Leave empty to use the default template.
       save_ntfy_settings: Save settings
       list_heading: Rules
@@ -113,6 +135,7 @@ en:
     new:
       title_transaction: New transaction notification rule
       title_balance: New balance notification rule
+      title_summary: New summary notification rule
     edit_page:
       title: Edit notification rule
     form:

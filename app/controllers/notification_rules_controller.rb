@@ -11,9 +11,10 @@ class NotificationRulesController < ApplicationController
   end
 
   def new
+    selected_target = params[:target].presence_in(%w[transaction balance summary]) || "transaction"
     @notification_rule = Current.family.notification_rules.build(
-      target: params[:target].presence_in(%w[transaction balance]) || "transaction",
-      delivery: default_delivery_for(params[:target].presence_in(%w[transaction balance]) || "transaction")
+      target: selected_target,
+      delivery: default_delivery_for(selected_target)
     )
   end
 
@@ -64,6 +65,8 @@ class NotificationRulesController < ApplicationController
         ntfy_transaction_body_template: p[:ntfy_transaction_body_template].presence,
         ntfy_balance_title_template: p[:ntfy_balance_title_template].presence,
         ntfy_balance_body_template: p[:ntfy_balance_body_template].presence,
+        ntfy_summary_title_template: p[:ntfy_summary_title_template].presence,
+        ntfy_summary_body_template: p[:ntfy_summary_body_template].presence,
         ntfy_balance_prior_days: family_ntfy_prior_days_param(p)
       )
     else
@@ -74,6 +77,8 @@ class NotificationRulesController < ApplicationController
         ntfy_transaction_body_template: p[:ntfy_transaction_body_template].presence,
         ntfy_balance_title_template: p[:ntfy_balance_title_template].presence,
         ntfy_balance_body_template: p[:ntfy_balance_body_template].presence,
+        ntfy_summary_title_template: p[:ntfy_summary_title_template].presence,
+        ntfy_summary_body_template: p[:ntfy_summary_body_template].presence,
         ntfy_balance_prior_days: family_ntfy_prior_days_param(p)
       }
       attrs[:ntfy_access_token] = p[:ntfy_access_token] if p[:ntfy_access_token].present?
@@ -123,7 +128,14 @@ class NotificationRulesController < ApplicationController
     end
 
     def default_delivery_for(target)
-      target == "balance" ? "on_sync" : "immediate"
+      case target
+      when "balance"
+        "on_sync"
+      when "summary"
+        "scheduled"
+      else
+        "immediate"
+      end
     end
 
     def require_family_admin!
@@ -140,7 +152,8 @@ class NotificationRulesController < ApplicationController
       params.require(:family).permit(
         :ntfy_url, :ntfy_access_token, :ntfy_basic_username, :ntfy_basic_password, :clear_ntfy_credentials,
         :ntfy_transaction_title_template, :ntfy_transaction_body_template,
-        :ntfy_balance_title_template, :ntfy_balance_body_template, :ntfy_balance_prior_days
+        :ntfy_balance_title_template, :ntfy_balance_body_template, :ntfy_balance_prior_days,
+        :ntfy_summary_title_template, :ntfy_summary_body_template
       )
     end
 

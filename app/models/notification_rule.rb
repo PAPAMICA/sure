@@ -13,7 +13,7 @@ class NotificationRule < ApplicationRecord
   accepts_nested_attributes_for :conditions, allow_destroy: true
 
   # prefix: true avoids defining NotificationRule.transaction (conflicts with AR::Base.transaction)
-  enum :target, { transaction: "transaction", balance: "balance" }, validate: true, prefix: true
+  enum :target, { transaction: "transaction", balance: "balance", summary: "summary" }, validate: true, prefix: true
   enum :delivery, { immediate: "immediate", scheduled: "scheduled", on_sync: "on_sync" }, validate: true
 
   FREQUENCIES = %w[hourly every_4_hours daily weekly].freeze
@@ -35,7 +35,7 @@ class NotificationRule < ApplicationRecord
     @registry ||= case target
     when "transaction"
       NotificationRule::Registry::TransactionTarget.new(self)
-    when "balance"
+    when "balance", "summary"
       NotificationRule::Registry::BalanceTarget.new(self)
     else
       raise UnsupportedTargetError, "Unsupported target: #{target}"
@@ -128,6 +128,19 @@ class NotificationRule < ApplicationRecord
     ntfy_response_success?(response)
   end
 
+  def deliver_summary_message!(accounts)
+    return false if family.ntfy_url.blank?
+
+    title, body = family.ntfy_summary_notification_for(accounts, notification_rule: self)
+    response = Notifications::NtfyDelivery.deliver!(
+      family.ntfy_url,
+      title: title,
+      body: body,
+      **family.ntfy_delivery_credentials
+    )
+    ntfy_response_success?(response)
+  end
+
   # Manual trigger from UI: latest matching transaction (by entry date) or deterministic account sample.
   def trigger_sample_deliver!
     return :no_ntfy if family.ntfy_url.blank?
@@ -144,6 +157,11 @@ class NotificationRule < ApplicationRecord
       account = matching_accounts_scope.unscope(:order).order(:name, :id).first
       return :no_match unless account
       return :delivery_failed unless deliver_balance_message!(account)
+      :ok
+    when "summary"
+      accounts = matching_accounts_scope.unscope(:order).order(:name, :id).to_a
+      return :no_match if accounts.empty?
+      return :delivery_failed unless deliver_summary_message!(accounts)
       :ok
     else
       :unsupported
@@ -296,6 +314,10 @@ class NotificationRule < ApplicationRecord
         errors.add(:base, I18n.t("notification_rules.errors.transaction_on_sync"))
       elsif target_balance? && immediate?
         errors.add(:base, I18n.t("notification_rules.errors.balance_immediate"))
+      elsif target_summary? && immediate?
+        errors.add(:base, I18n.t("notification_rules.errors.summary_immediate"))
+      elsif target_summary? && on_sync?
+        errors.add(:base, I18n.t("notification_rules.errors.summary_on_sync"))
       end
     end
 
