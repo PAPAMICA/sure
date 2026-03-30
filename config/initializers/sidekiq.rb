@@ -63,15 +63,38 @@ Sidekiq.configure_server do |config|
   config.on(:startup) do
     schedule_path = Rails.root.join("config/schedule.yml")
     if schedule_path.file?
-      schedule = YAML.load_file(schedule_path)
-      if schedule.present?
-        errors = Sidekiq::Cron::Job.load_from_hash!(schedule, { "source" => "schedule" })
-        failed = errors&.reject { |_, err| err.blank? }
-        if failed.present?
-          Rails.logger.error("[Sidekiq::Cron] Some jobs failed to save: #{failed.inspect}")
-        else
-          Rails.logger.info("[Sidekiq::Cron] Loaded #{schedule.size} job(s) from config/schedule.yml")
+      schedule = YAML.safe_load(ERB.new(schedule_path.read).result, aliases: true) || {}
+      if schedule.is_a?(Hash) && schedule.present?
+        loaded_jobs = []
+        failed_jobs = {}
+
+        # Load each schedule job independently so one malformed entry does not block all cron jobs.
+        schedule.each do |job_name, job_config|
+          begin
+            errors = Sidekiq::Cron::Job.load_from_hash!({ job_name => job_config }, source: "schedule")
+            error_message = errors&.dig(job_name)
+            if error_message.present?
+              failed_jobs[job_name] = error_message
+            else
+              loaded_jobs << job_name
+            end
+          rescue => e
+            failed_jobs[job_name] = e.message
+          end
         end
+
+        Rails.logger.info("[Sidekiq::Cron] Loaded #{loaded_jobs.size}/#{schedule.size} job(s): #{loaded_jobs.sort.join(', ')}")
+        if failed_jobs.present?
+          Rails.logger.error("[Sidekiq::Cron] Failed jobs: #{failed_jobs.inspect}")
+        end
+
+        %w[sync_hourly notification_rules_scheduler].each do |critical_job_name|
+          next if Sidekiq::Cron::Job.find(critical_job_name).present?
+
+          Rails.logger.error("[Sidekiq::Cron] Critical cron job missing: #{critical_job_name}")
+        end
+      else
+        Rails.logger.warn("[Sidekiq::Cron] config/schedule.yml is empty or invalid")
       end
     else
       Rails.logger.warn("[Sidekiq::Cron] config/schedule.yml not found — hourly sync and other cron jobs will not run")
