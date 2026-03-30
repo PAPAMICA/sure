@@ -115,7 +115,7 @@ class TransactionCategoriesController < ApplicationController
         transaction = next_transaction
       else
         entry = @entry
-        transaction = @entry.transaction
+        transaction = @entry.transaction if @entry&.transaction?
       end
 
       uncategorized_count = Transaction.quick_categorize_uncategorized_count(

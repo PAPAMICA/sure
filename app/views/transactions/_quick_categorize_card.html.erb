@@ -1,10 +1,11 @@
 <%# locals: (entry:, transaction:, categories:, ledger_usage: "personal", uncategorized_count: 0) %>
 <% lu = local_assigns.fetch(:ledger_usage, "personal") %>
 <% qc_remaining = local_assigns.fetch(:uncategorized_count) { Transaction.quick_categorize_uncategorized_count(Current.user, Current.family, ledger_usage: lu) } %>
+<% qc_txn = transaction.presence || (entry&.transaction? ? entry.transaction : nil) %>
 <% perm = entry && entry.account.permission_for(Current.user) %>
 <% full_edit = perm && perm.in?(%i[owner full_control]) %>
 <% can_note = perm && perm.in?(%i[owner full_control read_write]) %>
-<% if entry.blank? %>
+<% if entry.blank? || qc_txn.blank? %>
   <div class="bg-container rounded-2xl shadow-border-xs border border-primary p-10 text-center space-y-4 max-w-lg mx-auto">
     <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-container-inset text-secondary">
       <%= icon "check", size: "lg" %>
@@ -21,8 +22,8 @@
 <% else %>
   <div class="space-y-6"
        data-controller="quick-categorize"
-       data-quick-categorize-autosave-url-value="<%= transaction_path(transaction, usage: lu) %>"
-       data-quick-categorize-transaction-id-value="<%= transaction.id %>"
+       data-quick-categorize-autosave-url-value="<%= transaction_path(entry, usage: lu) %>"
+       data-quick-categorize-transaction-id-value="<%= qc_txn.id %>"
        data-quick-categorize-usage-value="<%= lu %>"
        data-quick-categorize-all-categories-text-value="<%= t("transactions.quick_categorize.all_categories_meta", count: categories.size) %>"
        data-quick-categorize-results-count-text-value="<%= t("transactions.quick_categorize.search_results_meta") %>">
@@ -55,10 +56,10 @@
             <%= icon "landmark", size: "sm", class: "text-secondary shrink-0" %>
             <%= entry.account.name %>
           </span>
-          <% if transaction.merchant %>
+          <% if qc_txn.merchant %>
             <span class="inline-flex items-center gap-1.5">
               <%= icon "store", size: "sm", class: "text-secondary shrink-0" %>
-              <%= transaction.merchant.name %>
+              <%= qc_txn.merchant.name %>
             </span>
           <% end %>
         </div>
@@ -165,7 +166,7 @@
                     usage: lu,
                     entry: {
                       entryable_type: "Transaction",
-                      entryable_attributes: { id: transaction.id, category_id: category.id }
+                      entryable_attributes: { id: qc_txn.id, category_id: category.id }
                     }
                   ),
                   method: :patch,

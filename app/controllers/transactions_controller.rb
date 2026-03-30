@@ -14,11 +14,14 @@ class TransactionsController < ApplicationController
     transaction = nil
     if params[:transaction_id].present?
       transaction = scope.where(id: params[:transaction_id]).first
+      # Deep links (e.g. ntfy): transaction may already be categorized or filters may differ — still open if accessible.
+      transaction ||= accessible_transactions.includes(entry: :account).find_by(id: params[:transaction_id])
     end
     transaction ||= Transaction.next_uncategorized_for(Current.user, Current.family, ledger_usage: @ledger_usage)
 
-    @entry = transaction&.entry
     @transaction = transaction
+    @entry = @transaction&.entry
+    @transaction = @entry.transaction if @entry&.transaction?
 
     if @entry && !@entry.account.permission_for(Current.user).in?(%i[owner full_control read_write])
       redirect_to transactions_path(**ledger_usage_url_options), alert: t("transactions.quick_categorize.no_access")

@@ -29,6 +29,15 @@ class TransactionsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, @entry.name
   end
 
+  test "quick categorize opens deep-linked transaction when already categorized" do
+    txn = transactions(:one)
+    txn.update!(category: categories(:food_and_drink))
+
+    get quick_categorize_transactions_url(transaction_id: txn.id, usage: "personal")
+    assert_response :success
+    assert_includes response.body, txn.entry.name
+  end
+
   test "creates with transaction details" do
     assert_difference [ "Entry.count", "Transaction.count" ], 1 do
       post transactions_url, params: {
