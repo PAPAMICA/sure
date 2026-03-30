@@ -330,12 +330,12 @@ class FamilyTest < ActiveSupport::TestCase
 
     url = family.send(:ntfy_transaction_in_app_link_url, txn.reload, txn.entry)
     assert_includes url, "bank.example.com"
-    assert_includes url, "/transactions/#{txn.id}"
+    assert_includes url, "/transactions/#{txn.entry.id}"
     assert_no_match(/quick_categorize/, url)
 
     vars = family.send(:ntfy_transaction_variables, txn, txn.entry, notification_rule: nil)
     assert_equal url, vars[:quick_categorize_url]
-    assert_includes vars[:transaction_detail_url], "/transactions/#{txn.id}"
+    assert_includes vars[:transaction_detail_url], "/transactions/#{txn.entry.id}"
   end
 
   test "ntfy transaction category_name is real category when not uncategorized" do

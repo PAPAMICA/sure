@@ -238,10 +238,11 @@ module Family::NtfyConfigurable
       end
     end
 
-    def ntfy_transaction_show_url(transaction, entry)
+    def ntfy_transaction_show_url(_transaction, entry)
       ntfy_safe_url do
+        # TransactionsController#show resolves :id via EntryableResource as an Entry id, not Transaction id.
         Rails.application.routes.url_helpers.transaction_url(
-          transaction,
+          entry,
           { usage: entry.account.ledger_usage }.merge(ntfy_url_options_for_public_links)
         )
       end
