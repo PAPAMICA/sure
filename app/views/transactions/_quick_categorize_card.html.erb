@@ -102,7 +102,7 @@
 
       <%# Catégories %>
       <div class="px-5 py-4 space-y-3">
-        <div class="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+        <div class="order-2 lg:order-1 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <label for="quick_categorize_search" class="text-sm font-medium text-primary"><%= t("transactions.quick_categorize.pick_category") %></label>
             <p class="text-xs text-secondary mt-0.5"><%= t("transactions.quick_categorize.search_hint") %></p>
@@ -110,7 +110,7 @@
           <p class="text-xs text-secondary tabular-nums shrink-0" data-quick-categorize-target="resultMeta" aria-live="polite"></p>
         </div>
 
-        <div class="relative">
+        <div class="order-3 lg:order-2 relative">
           <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-secondary" aria-hidden="true">
             <%= icon "search", size: "sm" %>
           </span>
@@ -128,12 +128,12 @@
 
         <div
           data-quick-categorize-target="categoryList"
-          class="max-h-[min(50vh,22rem)] overflow-y-auto overflow-x-hidden rounded-xl border border-primary bg-container-inset p-2 space-y-1.5"
+          class="order-1 lg:order-3 flex flex-wrap gap-2 lg:block lg:max-h-[min(50vh,22rem)] lg:overflow-y-auto lg:overflow-x-hidden rounded-xl border border-primary bg-container-inset p-2 lg:space-y-1.5"
           role="list"
         >
           <div
             data-quick-categorize-target="emptyState"
-            class="hidden rounded-lg border border-dashed border-primary px-4 py-8 text-center space-y-4"
+            class="hidden w-full rounded-lg border border-dashed border-primary px-4 py-8 text-center space-y-4"
             role="status"
           >
             <p class="text-sm text-secondary"><%= t("transactions.quick_categorize.search_no_results") %></p>
@@ -159,7 +159,7 @@
           </div>
 
           <% categories.each_with_index do |category, idx| %>
-            <%= tag.div class: "block rounded-lg border border-transparent transition-colors", role: "listitem", data: { qc_category: category.name.to_s.downcase, qc_sort: idx } do %>
+            <%= tag.div class: "inline-block lg:block rounded-lg border border-transparent transition-colors", role: "listitem", data: { qc_category: category.name.to_s.downcase, qc_sort: idx } do %>
               <%= button_to transaction_category_path(
                     entry,
                     quick_categorize: "1",
@@ -171,18 +171,18 @@
                   ),
                   method: :patch,
                   data: { turbo_frame: "quick_categorize_card" },
-                  class: "w-full flex items-center gap-3 rounded-lg border border-transparent px-3 py-2.5 text-left text-sm text-primary transition-colors hover:bg-surface-hover hover:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-container focus-visible:ring-gray-400" do %>
+                  class: "inline-flex w-auto lg:w-full items-center gap-2 lg:gap-3 rounded-full lg:rounded-lg border border-primary lg:border-transparent bg-container lg:bg-transparent px-3 py-1.5 lg:px-3 lg:py-2.5 text-left text-xs lg:text-sm text-primary transition-colors hover:bg-surface-hover hover:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-container focus-visible:ring-gray-400" do %>
                 <% if category.lucide_icon.present? %>
-                  <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-container border border-primary" style="color: <%= category.color %>">
+                  <span class="hidden lg:flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-container border border-primary" style="color: <%= category.color %>">
                     <%= icon category.lucide_icon, size: "sm", color: "current" %>
                   </span>
                 <% else %>
-                  <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-container border border-primary text-secondary">
+                  <span class="hidden lg:flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-container border border-primary text-secondary">
                     <%= icon "tag", size: "sm" %>
                   </span>
                 <% end %>
-                <span class="min-w-0 flex-1 font-medium truncate" style="color: <%= category.color %>"><%= category.name %></span>
-                <%= icon "chevron-right", size: "sm", class: "text-secondary shrink-0 opacity-60" %>
+                <span class="min-w-0 flex-1 font-medium truncate whitespace-nowrap" style="color: <%= category.color %>"><%= category.name %></span>
+                <%= icon "chevron-right", size: "sm", class: "hidden lg:block text-secondary shrink-0 opacity-60" %>
               <% end %>
             <% end %>
           <% end %>
