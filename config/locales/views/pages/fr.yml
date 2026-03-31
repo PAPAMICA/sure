@@ -94,3 +94,6 @@ fr:
         open_account: "Ouvrir %{name}"
         empty: Aucun compte liquide dans cette vue.
         stacked_title: Tendance de liquidité par compte
+        accounts: Comptes
+        available: Disponible
+        weight: Poids

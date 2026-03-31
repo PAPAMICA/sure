@@ -1,27 +1,16 @@
 <%# locals: (liquidity_widget:, period:, dashboard_ledger_usage: nil) %>
 <% data = liquidity_widget %>
 <% total_money = Money.new(data[:total], data[:currency]) %>
-<%
-  donut_style =
-    if data[:donut_segments].blank?
-      "background: conic-gradient(#E2E8F0 0 100%);"
-    else
-      start = 0.0
-      segments = data[:donut_segments].map do |segment|
-        stop = [ start + segment[:weight], 100.0 ].min
-        piece = "#{segment[:color]} #{start.round(2)}% #{stop.round(2)}%"
-        start = stop
-        piece
-      end
-      "background: conic-gradient(#{segments.join(', ')});"
-    end
-%>
+<% donut_segments = data[:rows].map { |row|
+     {
+       id: row[:account]&.id || "other",
+       name: row[:account]&.name || row[:name],
+       amount: row[:converted_amount].to_f,
+       color: row[:color]
+     }
+   } %>
 
-<section
-  class="bg-container rounded-xl shadow-border-xs border border-primary p-4 lg:p-6 space-y-5"
-  data-controller="liquidity-widget"
-  data-liquidity-widget-default-label-value="<%= t("pages.dashboard.liquidity_widget.distribution") %>"
-  data-liquidity-widget-default-value-value="<%= format_money(total_money) %>">
+<section class="bg-container rounded-xl shadow-border-xs border border-primary p-4 lg:p-6 space-y-5">
   <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
     <div class="space-y-3">
       <div class="space-y-1">
@@ -71,93 +60,105 @@
   </div>
 
   <% if data[:rows].any? %>
-  <div class="grid grid-cols-1 lg:grid-cols-[200px,1fr] gap-4 lg:gap-6">
-    <div class="flex flex-col items-center justify-center gap-3">
-      <div class="relative size-36 rounded-full transition-transform duration-300 hover:scale-[1.02]" style="<%= donut_style %>">
-        <div class="absolute inset-3 rounded-full bg-container border border-primary"></div>
-        <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-3">
-          <p class="text-[11px] text-secondary leading-tight" data-liquidity-widget-target="centerLabel"><%= t("pages.dashboard.liquidity_widget.distribution") %></p>
-          <p class="text-sm font-medium text-primary privacy-sensitive leading-tight" data-liquidity-widget-target="centerValue"><%= format_money(total_money) %></p>
-        </div>
-      </div>
-      <div class="flex flex-wrap justify-center gap-1.5">
-        <% data[:rows].each do |row| %>
-          <% row_money = Money.new(row[:converted_amount], data[:currency]) %>
-          <button
-            type="button"
-            class="inline-flex items-center gap-1.5 rounded-full border border-primary bg-container-inset px-2 py-1 text-[11px] text-primary"
-            data-action="mouseenter->liquidity-widget#preview mouseleave->liquidity-widget#clearPreview"
-            data-liquidity-name="<%= row[:account]&.name || row[:name] %>"
-            data-liquidity-amount="<%= format_money(row_money) %>">
-            <span class="h-2 w-2 rounded-full" style="background-color:<%= row[:color] %>"></span>
-            <span><%= row[:account]&.name || row[:name] %></span>
-          </button>
-        <% end %>
-      </div>
-      <p class="text-xs text-secondary text-center"><%= t("pages.dashboard.liquidity_widget.top_accounts_note", count: data[:rows].size) %></p>
-    </div>
-
-    <div class="space-y-3">
-    <div class="relative">
-    <div class="flex gap-1">
-      <% data[:rows].each do |row| %>
-        <% row_money = Money.new(row[:converted_amount], data[:currency]) %>
-        <div
-          class="h-2 rounded-full transition-opacity hover:opacity-80"
-          style="width: <%= row[:weight] %>%; background-color: <%= row[:color] %>;"
-          data-action="mouseenter->liquidity-widget#preview mouseleave->liquidity-widget#clearPreview mouseenter->liquidity-widget#showBarTooltip mouseleave->liquidity-widget#hideBarTooltip"
-          data-liquidity-name="<%= row[:account]&.name || row[:name] %>"
-          data-liquidity-amount="<%= format_money(row_money) %>"
-          data-liquidity-weight="<%= number_to_percentage(row[:weight], precision: 1) %>"
-          title="<%= row[:account]&.name || row[:name] %> — <%= number_to_percentage(row[:weight], precision: 1) %>">
-        </div>
-      <% end %>
-    </div>
-      <p class="hidden absolute -bottom-5 left-0 text-xs text-secondary" data-liquidity-widget-target="barTooltip"></p>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-      <% data[:rows].each do |row| %>
-        <% money = Money.new(row[:converted_amount], data[:currency]) %>
-        <% content = capture do %>
-          <div class="rounded-lg border border-primary bg-container-inset px-3 py-2 flex items-center justify-between gap-3 transition-colors">
-            <div class="flex items-center gap-2 min-w-0">
-              <% if row[:account].present? %>
-                <%= render "accounts/logo", account: row[:account], size: "sm", color: row[:color] %>
-              <% else %>
-                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-container border border-primary text-secondary">
-                  <%= icon "ellipsis", size: "sm" %>
-                </span>
-              <% end %>
-              <p class="text-sm text-primary truncate"><%= row[:account]&.name || row[:name] %></p>
-            </div>
-            <div class="text-right shrink-0">
-              <p class="text-sm font-medium text-primary privacy-sensitive"><%= format_money(money) %></p>
-              <p class="text-xs text-secondary"><%= number_to_percentage(row[:weight], precision: 1) %></p>
-            </div>
-          </div>
-        <% end %>
-        <% if row[:account].present? %>
-          <%= link_to account_path(row[:account]), class: "block hover:opacity-90", title: t("pages.dashboard.liquidity_widget.open_account", name: row[:account].name) do %>
-            <div
-              data-action="mouseenter->liquidity-widget#preview mouseleave->liquidity-widget#clearPreview"
-              data-liquidity-name="<%= row[:account].name %>"
-              data-liquidity-amount="<%= format_money(money) %>">
-              <%= content %>
-            </div>
-          <% end %>
-        <% else %>
+    <div class="px-1 lg:px-2">
+      <div class="flex flex-col lg:flex-row gap-8 items-center">
+        <div class="w-full lg:w-1/3 max-w-[300px] px-2">
           <div
-            data-action="mouseenter->liquidity-widget#preview mouseleave->liquidity-widget#clearPreview"
-            data-liquidity-name="<%= row[:name] %>"
-            data-liquidity-amount="<%= format_money(money) %>">
-            <%= content %>
+            class="h-[300px] relative"
+            data-controller="donut-chart"
+            data-donut-chart-segments-value="<%= donut_segments.to_json %>"
+            data-donut-chart-segment-opacity-value="0.9"
+            data-donut-chart-extended-hover-value="true"
+            data-donut-chart-hover-extension-value="3"
+            data-donut-chart-enable-click-value="false">
+            <div data-donut-chart-target="chartContainer" class="absolute inset-0 pointer-events-none"></div>
+            <div data-donut-chart-target="contentContainer" class="flex justify-center items-center h-full">
+              <div data-donut-chart-target="defaultContent" class="flex flex-col items-center">
+                <div class="text-secondary text-sm mb-2">
+                  <span><%= t("pages.dashboard.liquidity_widget.distribution") %></span>
+                </div>
+                <div class="text-3xl font-medium text-primary privacy-sensitive">
+                  <%= format_money(total_money) %>
+                </div>
+              </div>
+              <% data[:rows].each do |row| %>
+                <% row_id = row[:account]&.id || "other" %>
+                <div id="segment_<%= row_id %>" class="hidden">
+                  <div class="flex flex-col gap-2 items-center">
+                    <p class="text-sm text-secondary"><%= row[:account]&.name || row[:name] %></p>
+                    <p class="text-3xl font-medium text-primary privacy-sensitive">
+                      <%= format_money(Money.new(row[:converted_amount], data[:currency])) %>
+                    </p>
+                    <p class="text-sm text-secondary privacy-sensitive"><%= number_to_percentage(row[:weight], precision: 1) %></p>
+                  </div>
+                </div>
+              <% end %>
+            </div>
           </div>
-        <% end %>
-      <% end %>
+        </div>
+
+        <div class="w-full lg:w-2/3 bg-container-inset rounded-xl p-1 space-y-1 overflow-x-auto">
+          <div class="px-4 py-2 flex items-center uppercase text-xs font-medium text-secondary">
+            <div class="w-28 lg:w-40">
+              <p><%= t("pages.dashboard.liquidity_widget.accounts") %><span class="text-subdued mx-1">&middot;</span><%= data[:rows].count %></p>
+            </div>
+            <div class="ml-auto text-right flex items-center gap-6">
+              <div class="w-20 lg:w-40">
+                <p><%= t("pages.dashboard.liquidity_widget.available") %></p>
+              </div>
+              <div class="w-16">
+                <p><%= t("pages.dashboard.liquidity_widget.weight") %></p>
+              </div>
+            </div>
+          </div>
+          <div class="py-3 shadow-border-xs rounded-lg bg-container font-medium text-sm max-w-full">
+            <% data[:rows].each_with_index do |row, idx| %>
+              <% row_id = row[:account]&.id || "other" %>
+              <% row_money = Money.new(row[:converted_amount], data[:currency]) %>
+              <% row_name = row[:account]&.name || row[:name] %>
+              <% row_content = capture do %>
+                <div class="flex items-center gap-3 flex-1 min-w-0">
+                  <div class="h-7 w-7 flex-shrink-0 rounded-full flex justify-center items-center"
+                    style="background-color: color-mix(in oklab, <%= row[:color] %> 10%, transparent); color: <%= row[:color] %>;">
+                    <% if row[:account].present? %>
+                      <%= render "accounts/logo", account: row[:account], size: "sm", color: row[:color] %>
+                    <% else %>
+                      <%= icon "ellipsis", size: "sm", color: "current" %>
+                    <% end %>
+                  </div>
+                  <span class="text-sm font-medium text-primary truncate"><%= row_name %></span>
+                </div>
+                <div class="flex items-center gap-4 flex-shrink-0 text-right">
+                  <span class="text-sm font-medium text-primary whitespace-nowrap privacy-sensitive"><%= format_money(row_money) %></span>
+                  <span class="text-sm text-secondary whitespace-nowrap w-10 lg:w-15 privacy-sensitive"><%= number_to_percentage(row[:weight], precision: 1) %></span>
+                </div>
+              <% end %>
+
+              <% if row[:account].present? %>
+                <%= link_to account_path(row[:account]),
+                  class: "flex items-center justify-between mx-3 p-3 rounded-lg cursor-pointer group gap-3",
+                  data: {
+                    category_id: row_id,
+                    action: "mouseenter->donut-chart#highlightSegment mouseleave->donut-chart#unhighlightSegment"
+                  } do %>
+                  <%= row_content %>
+                <% end %>
+              <% else %>
+                <div class="flex items-center justify-between mx-3 p-3 rounded-lg group gap-3"
+                  data-category-id="<%= row_id %>"
+                  data-action="mouseenter->donut-chart#highlightSegment mouseleave->donut-chart#unhighlightSegment">
+                  <%= row_content %>
+                </div>
+              <% end %>
+
+              <% if idx < data[:rows].size - 1 %>
+                <%= render "shared/ruler", classes: "mx-3 lg:mx-4" %>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      </div>
     </div>
-    </div>
-  </div>
   <% else %>
     <div class="rounded-lg border border-primary bg-container-inset p-4">
       <p class="text-sm text-secondary"><%= t("pages.dashboard.liquidity_widget.empty") %></p>
