@@ -40,6 +40,18 @@ class RecurringTransaction < ApplicationRecord
     where(account_id: Account.accessible_by(user).select(:id)).or(where(account_id: nil))
   }
 
+  # Recurring patterns visible for a Perso/Pro ledger (same rule as projected recurring on transactions).
+  def self.for_ledger_dashboard(user:, family:, ledger_usage:)
+    ledger_account_ids = user.accessible_accounts.merge(Account.with_ledger_usage(ledger_usage)).pluck(:id)
+    scope = family.recurring_transactions.accessible_by(user).includes(:merchant, :account)
+
+    if ledger_account_ids.any?
+      scope.where(account_id: nil).or(scope.where(account_id: ledger_account_ids))
+    else
+      scope.where(account_id: nil)
+    end
+  end
+
   # Class methods for identification and cleanup
   # Schedules pattern identification with debounce to run after all syncs complete
   def self.identify_patterns_for(family)
@@ -174,6 +186,45 @@ class RecurringTransaction < ApplicationRecord
     rescue ArgumentError
       next_month.end_of_month
     end
+  end
+
+  def display_name_for_subscription
+    merchant&.name.presence || name.presence || "—"
+  end
+
+  # Category from the most recent matching bank transaction (for dashboard / abonnements).
+  def category_inferred_from_matches
+    @category_inferred_from_matches ||= begin
+      entries = matching_transactions
+      arr = entries.is_a?(Array) ? entries : entries.to_a
+      return nil if arr.empty?
+
+      latest = arr.max_by(&:date)
+      txn = latest.entryable
+      txn.is_a?(Transaction) ? txn.category : nil
+    end
+  end
+
+  # Typical monthly outflow in family currency (absolute value for display totals).
+  def converted_monthly_outflow_in_family_currency(family, rates)
+    raw = if manual? && expected_amount_avg.present?
+      expected_amount_avg_money.amount
+    elsif manual? && has_amount_variance?
+      if expected_amount_avg_money.present?
+        expected_amount_avg_money.amount
+      elsif expected_amount_min_money.present? && expected_amount_max_money.present?
+        (expected_amount_min_money.amount + expected_amount_max_money.amount) / 2
+      else
+        amount_money.amount
+      end
+    else
+      amount_money.amount
+    end
+    raw = raw.to_d.abs
+    return raw if currency == family.currency
+
+    rate = rates[currency]
+    raw * (rate.present? ? rate.to_d : 1.to_d)
   end
 
   # Find matching transactions for this recurring pattern

@@ -9,6 +9,7 @@ nb:
         home: Hjem
         reports: Rapporter
         transactions: Transaksjoner
+        member_subscriptions: Abonnement
     auth:
       existing_account: Har du allerede en konto?
       no_account: Ny hos %{product_name}?

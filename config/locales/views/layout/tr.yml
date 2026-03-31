@@ -9,6 +9,7 @@ tr:
         home: Ana Sayfa
         reports: Raporlar
         transactions: İşlemler
+        member_subscriptions: Abonelikler
     auth:
       existing_account: Zaten bir hesabınız var mı?
       no_account: "%{product_name}'ye yeni misiniz?"

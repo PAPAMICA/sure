@@ -1,0 +1,26 @@
+---
+en:
+  member_subscriptions:
+    title: Subscriptions
+    subtitle: Recurring charges detected on your accounts, grouped by category. Totals are approximate monthly costs in your family currency.
+    total_monthly: Total (monthly est.)
+    total_yearly: Yearly est.
+    count_label:
+      one: "%{count} subscription"
+      other: "%{count} subscriptions"
+    ledger_hint: Use the Perso/Pro toggle in the header to switch between personal and business ledgers.
+    detect: Detect subscriptions
+    settings_link: Recurring settings
+    recurring_disabled: Enable recurring transaction detection in settings to use this page.
+    identify_done: Detection finished — %{count} pattern(s) considered.
+    empty:
+      title: No recurring subscriptions yet
+      body: Run detection to scan your transactions for repeating charges (same merchant or label, similar dates).
+    uncategorized: Uncategorized
+    table:
+      name: Name
+      amount: Amount
+      account: Account
+      last_charge: Last charge
+      next_expected: Next expected
+    group_total: Subtotal in %{currency}

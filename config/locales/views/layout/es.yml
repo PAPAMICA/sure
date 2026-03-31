@@ -9,6 +9,7 @@ es:
         home: Inicio
         reports: Informes
         transactions: Transacciones
+        member_subscriptions: Suscripciones
     auth:
       existing_account: ¿Ya tienes una cuenta?
       no_account: ¿Nuevo en %{product_name}?

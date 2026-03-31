@@ -9,6 +9,7 @@ en:
         home: Home
         reports: Reports
         transactions: Transactions
+        member_subscriptions: Subscriptions
     auth:
       existing_account: Already have an account?
       no_account: New to %{product_name}?

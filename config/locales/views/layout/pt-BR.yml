@@ -9,6 +9,7 @@ pt-BR:
         home: Início
         reports: Relatórios
         transactions: Transações
+        member_subscriptions: Assinaturas
     auth.sign_up:
       existing_account: Já tem uma conta?
       no_account: Novo no %{product_name}?

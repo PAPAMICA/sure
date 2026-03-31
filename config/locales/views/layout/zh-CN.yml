@@ -10,6 +10,7 @@ zh-CN:
         home: 首页
         reports: 财务报告
         transactions: 交易记录
+        member_subscriptions: 订阅
     auth:
       existing_account: 已有账户？
       no_account: 新用户？

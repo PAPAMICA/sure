@@ -299,6 +299,12 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :member_subscriptions, only: [ :index ] do
+    collection do
+      post :identify
+    end
+  end
+
   resources :recurring_transactions, only: %i[index destroy] do
     collection do
       match :identify, via: [ :get, :post ]

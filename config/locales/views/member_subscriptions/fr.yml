@@ -1,0 +1,26 @@
+---
+fr:
+  member_subscriptions:
+    title: Abonnements
+    subtitle: Prélèvements récurrents détectés sur vos comptes, regroupés par catégorie. Les totaux sont des estimations mensuelles dans la devise de la famille.
+    total_monthly: Total (estim. mensuelle)
+    total_yearly: Estim. annuelle
+    count_label:
+      one: "%{count} abonnement"
+      other: "%{count} abonnements"
+    ledger_hint: Utilisez le sélecteur Perso/Pro dans l’en-tête pour basculer entre les journaux personnel et professionnel.
+    detect: Détecter les abonnements
+    settings_link: Paramètres récurrence
+    recurring_disabled: Activez la détection des transactions récurrentes dans les paramètres pour utiliser cette page.
+    identify_done: Détection terminée — %{count} motif(s) analysé(s).
+    empty:
+      title: Aucun abonnement récurrent pour l’instant
+      body: Lancez une détection pour analyser vos transactions (même commerçant ou libellé, dates proches).
+    uncategorized: Sans catégorie
+    table:
+      name: Nom
+      amount: Montant
+      account: Compte
+      last_charge: Dernier prélèvement
+      next_expected: Prochaine échéance
+    group_total: Sous-total en %{currency}

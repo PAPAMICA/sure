@@ -9,6 +9,7 @@ ca:
         home: Inici
         reports: Informes
         transactions: Transaccions
+        member_subscriptions: Subscripcions
     auth:
       existing_account: Ja tens un compte?
       no_account: Nou a %{product_name}?

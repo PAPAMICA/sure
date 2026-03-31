@@ -9,6 +9,7 @@ ro:
         home: Acasă
         reports: Rapoarte
         transactions: Tranzacții
+        member_subscriptions: Abonamente
     auth:
       existing_account: Ai deja un cont?
       no_account: Ești nou pe %{product_name}?
