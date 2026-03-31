@@ -252,6 +252,7 @@ class PagesController < ApplicationController
     def liquidity_supported_account?(account, include_investment_cash:)
       return true if account.balance_type == :cash
       return include_investment_cash if account.balance_type == :investment
+      return true if liquidity_other_asset?(account)
 
       false
     end
@@ -274,6 +275,16 @@ class PagesController < ApplicationController
             .order(date: :desc)
             .limit(1)
             .pick(:end_cash_balance).to_d
+        end
+      when :non_cash
+        if liquidity_other_asset?(account)
+          if on == Date.current
+            account.balance.to_d
+          else
+            account.end_balance_amount_on_or_before(on).to_d
+          end
+        else
+          0.to_d
         end
       else
         0.to_d
@@ -337,6 +348,10 @@ class PagesController < ApplicationController
       palette = %w[#6172F3 #14B8A6 #F59E0B #EC4899 #8B5CF6 #22C55E #F97316 #06B6D4 #E11D48 #84CC16]
       idx = account.id.to_s.each_byte.sum % palette.size
       palette[idx]
+    end
+
+    def liquidity_other_asset?(account)
+      account.accountable_type == "OtherAsset"
     end
 
     def liquidity_include_investment_cash_preference
