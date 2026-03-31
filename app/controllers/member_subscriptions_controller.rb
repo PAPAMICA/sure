@@ -15,8 +15,10 @@ class MemberSubscriptionsController < ApplicationController
     foreign_currencies = base.map(&:currency).uniq.reject { |c| c == Current.family.currency }
     @rates = ExchangeRate.rates_for(foreign_currencies, to: Current.family.currency, date: Date.current)
 
-    income_rows = base.select(&:recurring_income?)
-    expense_rows = base.select { |r| r.subscription_expense_like? && !r.recurring_income? }
+    # Revenus vs dépenses : même règle que le compte de résultat (montant d’écriture, etc.),
+    # pas la case « revenu récurrent » seule — sinon le donut reste vide côté revenus.
+    income_rows = base.reject(&:subscription_expense_like?)
+    expense_rows = base.select(&:subscription_expense_like?)
 
     @recurring = (expense_rows + income_rows).sort_by { |r|
       [ r.next_expected_date || Date.new(2099, 12, 31), r.display_name_for_subscription.downcase ]
@@ -25,6 +27,8 @@ class MemberSubscriptionsController < ApplicationController
     @total_monthly_recurring_income = income_rows.sum { |r| r.converted_monthly_outflow_in_family_currency(Current.family, @rates) }
     @total_monthly_converted = expense_rows.sum { |r| r.converted_monthly_outflow_in_family_currency(Current.family, @rates) }
     @disposable_monthly = @total_monthly_recurring_income - @total_monthly_converted
+
+    @income_recurring_rows = income_rows
 
     grouped = expense_rows.group_by(&:category_inferred_from_matches)
     @category_groups = grouped.sort_by { |category, _|

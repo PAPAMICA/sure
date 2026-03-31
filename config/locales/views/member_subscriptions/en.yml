@@ -2,8 +2,8 @@
 en:
   member_subscriptions:
     title: Subscriptions
-    subtitle: Recurring charges detected on your accounts, grouped by category. Income-like patterns (salary, etc.) are excluded. Totals are approximate monthly costs in your family currency.
-    total_monthly: Total (monthly est.)
+    subtitle: Recurring charges and income-like patterns (salary, etc.) are detected from your accounts. The donut compares recurring expenses by category to your recurring income; the green slice is disposable income (income − expenses). Totals are monthly estimates in your family currency.
+    total_monthly_expenses: Recurring expenses (monthly est.)
     total_yearly: Yearly est.
     count_label:
       one: "%{count} subscription"
@@ -24,6 +24,7 @@ en:
       last_charge: Last charge
       next_expected: Next expected
     group_total: Subtotal in %{currency}
+    income_section_title: Recurring income
     badges:
       recurring_income: Recurring income
     donut:

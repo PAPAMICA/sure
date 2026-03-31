@@ -2,8 +2,8 @@
 fr:
   member_subscriptions:
     title: Abonnements
-    subtitle: Prélèvements récurrents détectés sur vos comptes, regroupés par catégorie. Les revenus récurrents (salaire, etc.) ne sont pas inclus. Les totaux sont des estimations mensuelles dans la devise de la famille.
-    total_monthly: Total (estim. mensuelle)
+    subtitle: Les prélèvements et les revenus récurrents (salaire, etc.) sont détectés sur vos comptes. Le donut compare les dépenses récurrentes par catégorie à vos revenus récurrents ; le segment vert est le reste à vivre (revenus − dépenses). Les totaux sont des estimations mensuelles dans la devise de la famille.
+    total_monthly_expenses: Dépenses récurrentes (estim. mensuelle)
     total_yearly: Estim. annuelle
     count_label:
       one: "%{count} abonnement"
@@ -24,6 +24,7 @@ fr:
       last_charge: Dernier prélèvement
       next_expected: Prochaine échéance
     group_total: Sous-total en %{currency}
+    income_section_title: Revenus récurrents
     badges:
       recurring_income: Revenu récurrent
     donut:

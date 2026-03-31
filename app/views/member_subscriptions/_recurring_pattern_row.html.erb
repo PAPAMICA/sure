@@ -1,0 +1,56 @@
+<%# locals: (recurring:, rates:) %>
+<% conv = recurring.converted_monthly_outflow_in_family_currency(Current.family, rates) %>
+<tr class="border-b border-primary last:border-0 hover:bg-surface-hover/60">
+  <td class="px-4 py-3 lg:px-5">
+    <div class="flex items-center gap-2 min-w-0">
+      <% if recurring.merchant.present? %>
+        <% if recurring.merchant.logo_url.present? %>
+          <%= image_tag recurring.merchant.logo_url, class: "w-6 h-6 rounded-full shrink-0", loading: "lazy", alt: "" %>
+        <% else %>
+          <%= render DS::FilledIcon.new(variant: :text, text: recurring.merchant.name, size: "sm", rounded: true) %>
+        <% end %>
+        <span class="font-medium text-primary truncate"><%= recurring.merchant.name %></span>
+      <% else %>
+        <%= render DS::FilledIcon.new(variant: :text, text: recurring.name, size: "sm", rounded: true) %>
+        <span class="font-medium text-primary truncate"><%= recurring.name %></span>
+      <% end %>
+      <% unless recurring.subscription_expense_like? %>
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-tint-10 text-success shrink-0">
+          <%= t("member_subscriptions.badges.recurring_income") %>
+        </span>
+      <% end %>
+      <% if recurring.manual? %>
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-tint-10 text-link shrink-0">
+          <%= t("recurring_transactions.badges.manual") %>
+        </span>
+      <% end %>
+    </div>
+  </td>
+  <td class="px-4 py-3 lg:px-5 align-top">
+    <div class="privacy-sensitive space-y-0.5">
+      <% if recurring.manual? && recurring.has_amount_variance? %>
+        <span class="text-sm font-medium text-primary whitespace-nowrap">
+          <%= format_money(-recurring.expected_amount_avg_money) %>
+        </span>
+      <% else %>
+        <span class="text-sm font-medium text-primary whitespace-nowrap">
+          <%= format_money(-recurring.amount_money) %>
+        </span>
+      <% end %>
+      <% if recurring.currency != Current.family.currency %>
+        <span class="block text-xs text-secondary whitespace-nowrap">
+          ≈ <%= format_money(Money.new(conv, Current.family.currency)) %>
+        </span>
+      <% end %>
+    </div>
+  </td>
+  <td class="px-4 py-3 lg:px-5 align-top text-secondary hidden md:table-cell">
+    <%= recurring.account&.name || "—" %>
+  </td>
+  <td class="px-4 py-3 lg:px-5 align-top text-secondary hidden sm:table-cell whitespace-nowrap">
+    <%= format_date(recurring.last_occurrence_date) %>
+  </td>
+  <td class="px-4 py-3 lg:px-5 align-top text-primary whitespace-nowrap">
+    <%= format_date(recurring.next_expected_date) %>
+  </td>
+</tr>
