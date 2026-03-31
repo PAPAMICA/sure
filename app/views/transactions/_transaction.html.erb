@@ -44,7 +44,8 @@
               <% end %>
             </div>
 
-            <div class="truncate">
+            <%# min-w-0: allow flex shrink; avoid "truncate" here — its overflow:hidden blocks native title tooltips on badges/icons %>
+            <div class="min-w-0">
               <div class="space-y-0.5">
                 <div class="flex items-center gap-1 min-w-0">
                   <div class="truncate flex-shrink">
@@ -117,18 +118,17 @@
                     <% if defined?(@recurring_entry_ids) && @recurring_entry_ids&.include?(entry.id) %>
                       <span
                         class="inline-flex shrink-0 text-secondary opacity-80 hover:opacity-100 cursor-help"
-                        title="<%= t("transactions.transaction.recurring_tooltip") %>"
                         aria-label="<%= t("transactions.transaction.recurring_aria") %>">
-                        <%= icon "repeat", size: "xs", color: "current" %>
+                        <%= icon "repeat", size: "xs", color: "current", title: t("transactions.transaction.recurring_tooltip") %>
                       </span>
                     <% end %>
 
                     <% if entry.notes.present? %>
+                      <% notes_tooltip = h(entry.notes.to_s.truncate(1000).squish) %>
                       <span
                         class="inline-flex shrink-0 text-secondary opacity-80 hover:opacity-100 cursor-help"
-                        title="<%= h(entry.notes.to_s.truncate(1000).squish) %>"
                         aria-label="<%= t("transactions.transaction.notes_aria") %>">
-                        <%= icon "info", size: "xs", color: "current" %>
+                        <%= icon "info", size: "xs", color: "current", title: notes_tooltip %>
                       </span>
                     <% end %>
 
