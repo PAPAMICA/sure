@@ -45,7 +45,7 @@ class AccountsController < ApplicationController
     @chart_view = params[:chart_view] || "balance"
     @tab = params[:tab]
     @q = params.fetch(:q, {}).permit(:search, status: [])
-    entries = @account.entries.where(excluded: false).search(@q).reverse_chronological
+    entries = @account.entries.where(excluded: false).search(@q).reverse_chronological.includes(:entryable)
 
     @pagy, @entries = pagy(
       entries,
@@ -54,6 +54,13 @@ class AccountsController < ApplicationController
     )
 
     @activity_feed_data = Account::ActivityFeedData.new(@account, @entries)
+
+    @recurring_entry_ids = RecurringTransaction.entry_ids_matching_active_recurring(
+      family: Current.family,
+      entries: @entries,
+      user: Current.user,
+      account: @account
+    )
   end
 
   def sync

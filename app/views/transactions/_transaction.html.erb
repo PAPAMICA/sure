@@ -114,6 +114,24 @@
                       </span>
                     <% end %>
 
+                    <% if defined?(@recurring_entry_ids) && @recurring_entry_ids&.include?(entry.id) %>
+                      <span
+                        class="inline-flex shrink-0 text-secondary opacity-80 hover:opacity-100 cursor-help"
+                        title="<%= t("transactions.transaction.recurring_tooltip") %>"
+                        aria-label="<%= t("transactions.transaction.recurring_aria") %>">
+                        <%= icon "repeat", size: "xs", color: "current" %>
+                      </span>
+                    <% end %>
+
+                    <% if entry.notes.present? %>
+                      <span
+                        class="inline-flex shrink-0 text-secondary opacity-80 hover:opacity-100 cursor-help"
+                        title="<%= h(entry.notes.to_s.truncate(1000).squish) %>"
+                        aria-label="<%= t("transactions.transaction.notes_aria") %>">
+                        <%= icon "info", size: "xs", color: "current" %>
+                      </span>
+                    <% end %>
+
                     <% if transaction.transfer.present? %>
                       <%= render "transactions/transfer_match", transaction: transaction %>
                     <% end %>

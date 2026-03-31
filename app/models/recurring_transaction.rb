@@ -304,6 +304,78 @@ class RecurringTransaction < ApplicationRecord
     raw * (rate.present? ? rate.to_d : 1.to_d)
   end
 
+  # True if this active pattern matches the given bank transaction entry (same rules as {#matching_transactions}).
+  def matches_entry?(entry)
+    return false unless entry.is_a?(Entry)
+    return false unless entry.entryable_type == "Transaction"
+    return false unless entry.currency == currency
+
+    if account_id.present?
+      return false unless entry.account_id == account_id
+    else
+      return false unless entry.account.family_id == family_id
+    end
+
+    day = entry.date.day
+    dmin = [ expected_day_of_month - 2, 1 ].max
+    dmax = [ expected_day_of_month + 2, 31 ].min
+    return false if day < dmin || day > dmax
+
+    amt = entry.amount
+    if manual? && has_amount_variance?
+      return false unless expected_amount_min.present? && expected_amount_max.present?
+      return false unless amt >= expected_amount_min && amt <= expected_amount_max
+    else
+      return false unless amt == amount
+    end
+
+    txn = entry.entryable
+    return false unless txn.is_a?(Transaction)
+
+    if merchant_id.present?
+      txn.merchant_id == merchant_id
+    else
+      entry.name == name
+    end
+  end
+
+  # Entry ids on this page that match at least one active recurring pattern (for UI indicators).
+  # +ledger_usage+ filters patterns like the transactions index; +account+ limits to family-wide + that account (activity tab).
+  def self.entry_ids_matching_active_recurring(family:, entries:, user:, ledger_usage: nil, account: nil)
+    return Set.new if family.recurring_transactions_disabled?
+
+    entries = Array(entries).compact
+    return Set.new if entries.empty?
+
+    scope = family.recurring_transactions.accessible_by(user).active.includes(:merchant)
+    recurring_patterns =
+      if account
+        scope.where(account_id: nil).or(scope.where(account_id: account.id))
+      elsif ledger_usage
+        ledger_account_ids = user.accessible_accounts.merge(Account.with_ledger_usage(ledger_usage)).pluck(:id)
+        if ledger_account_ids.any?
+          scope.where(account_id: nil).or(scope.where(account_id: ledger_account_ids))
+        else
+          scope.where(account_id: nil)
+        end
+      else
+        scope
+      end
+
+    matched = Set.new
+    entries.each do |entry|
+      next unless entry.entryable_type == "Transaction"
+
+      recurring_patterns.each do |rt|
+        if rt.matches_entry?(entry)
+          matched << entry.id
+          break
+        end
+      end
+    end
+    matched
+  end
+
   # Find matching transactions for this recurring pattern
   def matching_transactions
     # For manual recurring with amount variance, match within range

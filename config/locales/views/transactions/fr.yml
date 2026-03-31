@@ -94,6 +94,9 @@ fr:
       split: Fractionnée
       split_tooltip: Cette transaction a été divisée en plusieurs lignes
       split_child_tooltip: Ligne d'une transaction fractionnée
+      notes_aria: Notes
+      recurring_tooltip: Correspond à une récurrence active
+      recurring_aria: Transaction récurrente
     merge_duplicate:
       success: Transactions fusionnées avec succès
       failure: Impossible de fusionner les transactions

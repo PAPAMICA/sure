@@ -794,4 +794,118 @@ class RecurringTransactionTest < ActiveSupport::TestCase
       RecurringTransaction.create_from_transaction(transaction)
     end
   end
+
+  test "matches_entry? matches merchant and amount when in day window" do
+    recurring = @family.recurring_transactions.create!(
+      account: @account,
+      merchant: @merchant,
+      amount: 15.99,
+      currency: "USD",
+      expected_day_of_month: 5,
+      last_occurrence_date: 1.month.ago.to_date,
+      next_expected_date: 5.days.from_now.to_date,
+      status: "active"
+    )
+
+    transaction = Transaction.create!(merchant: @merchant, category: categories(:food_and_drink))
+    entry = @account.entries.create!(
+      date: Date.new(2025, 3, 5),
+      amount: 15.99,
+      currency: "USD",
+      name: "Netflix",
+      entryable: transaction
+    )
+
+    assert recurring.matches_entry?(entry)
+  end
+
+  test "matches_entry? is false when amount differs" do
+    recurring = @family.recurring_transactions.create!(
+      account: @account,
+      merchant: @merchant,
+      amount: 15.99,
+      currency: "USD",
+      expected_day_of_month: 5,
+      last_occurrence_date: 1.month.ago.to_date,
+      next_expected_date: 5.days.from_now.to_date,
+      status: "active"
+    )
+    transaction = Transaction.create!(merchant: @merchant, category: categories(:food_and_drink))
+    entry = @account.entries.create!(
+      date: Date.new(2025, 3, 5),
+      amount: 20.00,
+      currency: "USD",
+      name: "Netflix",
+      entryable: transaction
+    )
+
+    assert_not recurring.matches_entry?(entry)
+  end
+
+  test "entry_ids_matching_active_recurring includes entry id when pattern matches" do
+    @family.recurring_transactions.create!(
+      account: @account,
+      merchant: @merchant,
+      amount: 22.50,
+      currency: "USD",
+      expected_day_of_month: 12,
+      last_occurrence_date: 1.month.ago.to_date,
+      next_expected_date: 5.days.from_now.to_date,
+      status: "active"
+    )
+
+    transaction = Transaction.create!(merchant: @merchant, category: categories(:food_and_drink))
+    entry = @account.entries.create!(
+      date: Date.new(2025, 3, 12),
+      amount: 22.50,
+      currency: "USD",
+      name: "Sub",
+      entryable: transaction
+    )
+
+    admin = users(:family_admin)
+    ids = RecurringTransaction.entry_ids_matching_active_recurring(
+      family: @family,
+      entries: [ entry ],
+      user: admin,
+      account: @account
+    )
+
+    assert_includes ids, entry.id
+  end
+
+  test "entry_ids_matching_active_recurring returns empty when family recurring is disabled" do
+    @family.recurring_transactions.create!(
+      account: @account,
+      merchant: @merchant,
+      amount: 22.50,
+      currency: "USD",
+      expected_day_of_month: 12,
+      last_occurrence_date: 1.month.ago.to_date,
+      next_expected_date: 5.days.from_now.to_date,
+      status: "active"
+    )
+
+    transaction = Transaction.create!(merchant: @merchant, category: categories(:food_and_drink))
+    entry = @account.entries.create!(
+      date: Date.new(2025, 3, 12),
+      amount: 22.50,
+      currency: "USD",
+      name: "Sub",
+      entryable: transaction
+    )
+
+    @family.update!(recurring_transactions_disabled: true)
+    admin = users(:family_admin)
+    ids = RecurringTransaction.entry_ids_matching_active_recurring(
+      family: @family,
+      entries: [ entry ],
+      user: admin,
+      account: @account
+    )
+
+    assert_empty ids
+  ensure
+    @family.update!(recurring_transactions_disabled: false)
+  end
 end

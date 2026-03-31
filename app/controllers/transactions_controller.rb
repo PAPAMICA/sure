@@ -50,7 +50,7 @@ class TransactionsController < ApplicationController
     base_scope = @search.transactions_scope
                        .reverse_chronological
                        .includes(
-                         { entry: :account },
+                         { entry: [ :account, :entryable ] },
                          :category, :merchant, :tags,
                          :transfer_as_inflow, :transfer_as_outflow
                        )
@@ -82,6 +82,13 @@ class TransactionsController < ApplicationController
     else
       Set.new
     end
+
+    @recurring_entry_ids = RecurringTransaction.entry_ids_matching_active_recurring(
+      family: Current.family,
+      entries: @transactions.map(&:entry),
+      user: Current.user,
+      ledger_usage: @ledger_usage
+    )
 
     # Load projected recurring transactions for next 10 days (match Perso/Pro account filter)
     ledger_account_ids = Current.user.accessible_accounts.merge(Account.with_ledger_usage(@ledger_usage)).pluck(:id)

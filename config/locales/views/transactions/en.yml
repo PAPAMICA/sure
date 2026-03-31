@@ -95,6 +95,9 @@ en:
       split: Split
       split_tooltip: This transaction has been split into multiple entries
       split_child_tooltip: Part of a split transaction
+      notes_aria: Notes
+      recurring_tooltip: Matches an active recurring pattern
+      recurring_aria: Recurring transaction
     merge_duplicate:
       success: Transactions merged successfully
       failure: Could not merge transactions
