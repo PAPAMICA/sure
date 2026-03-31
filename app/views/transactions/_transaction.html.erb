@@ -44,11 +44,10 @@
               <% end %>
             </div>
 
-            <%# min-w-0: allow flex shrink; avoid "truncate" here — its overflow:hidden blocks native title tooltips on badges/icons %>
             <div class="min-w-0">
               <div class="space-y-0.5">
                 <div class="flex items-center gap-1 min-w-0">
-                  <div class="truncate flex-shrink">
+                  <div class="truncate flex-shrink min-w-0">
                     <% if transaction.transfer? %>
                       <%= link_to(
                             entry.name,
@@ -69,6 +68,9 @@
                             },
                             class: "hover:underline"
                           ) %>
+                    <% end %>
+                    <% if entry.notes.present? %>
+                      <span class="text-secondary font-normal text-xs"> (<%= h(entry.notes.to_s.truncate(500).squish) %>)</span>
                     <% end %>
                   </div>
 
@@ -116,31 +118,8 @@
                     <% end %>
 
                     <% if defined?(@recurring_entry_ids) && @recurring_entry_ids&.include?(entry.id) %>
-                      <span
-                        data-controller="tooltip"
-                        data-tooltip-strategy-value="fixed"
-                        class="inline-flex shrink-0 text-secondary opacity-80 hover:opacity-100 cursor-help relative z-10"
-                        aria-label="<%= t("transactions.transaction.recurring_aria") %>">
+                      <span class="inline-flex shrink-0 text-secondary opacity-80" aria-label="<%= t("transactions.transaction.recurring_aria") %>">
                         <%= icon "repeat", size: "xs", color: "current" %>
-                        <%# Dark tooltip in light mode; elevated gray in dark mode (avoid bg-inverse = white panel in dark) %>
-                        <div role="tooltip" data-tooltip-target="tooltip" class="tooltip z-50 max-w-xs rounded-lg border border-secondary bg-gray-900 px-3 py-2 text-sm text-white shadow-border-lg outline-none ring-0 theme-dark:bg-gray-800 theme-dark:text-gray-100">
-                          <%= t("transactions.transaction.recurring_tooltip") %>
-                        </div>
-                      </span>
-                    <% end %>
-
-                    <% if entry.notes.present? %>
-                      <span
-                        data-controller="tooltip"
-                        data-tooltip-strategy-value="fixed"
-                        class="inline-flex shrink-0 text-secondary opacity-80 hover:opacity-100 cursor-help relative z-10"
-                        aria-label="<%= t("transactions.transaction.notes_aria") %>">
-                        <%= icon "info", size: "xs", color: "current" %>
-                        <div role="tooltip" data-tooltip-target="tooltip" class="tooltip z-50 max-h-48 max-w-sm overflow-y-auto rounded-lg border border-secondary bg-gray-900 p-3 text-sm leading-snug text-white shadow-border-lg outline-none ring-0 theme-dark:bg-gray-800 theme-dark:text-gray-100">
-                          <p class="m-0 whitespace-pre-wrap break-words">
-                            <%= h(entry.notes.to_s.truncate(4000).squish) %>
-                          </p>
-                        </div>
                       </span>
                     <% end %>
 
