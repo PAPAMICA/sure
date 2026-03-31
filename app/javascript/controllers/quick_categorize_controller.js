@@ -90,10 +90,10 @@ export default class extends Controller {
     if (emptyEl) {
       ordered.push(emptyEl);
     }
-    ordered.push(
-      ...matching.map((x) => x.el),
-      ...notMatching.map((x) => x.el),
-    );
+    ordered.push(...matching.map((x) => x.el));
+    if (q.length === 0) {
+      ordered.push(...notMatching.map((x) => x.el));
+    }
     container.replaceChildren(...ordered);
 
     this.syncSelectionAfterFilter();

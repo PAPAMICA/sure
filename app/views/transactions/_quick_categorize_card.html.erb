@@ -20,7 +20,7 @@
     ) %>
   </div>
 <% else %>
-  <div class="space-y-6"
+    <div class="space-y-4 lg:space-y-6"
        data-controller="quick-categorize"
        data-quick-categorize-autosave-url-value="<%= transaction_path(entry, usage: lu) %>"
        data-quick-categorize-transaction-id-value="<%= qc_txn.id %>"
@@ -29,25 +29,25 @@
        data-quick-categorize-results-count-text-value="<%= t("transactions.quick_categorize.search_results_meta") %>">
     <%# Résumé transaction %>
     <div class="bg-container rounded-2xl shadow-border-xs border border-primary overflow-hidden">
-      <div class="bg-container-inset border-b border-primary px-5 py-4">
+      <div class="bg-container-inset border-b border-primary px-4 py-3 lg:px-5 lg:py-4">
         <div class="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
           <p class="text-xs font-medium text-secondary uppercase tracking-wide"><%= t("transactions.quick_categorize.card_heading") %></p>
           <p class="text-xs font-medium text-secondary tabular-nums shrink-0" aria-live="polite">
             <%= t("transactions.quick_categorize.uncategorized_remaining", count: qc_remaining) %>
           </p>
         </div>
-        <p class="mt-1 text-lg font-semibold text-primary leading-snug"><%= entry.name %></p>
+        <p class="mt-1 text-base lg:text-lg font-semibold text-primary leading-snug"><%= entry.name %></p>
         <% qc_amount = entry.amount_money.abs %>
         <% if entry.amount.negative? %>
-          <p class="mt-2 text-3xl font-semibold tabular-nums tracking-tight privacy-sensitive text-success">
+          <p class="mt-1.5 lg:mt-2 text-2xl lg:text-3xl font-semibold tabular-nums tracking-tight privacy-sensitive text-success">
             +<%= format_money(qc_amount) %>
           </p>
         <% else %>
-          <p class="mt-2 text-3xl font-semibold tabular-nums tracking-tight privacy-sensitive text-destructive">
+          <p class="mt-1.5 lg:mt-2 text-2xl lg:text-3xl font-semibold tabular-nums tracking-tight privacy-sensitive text-destructive">
             -<%= format_money(qc_amount) %>
           </p>
         <% end %>
-        <div class="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm text-secondary">
+        <div class="mt-2 lg:mt-3 flex flex-wrap gap-x-4 lg:gap-x-5 gap-y-1 text-xs lg:text-sm text-secondary">
           <span class="inline-flex items-center gap-1.5">
             <%= icon "calendar", size: "sm", class: "text-secondary shrink-0" %>
             <%= l(entry.date, format: :long) %>
@@ -66,7 +66,7 @@
       </div>
 
       <% if full_edit %>
-        <div class="px-5 py-4 space-y-4 border-b border-primary">
+        <div class="px-4 py-3 lg:px-5 lg:py-4 space-y-3 lg:space-y-4 border-b border-primary">
           <%= label_tag "entry_name", t("transactions.quick_categorize.name_label"), class: "text-sm font-medium text-primary" %>
           <%= text_field_tag "entry[name]", entry.name,
                 id: "entry_name",
@@ -87,7 +87,7 @@
                 } %>
         </div>
       <% elsif can_note %>
-        <div class="px-5 py-4 space-y-3 border-b border-primary">
+        <div class="px-4 py-3 lg:px-5 lg:py-4 space-y-3 border-b border-primary">
           <%= label_tag "entry_notes", t("transactions.quick_categorize.notes_label"), class: "text-sm font-medium text-primary" %>
           <%= text_area_tag "entry[notes]", entry.notes,
                 id: "entry_notes",
@@ -101,7 +101,7 @@
       <% end %>
 
       <%# Catégories %>
-      <div class="px-5 py-4 space-y-3">
+      <div class="px-4 py-3 lg:px-5 lg:py-4 space-y-2.5 lg:space-y-3">
         <div class="order-2 lg:order-1 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <label for="quick_categorize_search" class="text-sm font-medium text-primary"><%= t("transactions.quick_categorize.pick_category") %></label>
@@ -171,13 +171,13 @@
                   ),
                   method: :patch,
                   data: { turbo_frame: "quick_categorize_card" },
-                  class: "inline-flex w-auto lg:w-full items-center gap-2 lg:gap-3 rounded-full lg:rounded-lg border border-primary lg:border-transparent bg-container lg:bg-transparent px-3 py-1.5 lg:px-3 lg:py-2.5 text-left text-xs lg:text-sm text-primary transition-colors hover:bg-surface-hover hover:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-container focus-visible:ring-gray-400" do %>
+                  class: "inline-flex w-auto lg:w-full items-center gap-2 rounded-full lg:rounded-lg border border-primary lg:border-transparent bg-container lg:bg-transparent px-2.5 py-1 lg:px-3 lg:py-2.5 text-left text-xs lg:text-sm text-primary transition-colors hover:bg-surface-hover hover:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-container focus-visible:ring-gray-400" do %>
                 <% if category.lucide_icon.present? %>
-                  <span class="hidden lg:flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-container border border-primary" style="color: <%= category.color %>">
+                  <span class="flex h-4 w-4 lg:h-9 lg:w-9 shrink-0 items-center justify-center rounded lg:rounded-lg bg-transparent lg:bg-container lg:border-0 lg:border-primary" style="color: <%= category.color %>">
                     <%= icon category.lucide_icon, size: "sm", color: "current" %>
                   </span>
                 <% else %>
-                  <span class="hidden lg:flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-container border border-primary text-secondary">
+                  <span class="flex h-4 w-4 lg:h-9 lg:w-9 shrink-0 items-center justify-center rounded lg:rounded-lg bg-transparent lg:bg-container lg:border-0 lg:border-primary text-secondary">
                     <%= icon "tag", size: "sm" %>
                   </span>
                 <% end %>
