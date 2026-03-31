@@ -51,6 +51,9 @@ de:
       tab_transactions: Transaktionen
       tab_upcoming: Anstehend
       uncategorized: (ohne Kategorie)
+      mark_recurring: Als wiederkehrend markieren
+      mark_recurring_subtitle: Als wiederkehrende Transaktion verfolgen. Die Betragsabweichung wird automatisch aus den letzten 6 Monaten ähnlicher Transaktionen berechnet.
+      mark_recurring_title: Wiederkehrende Transaktion
     activity_labels:
       buy: Kaufen
       sell: Verkaufen
@@ -65,9 +68,6 @@ de:
       withdrawal: Entnahme
       exchange: Umtausch
       other: Sonstige
-    mark_recurring: Als wiederkehrend markieren
-    mark_recurring_subtitle: Als wiederkehrende Transaktion verfolgen. Die Betragsabweichung wird automatisch aus den letzten 6 Monaten ähnlicher Transaktionen berechnet.
-    mark_recurring_title: Wiederkehrende Transaktion
     potential_duplicate_title: Mögliches Duplikat erkannt
     potential_duplicate_description: Diese ausstehende Transaktion könnte mit der unten stehenden gebuchten Transaktion übereinstimmen. Wenn ja, führe sie zusammen, um Doppelzählung zu vermeiden.
     merge_duplicate: Ja, zusammenführen

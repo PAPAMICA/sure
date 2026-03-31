@@ -51,6 +51,9 @@ es:
       tab_transactions: Transacciones
       tab_upcoming: Próximas
       uncategorized: "(sin categorizar)"
+      mark_recurring: Marcar como recurrente
+      mark_recurring_subtitle: Realiza el seguimiento como una transacción recurrente. La variación del importe se calcula automáticamente basándose en transacciones similares de los últimos 6 meses.
+      mark_recurring_title: Transacción recurrente
     activity_labels:
       buy: Compra
       sell: Venta
@@ -65,9 +68,6 @@ es:
       withdrawal: Retirada
       exchange: Intercambio
       other: Otros
-    mark_recurring: Marcar como recurrente
-    mark_recurring_subtitle: Realiza el seguimiento como una transacción recurrente. La variación del importe se calcula automáticamente basándose en transacciones similares de los últimos 6 meses.
-    mark_recurring_title: Transacción recurrente
     potential_duplicate_title: Posible duplicado detectado
     potential_duplicate_description: Esta transacción pendiente podría ser la misma que la transacción confirmada a continuación. Si es así, combínalas para evitar una doble contabilización.
     duplicate_resolution:

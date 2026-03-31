@@ -358,29 +358,21 @@ class TransactionsController < ApplicationController
 
     return unless require_account_permission!(transaction.entry.account)
 
-    # Check if a recurring transaction already exists for this pattern
-    existing = Current.family.recurring_transactions.find_by(
-      account_id: transaction.entry.account_id,
-      merchant_id: transaction.merchant_id,
-      name: transaction.merchant_id.present? ? nil : transaction.entry.name,
-      currency: transaction.entry.currency,
-      manual: true
-    )
-
-    if existing
-      flash[:alert] = t("recurring_transactions.already_exists")
-      respond_mark_as_recurring
-      return
-    end
-
     begin
       RecurringTransaction.create_from_transaction(transaction)
       flash[:notice] = t("recurring_transactions.marked_as_recurring")
       respond_mark_as_recurring
+    rescue RecurringTransaction::DuplicateManualRecurring
+      flash[:alert] = t("recurring_transactions.already_exists")
+      respond_mark_as_recurring
     rescue ActiveRecord::RecordInvalid
       flash[:alert] = t("recurring_transactions.creation_failed")
       respond_mark_as_recurring
-    rescue StandardError
+    rescue ActiveRecord::RecordNotUnique
+      flash[:alert] = t("recurring_transactions.already_exists")
+      respond_mark_as_recurring
+    rescue StandardError => e
+      Rails.logger.error("mark_as_recurring failed: #{e.class}: #{e.message}")
       flash[:alert] = t("recurring_transactions.unexpected_error")
       respond_mark_as_recurring
     end

@@ -1,6 +1,9 @@
 class RecurringTransaction < ApplicationRecord
   include Monetizable
 
+  # Raised when a manual recurring already exists for the same pattern (unique index).
+  DuplicateManualRecurring = Class.new(StandardError)
+
   belongs_to :family
   belongs_to :account, optional: true
   belongs_to :merchant, optional: true
@@ -70,12 +73,14 @@ class RecurringTransaction < ApplicationRecord
 
   # Create a manual recurring transaction from an existing transaction
   # Automatically calculates amount variance from past 6 months of matching transactions
+  #
+  # If an auto-detected recurring row already exists for the same pattern (unique index on
+  # family/account/merchant|name/amount/currency), it is promoted to manual instead of inserting.
   def self.create_from_transaction(transaction, date_variance: 2)
     entry = transaction.entry
     family = entry.account.family
     expected_day = entry.date.day
 
-    # Find matching transactions from the past 6 months
     matching_amounts = find_matching_transaction_amounts(
       family: family,
       merchant_id: transaction.merchant_id,
@@ -86,41 +91,97 @@ class RecurringTransaction < ApplicationRecord
       account: entry.account
     )
 
-    # Calculate amount variance from historical data
     expected_min = expected_max = expected_avg = nil
     if matching_amounts.size > 1
-      # Multiple transactions found - calculate variance
       expected_min = matching_amounts.min
       expected_max = matching_amounts.max
       expected_avg = matching_amounts.sum / matching_amounts.size
     elsif matching_amounts.size == 1
-      # Single transaction - no variance yet
       amount = matching_amounts.first
       expected_min = amount
       expected_max = amount
       expected_avg = amount
     end
 
-    # Calculate next expected date relative to today, not the transaction date
     next_expected = calculate_next_expected_date_from_today(expected_day)
 
-    create!(
-      family: family,
-      account: entry.account,
-      merchant_id: transaction.merchant_id,
-      name: transaction.merchant_id.present? ? nil : entry.name,
-      amount: entry.amount,
+    existing = find_existing_recurring_for_pattern(transaction, entry)
+    if existing
+      raise DuplicateManualRecurring if existing.manual?
+
+      return promote_auto_recurring_to_manual!(
+        existing,
+        entry: entry,
+        matching_amounts: matching_amounts,
+        expected_min: expected_min,
+        expected_max: expected_max,
+        expected_avg: expected_avg,
+        next_expected: next_expected
+      )
+    end
+
+    begin
+      create!(
+        family: family,
+        account: entry.account,
+        merchant_id: transaction.merchant_id,
+        name: transaction.merchant_id.present? ? nil : entry.name,
+        amount: entry.amount,
+        currency: entry.currency,
+        expected_day_of_month: expected_day,
+        last_occurrence_date: entry.date,
+        next_expected_date: next_expected,
+        status: "active",
+        occurrence_count: matching_amounts.size,
+        manual: true,
+        expected_amount_min: expected_min,
+        expected_amount_max: expected_max,
+        expected_amount_avg: expected_avg
+      )
+    rescue ActiveRecord::RecordNotUnique
+      existing = find_existing_recurring_for_pattern(transaction, entry)
+      raise unless existing
+      raise DuplicateManualRecurring if existing.manual?
+
+      promote_auto_recurring_to_manual!(
+        existing,
+        entry: entry,
+        matching_amounts: matching_amounts,
+        expected_min: expected_min,
+        expected_max: expected_max,
+        expected_avg: expected_avg,
+        next_expected: next_expected
+      )
+    end
+  end
+
+  def self.find_existing_recurring_for_pattern(transaction, entry)
+    family = entry.account.family
+    amount = entry.amount_money.amount
+    scope = family.recurring_transactions.where(
+      account_id: entry.account_id,
       currency: entry.currency,
-      expected_day_of_month: expected_day,
+      amount: amount
+    )
+    if transaction.merchant_id.present?
+      scope.find_by(merchant_id: transaction.merchant_id)
+    else
+      scope.find_by(merchant_id: nil, name: entry.name)
+    end
+  end
+
+  def self.promote_auto_recurring_to_manual!(existing, entry:, matching_amounts:, expected_min:, expected_max:, expected_avg:, next_expected:)
+    existing.update!(
+      manual: true,
       last_occurrence_date: entry.date,
       next_expected_date: next_expected,
       status: "active",
       occurrence_count: matching_amounts.size,
-      manual: true,
       expected_amount_min: expected_min,
       expected_amount_max: expected_max,
       expected_amount_avg: expected_avg
     )
+    existing
   end
 
   # Find matching transaction entries for variance calculation

@@ -736,4 +736,62 @@ class RecurringTransactionTest < ActiveSupport::TestCase
     assert_equal(-2000.0, recurring.amount.to_f)
     assert_not recurring.subscription_expense_like?
   end
+
+  test "create_from_transaction promotes automatic recurring to manual when pattern matches" do
+    @family.recurring_transactions.destroy_all
+    transaction = Transaction.create!(merchant: @merchant, category: categories(:food_and_drink))
+    entry = @account.entries.create!(
+      date: Date.current,
+      amount: 42.99,
+      currency: "USD",
+      name: "Test",
+      entryable: transaction
+    )
+    auto = @family.recurring_transactions.create!(
+      account: @account,
+      merchant: @merchant,
+      amount: 42.99,
+      currency: "USD",
+      expected_day_of_month: entry.date.day,
+      last_occurrence_date: 1.month.ago.to_date,
+      next_expected_date: 1.month.from_now.to_date,
+      status: "active",
+      occurrence_count: 2,
+      manual: false
+    )
+
+    assert_no_difference "@family.recurring_transactions.count" do
+      RecurringTransaction.create_from_transaction(transaction)
+    end
+
+    assert auto.reload.manual
+  end
+
+  test "create_from_transaction raises DuplicateManualRecurring when manual duplicate exists" do
+    @family.recurring_transactions.destroy_all
+    transaction = Transaction.create!(merchant: @merchant, category: categories(:food_and_drink))
+    entry = @account.entries.create!(
+      date: Date.current,
+      amount: 42.99,
+      currency: "USD",
+      name: "Test",
+      entryable: transaction
+    )
+    @family.recurring_transactions.create!(
+      account: @account,
+      merchant: @merchant,
+      amount: 42.99,
+      currency: "USD",
+      expected_day_of_month: entry.date.day,
+      last_occurrence_date: entry.date,
+      next_expected_date: 1.month.from_now.to_date,
+      status: "active",
+      occurrence_count: 1,
+      manual: true
+    )
+
+    assert_raises(RecurringTransaction::DuplicateManualRecurring) do
+      RecurringTransaction.create_from_transaction(transaction)
+    end
+  end
 end

@@ -59,6 +59,9 @@ fr:
       tab_transactions: Transactions
       tab_upcoming: À venir
       uncategorized: "(non catégorisée)"
+      mark_recurring: Marquer comme récurrente
+      mark_recurring_subtitle: Suivre comme transaction récurrente. L'écart de montant est calculé à partir des 6 derniers mois d'opérations similaires.
+      mark_recurring_title: Transaction récurrente
     activity_labels:
       buy: Achat
       sell: Vente
@@ -73,9 +76,6 @@ fr:
       withdrawal: Retrait
       exchange: Échange
       other: Autre
-    mark_recurring: Marquer comme récurrente
-    mark_recurring_subtitle: Suivre comme transaction récurrente. L'écart de montant est calculé à partir des 6 derniers mois d'opérations similaires.
-    mark_recurring_title: Transaction récurrente
     potential_duplicate_title: Doublon possible
     potential_duplicate_description: Cette transaction en attente pourrait être la même que la transaction comptabilisée ci-dessous. Fusionnez-les pour éviter un double comptage.
     merge_duplicate: Oui, les fusionner
