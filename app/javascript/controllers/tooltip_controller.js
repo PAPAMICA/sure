@@ -11,6 +11,8 @@ export default class extends Controller {
   static targets = ["tooltip"];
   static values = {
     placement: { type: String, default: "top" },
+    /** "absolute" (default) or "fixed" — use "fixed" inside overflow-y scroll areas so the tooltip is not clipped */
+    strategy: { type: String, default: "absolute" },
     offset: { type: Number, default: 10 },
     crossAxis: { type: Number, default: 0 },
     alignmentAxis: { type: Number, default: null },
@@ -68,6 +70,7 @@ export default class extends Controller {
     // Update position even if not visible, to ensure correct positioning when shown
     computePosition(this.element, this.tooltipTarget, {
       placement: this.placementValue,
+      strategy: this.strategyValue,
       middleware: [
         offset({
           mainAxis: this.offsetValue,
@@ -77,8 +80,9 @@ export default class extends Controller {
         flip(),
         shift({ padding: 5 }),
       ],
-    }).then(({ x, y, placement, middlewareData }) => {
+    }).then(({ x, y }) => {
       Object.assign(this.tooltipTarget.style, {
+        position: this.strategyValue,
         left: `${x}px`,
         top: `${y}px`,
       });
