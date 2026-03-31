@@ -1,4 +1,4 @@
-<%# locals: (liquidity_widget:) %>
+<%# locals: (liquidity_widget:, period:, dashboard_ledger_usage: nil) %>
 <% data = liquidity_widget %>
 <% total_money = Money.new(data[:total], data[:currency]) %>
 <%
@@ -66,6 +66,7 @@
     </div>
   </div>
 
+  <% if data[:rows].any? %>
   <div class="grid grid-cols-1 lg:grid-cols-[180px,1fr] gap-4 lg:gap-6">
     <div class="flex flex-col items-center justify-center gap-3">
       <div class="relative size-36 rounded-full transition-transform duration-300 hover:scale-[1.02]" style="<%= donut_style %>">
@@ -119,5 +120,32 @@
       <% end %>
     </div>
     </div>
+  </div>
+  </div>
+  <% else %>
+    <div class="rounded-lg border border-primary bg-container-inset p-4">
+      <p class="text-sm text-secondary"><%= t("pages.dashboard.liquidity_widget.empty") %></p>
+    </div>
+  <% end %>
+
+  <div class="rounded-xl border border-primary bg-container-inset p-3 lg:p-4 space-y-3">
+    <div class="flex items-center justify-between gap-3">
+      <h3 class="text-sm font-medium text-primary"><%= t("pages.dashboard.liquidity_widget.stacked_title") %></h3>
+      <%= form_with url: root_path, method: :get, data: { controller: "auto-submit-form", turbo_frame: "_top" } do %>
+        <% if local_assigns[:dashboard_ledger_usage].present? %>
+          <%= hidden_field_tag :usage, dashboard_ledger_usage %>
+        <% end %>
+        <%= hidden_field_tag :liquidity_include_investment_cash, data[:include_investment_cash] ? "1" : "0" %>
+        <%= render "shared/dashboard_period_selector_fields", period: period %>
+      <% end %>
+    </div>
+
+    <%= tag.div(
+      class: "w-full min-h-64 privacy-sensitive",
+      data: {
+        controller: "stacked-liquidity-area-chart",
+        stacked_liquidity_area_chart_data_value: data[:stacked_chart_data]
+      }
+    ) %>
   </div>
 </section>

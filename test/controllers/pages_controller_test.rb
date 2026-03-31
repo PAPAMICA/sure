@@ -15,6 +15,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_select "p", text: I18n.t("pages.dashboard.liquidity_widget.eyebrow")
     assert_select "a", text: I18n.t("pages.dashboard.liquidity_widget.include_investment_cash")
     assert_select "a", text: I18n.t("pages.dashboard.liquidity_widget.exclude_investment_cash")
+    assert_select "[data-controller='stacked-liquidity-area-chart']"
   end
 
   test "dashboard accepts ledger usage filter" do

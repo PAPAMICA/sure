@@ -92,3 +92,5 @@ fr:
         other_accounts: "Autres (%{count})"
         top_accounts_note: "%{count} postes principaux affichés"
         open_account: "Ouvrir %{name}"
+        empty: Aucun compte liquide dans cette vue.
+        stacked_title: Tendance de liquidité par compte

@@ -187,7 +187,7 @@ class PagesController < ApplicationController
         {
           account: account,
           converted_amount: converted,
-          color: Accountable.from_type(account.accountable_type).color
+          color: liquidity_color_for_account(account)
         }
       end.compact
 
@@ -232,10 +232,17 @@ class PagesController < ApplicationController
         { name: row[:account]&.name || row[:name], weight: pct, color: row[:color] }
       }
 
+      stacked_chart_data = build_liquidity_stacked_chart_data(
+        top_rows: top_rows,
+        grouped_rows: remaining_rows,
+        include_investment_cash: include_investment_cash
+      )
+
       {
         total: total,
         rows: top_rows,
         donut_segments: donut_segments,
+        stacked_chart_data: stacked_chart_data,
         changes: changes,
         currency: Current.family.currency,
         include_investment_cash: include_investment_cash
@@ -283,6 +290,53 @@ class PagesController < ApplicationController
         ExchangeRate.find_or_fetch_rate(from: currency, to: Current.family.currency, date: on)&.rate || 1
       end
       amount * rate
+    end
+
+    def build_liquidity_stacked_chart_data(top_rows:, grouped_rows:, include_investment_cash:)
+      dates = @period.date_range.to_a
+      top_accounts = top_rows.filter_map { |row| row[:account] }
+      grouped_accounts = grouped_rows.filter_map { |row| row[:account] }
+
+      layers = top_accounts.map do |account|
+        {
+          key: account.id,
+          name: account.name,
+          color: liquidity_color_for_account(account),
+          amounts: dates.map do |date|
+            amount = liquidity_amount_for(account, on: date)
+            convert_to_family_currency(amount, currency: account.currency, on: date).to_f.round(2)
+          end
+        }
+      end
+
+      if grouped_accounts.any?
+        layers << {
+          key: "other",
+          name: I18n.t("pages.dashboard.liquidity_widget.other_accounts", count: grouped_accounts.size),
+          color: "#94A3B8",
+          amounts: dates.map do |date|
+            grouped_accounts.sum do |account|
+              amount = liquidity_amount_for(account, on: date)
+              convert_to_family_currency(amount, currency: account.currency, on: date)
+            end.to_f.round(2)
+          end
+        }
+      end
+
+      {
+        dates: dates.map(&:to_s),
+        layers: layers,
+        currency: Current.family.currency,
+        include_investment_cash: include_investment_cash
+      }
+    end
+
+    def liquidity_color_for_account(account)
+      return account.color if account.respond_to?(:color) && account.color.present?
+
+      palette = %w[#6172F3 #14B8A6 #F59E0B #EC4899 #8B5CF6 #22C55E #F97316 #06B6D4 #E11D48 #84CC16]
+      idx = account.id.to_s.each_byte.sum % palette.size
+      palette[idx]
     end
 
     def liquidity_include_investment_cash_preference

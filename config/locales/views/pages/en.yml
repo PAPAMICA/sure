@@ -92,3 +92,5 @@ en:
         other_accounts: "Other (%{count})"
         top_accounts_note: "Top %{count} buckets shown"
         open_account: "Open %{name}"
+        empty: No liquid accounts in this view.
+        stacked_title: Liquidity trend by account

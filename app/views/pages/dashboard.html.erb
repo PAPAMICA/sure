@@ -30,9 +30,9 @@
 <% end %>
 
 
-<% if @accounts.any? && @liquidity_widget[:rows].any? %>
+<% if @accounts.any? %>
   <div class="mb-6">
-    <%= render "pages/dashboard/liquidity_widget", liquidity_widget: @liquidity_widget %>
+    <%= render "pages/dashboard/liquidity_widget", liquidity_widget: @liquidity_widget, period: @period, dashboard_ledger_usage: @dashboard_ledger_usage %>
   </div>
 <% end %>
 
