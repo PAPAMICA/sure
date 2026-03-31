@@ -705,4 +705,35 @@ class RecurringTransactionTest < ActiveSupport::TestCase
     assert recurring_b.present?
     assert_not_equal recurring_a, recurring_b
   end
+
+  test "subscription_expense_like? is true for typical subscription outflow" do
+    recurring = recurring_transactions(:netflix_subscription)
+    assert recurring.subscription_expense_like?
+  end
+
+  test "subscription_expense_like? is false for income-like recurring pattern" do
+    @family.recurring_transactions.destroy_all
+    merchant = merchants(:amazon)
+    [ 0, 1, 2 ].each do |months_ago|
+      transaction = Transaction.create!(
+        merchant: merchant,
+        category: categories(:food_and_drink)
+      )
+      @account.entries.create!(
+        date: months_ago.months.ago.beginning_of_month + 5.days,
+        amount: -2000.00,
+        currency: "USD",
+        name: "Salary",
+        entryable: transaction
+      )
+    end
+
+    assert_difference "@family.recurring_transactions.count", 1 do
+      RecurringTransaction.identify_patterns_for!(@family)
+    end
+
+    recurring = @family.recurring_transactions.last
+    assert_equal(-2000.0, recurring.amount.to_f)
+    assert_not recurring.subscription_expense_like?
+  end
 end

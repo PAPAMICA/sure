@@ -2,7 +2,7 @@
 en:
   member_subscriptions:
     title: Subscriptions
-    subtitle: Recurring charges detected on your accounts, grouped by category. Totals are approximate monthly costs in your family currency.
+    subtitle: Recurring charges detected on your accounts, grouped by category. Income-like patterns (salary, etc.) are excluded. Totals are approximate monthly costs in your family currency.
     total_monthly: Total (monthly est.)
     total_yearly: Yearly est.
     count_label:

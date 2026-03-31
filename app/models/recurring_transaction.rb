@@ -192,6 +192,22 @@ class RecurringTransaction < ApplicationRecord
     merchant&.name.presence || name.presence || "—"
   end
 
+  # True if this pattern behaves like an expense for the income statement (same rule as IncomeStatement::Totals):
+  # investment_contribution counts as expense; entry.amount < 0 is income (excluded from Abonnements).
+  def subscription_expense_like?
+    entries = matching_transactions
+    arr = entries.is_a?(Array) ? entries : entries.to_a
+    if arr.empty?
+      return amount_money.amount >= 0
+    end
+
+    latest = arr.max_by(&:date)
+    txn = latest.entryable
+    return amount_money.amount >= 0 unless txn.is_a?(Transaction)
+
+    expense_like_in_income_statement?(txn, latest)
+  end
+
   # Category from the most recent matching bank transaction (for dashboard / abonnements).
   def category_inferred_from_matches
     @category_inferred_from_matches ||= begin
@@ -367,6 +383,11 @@ class RecurringTransaction < ApplicationRecord
   end
 
   private
+    def expense_like_in_income_statement?(transaction, entry)
+      return true if transaction.kind == "investment_contribution"
+      entry.amount >= 0
+    end
+
     def monetizable_currency
       currency
     end

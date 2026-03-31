@@ -353,7 +353,8 @@ class TransactionsController < ApplicationController
   end
 
   def mark_as_recurring
-    transaction = accessible_transactions.includes(entry: :account).find(params[:id])
+    transaction = transaction_for_mark_as_recurring(params[:id])
+    raise ActiveRecord::RecordNotFound if transaction.nil?
 
     return unless require_account_permission!(transaction.entry.account)
 
@@ -368,33 +369,20 @@ class TransactionsController < ApplicationController
 
     if existing
       flash[:alert] = t("recurring_transactions.already_exists")
-      redirect_back_or_to transactions_path
+      respond_mark_as_recurring
       return
     end
 
     begin
-      recurring_transaction = RecurringTransaction.create_from_transaction(transaction)
-
-      respond_to do |format|
-        format.html do
-          flash[:notice] = t("recurring_transactions.marked_as_recurring")
-          redirect_back_or_to transactions_path
-        end
-      end
-    rescue ActiveRecord::RecordInvalid => e
-      respond_to do |format|
-        format.html do
-          flash[:alert] = t("recurring_transactions.creation_failed")
-          redirect_back_or_to transactions_path
-        end
-      end
-    rescue StandardError => e
-      respond_to do |format|
-        format.html do
-          flash[:alert] = t("recurring_transactions.unexpected_error")
-          redirect_back_or_to transactions_path
-        end
-      end
+      RecurringTransaction.create_from_transaction(transaction)
+      flash[:notice] = t("recurring_transactions.marked_as_recurring")
+      respond_mark_as_recurring
+    rescue ActiveRecord::RecordInvalid
+      flash[:alert] = t("recurring_transactions.creation_failed")
+      respond_mark_as_recurring
+    rescue StandardError
+      flash[:alert] = t("recurring_transactions.unexpected_error")
+      respond_mark_as_recurring
     end
   end
 
@@ -406,6 +394,30 @@ class TransactionsController < ApplicationController
   end
 
   private
+    # Resolves :id as a Transaction id (member routes) or an Entry id (same as #show / transaction_path(entry)).
+    def transaction_for_mark_as_recurring(id)
+      return nil if id.blank?
+
+      tx = accessible_transactions.includes(entry: :account).find_by(id: id)
+      return tx if tx
+
+      entry = Current.family.entries
+        .joins(:account)
+        .merge(Account.accessible_by(Current.user))
+        .includes(:account)
+        .find_by(id: id)
+      return unless entry&.transaction?
+
+      entry.transaction
+    end
+
+    def respond_mark_as_recurring
+      respond_to do |format|
+        format.html { redirect_back_or_to transactions_path(**ledger_usage_url_options) }
+        format.turbo_stream { stream_redirect_back_or_to(transactions_path(**ledger_usage_url_options)) }
+      end
+    end
+
     # When opening quick categorize from a deep link (e.g. ntfy), align Perso/Pro ledger with the transaction's account.
     def apply_quick_categorize_ledger_usage_from_transaction
       return unless params[:transaction_id].present?

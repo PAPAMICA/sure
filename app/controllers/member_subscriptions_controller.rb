@@ -11,6 +11,7 @@ class MemberSubscriptionsController < ApplicationController
   def index
     @recurring_disabled = Current.family.recurring_transactions_disabled?
     @recurring = recurring_scope.active.includes(:merchant, :account).order(next_expected_date: :asc).to_a
+    @recurring.select!(&:subscription_expense_like?)
 
     foreign_currencies = @recurring.map(&:currency).uniq.reject { |c| c == Current.family.currency }
     @rates = ExchangeRate.rates_for(foreign_currencies, to: Current.family.currency, date: Date.current)

@@ -272,6 +272,36 @@ end
     assert_equal entry.date.day, recurring.expected_day_of_month
   end
 
+  test "mark_as_recurring accepts entry id in URL (same as transaction show)" do
+    family = families(:empty)
+    sign_in users(:empty)
+    account = family.accounts.create! name: "Test", balance: 0, currency: "USD", accountable: Depository.new
+    merchant = family.merchants.create! name: "Test Merchant"
+    entry = create_transaction(account: account, amount: 100, merchant: merchant)
+
+    assert_difference "family.recurring_transactions.count", 1 do
+      post mark_as_recurring_transaction_path(entry)
+    end
+
+    assert_redirected_to transactions_path
+    assert_equal "Transaction marked as recurring", flash[:notice]
+  end
+
+  test "mark_as_recurring responds with turbo_stream redirect when requested" do
+    family = families(:empty)
+    sign_in users(:empty)
+    account = family.accounts.create! name: "Test", balance: 0, currency: "USD", accountable: Depository.new
+    merchant = family.merchants.create! name: "Test Merchant"
+    entry = create_transaction(account: account, amount: 100, merchant: merchant)
+
+    post mark_as_recurring_transaction_path(entry),
+      headers: { "Accept" => "text/vnd.turbo-stream.html" }
+
+    assert_response :success
+    assert_includes response.body, "turbo-stream"
+    assert_equal "Transaction marked as recurring", flash[:notice]
+  end
+
   test "mark_as_recurring shows alert if recurring transaction already exists" do
     family = families(:empty)
     sign_in users(:empty)

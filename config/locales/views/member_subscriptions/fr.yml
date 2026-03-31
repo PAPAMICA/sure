@@ -2,7 +2,7 @@
 fr:
   member_subscriptions:
     title: Abonnements
-    subtitle: Prélèvements récurrents détectés sur vos comptes, regroupés par catégorie. Les totaux sont des estimations mensuelles dans la devise de la famille.
+    subtitle: Prélèvements récurrents détectés sur vos comptes, regroupés par catégorie. Les revenus récurrents (salaire, etc.) ne sont pas inclus. Les totaux sont des estimations mensuelles dans la devise de la famille.
     total_monthly: Total (estim. mensuelle)
     total_yearly: Estim. annuelle
     count_label:
