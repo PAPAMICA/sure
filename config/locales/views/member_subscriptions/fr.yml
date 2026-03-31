@@ -24,9 +24,14 @@ fr:
       last_charge: Dernier prélèvement
       next_expected: Prochaine échéance
     group_total: Sous-total en %{currency}
+    badges:
+      recurring_income: Revenu récurrent
     donut:
       title: Par catégorie (estim. mensuelle)
-      center_label: Total (estim. mensuelle)
+      center_expense_total: Total (estim. mensuelle)
+      center_disposable: Reste à vivre (estim.)
+      center_deficit: Écart vs revenus récurrents (estim.)
+      disposable_income: Reste à vivre
       categories_heading: Catégories
       value: Montant
       weight: Part

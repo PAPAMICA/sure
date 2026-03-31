@@ -1170,6 +1170,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_30_200000) do
     t.decimal "expected_amount_max", precision: 19, scale: 4
     t.decimal "expected_amount_avg", precision: 19, scale: 4
     t.uuid "account_id"
+    t.boolean "recurring_income", default: false, null: false
     t.index ["account_id"], name: "index_recurring_transactions_on_account_id"
     t.index ["family_id", "account_id", "merchant_id", "amount", "currency"], name: "idx_recurring_txns_acct_merchant", unique: true, where: "(merchant_id IS NOT NULL)"
     t.index ["family_id", "account_id", "name", "amount", "currency"], name: "idx_recurring_txns_acct_name", unique: true, where: "((name IS NOT NULL) AND (merchant_id IS NULL))"

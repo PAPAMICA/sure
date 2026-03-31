@@ -45,6 +45,7 @@
         <%= icon "info", class: "w-5 h-5 text-link mt-0.5 flex-shrink-0" %>
         <div>
           <p class="text-sm font-medium text-primary mb-2"><%= t("recurring_transactions.info.title") %></p>
+          <p class="text-xs text-secondary mb-2"><%= t("recurring_transactions.info.recurring_income_hint") %></p>
           <p class="text-xs text-secondary mb-2"><%= t("recurring_transactions.info.manual_description") %></p>
           <p class="text-xs text-secondary mb-1"><%= t("recurring_transactions.info.automatic_description") %></p>
           <ul class="list-disc list-inside text-xs text-secondary space-y-0.5 ml-2">
@@ -90,6 +91,7 @@
               <th class="text-left py-3 px-2"><%= t("recurring_transactions.table.next_date") %></th>
               <th class="text-left py-3 px-2"><%= t("recurring_transactions.table.last_occurrence") %></th>
               <th class="text-left py-3 px-2"><%= t("recurring_transactions.table.status") %></th>
+              <th class="text-left py-3 px-2 hidden lg:table-cell"><%= t("recurring_transactions.table.recurring_income") %></th>
               <th class="text-right py-3 px-2"><%= t("recurring_transactions.table.actions") %></th>
             </tr>
           </thead>
@@ -156,6 +158,19 @@
                     <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-surface-inset text-primary">
                       <%= t("recurring_transactions.status.inactive") %>
                     </span>
+                  <% end %>
+                </td>
+                <td class="py-3 px-2 text-sm hidden lg:table-cell align-middle">
+                  <% if recurring_transaction.subscription_expense_like? %>
+                    <span class="text-secondary text-xs">—</span>
+                  <% else %>
+                    <%= form_with model: recurring_transaction, data: { controller: "auto-submit-form", turbo_frame: "_top" } do |f| %>
+                      <%= f.check_box :recurring_income,
+                          {
+                            class: "checkbox checkbox--light",
+                            data: { auto_submit_form_target: "auto" }
+                          } %>
+                    <% end %>
                   <% end %>
                 </td>
                 <td class="py-3 px-2 text-sm text-right">

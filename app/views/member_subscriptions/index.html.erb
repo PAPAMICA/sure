@@ -133,6 +133,11 @@
                         <%= render DS::FilledIcon.new(variant: :text, text: recurring.name, size: "sm", rounded: true) %>
                         <span class="font-medium text-primary truncate"><%= recurring.name %></span>
                       <% end %>
+                      <% if recurring.recurring_income? %>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-tint-10 text-success shrink-0">
+                          <%= t("member_subscriptions.badges.recurring_income") %>
+                        </span>
+                      <% end %>
                       <% if recurring.manual? %>
                         <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-tint-10 text-link shrink-0">
                           <%= t("recurring_transactions.badges.manual") %>

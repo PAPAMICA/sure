@@ -20,6 +20,7 @@ class RecurringTransaction < ApplicationRecord
   validates :expected_day_of_month, presence: true, numericality: { greater_than: 0, less_than_or_equal_to: 31 }
   validate :merchant_or_name_present
   validate :amount_variance_consistency
+  validate :recurring_income_only_when_not_expense_like
 
   def merchant_or_name_present
     if merchant_id.blank? && name.blank?
@@ -34,6 +35,14 @@ class RecurringTransaction < ApplicationRecord
       if expected_amount_min > expected_amount_max
         errors.add(:expected_amount_min, "cannot be greater than expected_amount_max")
       end
+    end
+  end
+
+  def recurring_income_only_when_not_expense_like
+    return unless recurring_income
+
+    if subscription_expense_like?
+      errors.add(:recurring_income, I18n.t("recurring_transactions.errors.recurring_income_not_income_pattern"))
     end
   end
 

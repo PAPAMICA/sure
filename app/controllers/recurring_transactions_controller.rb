@@ -42,6 +42,17 @@ class RecurringTransactionsController < ApplicationController
     end
   end
 
+  def update
+    @recurring_transaction = Current.family.recurring_transactions.accessible_by(Current.user).find(params[:id])
+    @recurring_transaction.assign_attributes(recurring_transaction_params)
+
+    if @recurring_transaction.save
+      redirect_to recurring_transactions_path, notice: t("recurring_transactions.updated")
+    else
+      redirect_to recurring_transactions_path, alert: @recurring_transaction.errors.full_messages.to_sentence
+    end
+  end
+
   def toggle_status
     @recurring_transaction = Current.family.recurring_transactions.accessible_by(Current.user).find(params[:id])
 
@@ -73,5 +84,9 @@ class RecurringTransactionsController < ApplicationController
 
     def recurring_settings_params
       { recurring_transactions_disabled: params[:recurring_transactions_disabled] == "true" }
+    end
+
+    def recurring_transaction_params
+      params.require(:recurring_transaction).permit(:recurring_income)
     end
 end

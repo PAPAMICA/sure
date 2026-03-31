@@ -19,6 +19,7 @@ fr:
     settings_updated: Paramètres des transactions récurrentes mis à jour
     info:
       title: Détection automatique des modèles
+      recurring_income_hint: "Pour les motifs de type revenu (salaire, etc.), cochez Revenu récurrent pour qu’ils apparaissent dans Abonnements et que le donut affiche le reste à vivre (revenus récurrents − dépenses récurrentes) en vert."
       manual_description: Vous pouvez identifier manuellement les modèles ou nettoyer les transactions récurrentes obsolètes en utilisant les boutons ci-dessus.
       automatic_description: "L'identification automatique s'exécute également après :"
       triggers:
@@ -30,16 +31,20 @@ fr:
     marked_active: Transaction récurrente marquée comme active
     deleted: Transaction récurrente supprimée
     confirm_delete: Êtes-vous sûr(e) de vouloir supprimer cette transaction récurrente ?
+    updated: Récurrent mis à jour
     marked_as_recurring: Transaction marquée comme récurrente
     already_exists: Une transaction récurrente manuelle existe déjà pour ce modèle
     creation_failed: Échec de la création de la transaction récurrente. Veuillez vérifier les détails de la transaction et réessayer.
     unexpected_error: Une erreur inattendue s'est produite lors de la création de la transaction récurrente
     amount_range: "Plage : %{min} à %{max}"
+    errors:
+      recurring_income_not_income_pattern: Seuls les motifs de type revenu (ex. salaire) peuvent être comptés comme revenu récurrent pour Abonnements.
     empty:
       title: Aucune transaction récurrente trouvée
       description: Cliquez sur "Identifier les modèles" pour détecter automatiquement les transactions récurrentes à partir de votre historique de transactions.
     table:
       merchant: Nom
+      recurring_income: Revenu récurrent
       amount: Montant
       expected_day: Jour prévu
       next_date: Prochaine date

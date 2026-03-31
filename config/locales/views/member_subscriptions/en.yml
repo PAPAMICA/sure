@@ -24,9 +24,14 @@ en:
       last_charge: Last charge
       next_expected: Next expected
     group_total: Subtotal in %{currency}
+    badges:
+      recurring_income: Recurring income
     donut:
       title: By category (monthly est.)
-      center_label: Total (monthly est.)
+      center_expense_total: Total (monthly est.)
+      center_disposable: Disposable income (est.)
+      center_deficit: Shortfall vs recurring income (est.)
+      disposable_income: Disposable income
       categories_heading: Categories
       value: Amount
       weight: Share

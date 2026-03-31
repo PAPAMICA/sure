@@ -19,11 +19,11 @@
           <div data-donut-chart-target="contentContainer" class="flex justify-center items-center h-full">
             <div data-donut-chart-target="defaultContent" class="flex flex-col items-center">
               <div class="text-secondary text-sm mb-2 text-center">
-                <span><%= t("member_subscriptions.donut.center_label") %></span>
+                <span><%= t(donut_data.fetch(:center_label_i18n, "member_subscriptions.donut.center_expense_total")) %></span>
               </div>
 
-              <div class="text-3xl font-medium text-primary privacy-sensitive">
-                <%= format_money Money.new(donut_data[:total], donut_data[:currency]) %>
+              <div class="text-3xl font-medium privacy-sensitive <%= donut_data.fetch(:center_amount_class, "text-primary") %>">
+                <%= format_money Money.new(donut_data.fetch(:center_amount, donut_data[:total]), donut_data[:currency]) %>
               </div>
             </div>
 
@@ -81,7 +81,7 @@
                     ) %>
                   <% end %>
                 </div>
-                <span class="text-sm font-medium text-primary truncate"><%= category[:name] %></span>
+                <span class="text-sm font-medium truncate <%= category[:id] == "disposable_income" ? "text-success" : "text-primary" %>"><%= category[:name] %></span>
               </div>
               <div class="flex items-center gap-4 flex-shrink-0 text-right">
                 <span class="text-sm font-medium text-primary whitespace-nowrap privacy-sensitive"><%= format_money Money.new(category[:amount], category[:currency]) %></span>
