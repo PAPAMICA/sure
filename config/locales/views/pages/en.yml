@@ -81,3 +81,14 @@ en:
         trades: "Trades"
         no_investments: "No investment accounts"
         add_investment: "Add an investment account to track your portfolio"
+      liquidity_widget:
+        eyebrow: Available liquidity
+        subtitle: Cash available now across your liquid accounts
+        change_window: "vs %{days}d"
+        no_reference: N/A
+        distribution: Distribution
+        include_investment_cash: Include investment cash
+        exclude_investment_cash: Exclude investment cash
+        other_accounts: "Other (%{count})"
+        top_accounts_note: "Top %{count} buckets shown"
+        open_account: "Open %{name}"

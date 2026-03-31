@@ -81,3 +81,14 @@ fr:
         trades: Opérations
         no_investments: Aucun compte d'investissement
         add_investment: Ajoutez un compte d'investissement pour suivre votre portefeuille
+      liquidity_widget:
+        eyebrow: Liquidité disponible
+        subtitle: Trésorerie disponible sur vos comptes liquides
+        change_window: "vs J-%{days}"
+        no_reference: N/A
+        distribution: Répartition
+        include_investment_cash: Inclure le cash d'investissement
+        exclude_investment_cash: Exclure le cash d'investissement
+        other_accounts: "Autres (%{count})"
+        top_accounts_note: "%{count} postes principaux affichés"
+        open_account: "Ouvrir %{name}"

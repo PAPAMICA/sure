@@ -17,6 +17,7 @@ class PagesController < ApplicationController
     accessible_visible = Current.user.accessible_accounts.visible.with_attached_logo
     @accounts = accessible_visible.with_ledger_usage(@dashboard_ledger_usage)
     @any_accounts_visible = accessible_visible.any?
+    @liquidity_widget = build_liquidity_widget_data
 
     family_currency = Current.family.currency
 
@@ -87,6 +88,9 @@ class PagesController < ApplicationController
   end
 
   private
+    LIQUIDITY_COMPARISON_WINDOWS_DAYS = [ 1, 7, 30 ].freeze
+    LIQUIDITY_TOP_ACCOUNTS_LIMIT = 6
+
     def preferences_params
       prefs = params.require(:preferences)
       {}.tap do |permitted|
@@ -163,6 +167,135 @@ class PagesController < ApplicationController
       end
 
       ordered_sections
+    end
+
+    def build_liquidity_widget_data
+      include_investment_cash = liquidity_include_investment_cash_preference
+      accounts = Current.user.finance_accounts(ledger_usage: @dashboard_ledger_usage)
+        .visible
+        .includes(:account_shares)
+        .to_a
+        .select { |account| account.classification == "asset" }
+        .select { |account| liquidity_supported_account?(account, include_investment_cash: include_investment_cash) }
+
+      current_date = Date.current
+      rows = accounts.map do |account|
+        amount = liquidity_amount_for(account, on: current_date)
+        converted = convert_to_family_currency(amount, currency: account.currency, on: current_date)
+        next if converted <= 0
+
+        {
+          account: account,
+          converted_amount: converted,
+          color: Accountable.from_type(account.accountable_type).color
+        }
+      end.compact
+
+      total = rows.sum { |row| row[:converted_amount] }
+
+      rows.each do |row|
+        row[:weight] = total.zero? ? 0 : (row[:converted_amount] / total * 100)
+      end
+
+      changes = LIQUIDITY_COMPARISON_WINDOWS_DAYS.map do |days|
+        past_total = accounts.sum do |account|
+          amount = liquidity_amount_for(account, on: current_date - days.days)
+          convert_to_family_currency(amount, currency: account.currency, on: current_date - days.days)
+        end
+        delta = total - past_total
+        pct = past_total.zero? ? nil : (delta / past_total * 100)
+
+        {
+          days: days,
+          delta: delta,
+          pct: pct
+        }
+      end
+
+      sorted_rows = rows.sort_by { |row| -row[:converted_amount] }
+      top_rows = sorted_rows.first(LIQUIDITY_TOP_ACCOUNTS_LIMIT)
+      remaining_rows = sorted_rows.drop(LIQUIDITY_TOP_ACCOUNTS_LIMIT)
+      remaining_total = remaining_rows.sum { |row| row[:converted_amount] }
+
+      if remaining_total.positive?
+        top_rows << {
+          account: nil,
+          name: I18n.t("pages.dashboard.liquidity_widget.other_accounts", count: remaining_rows.size),
+          converted_amount: remaining_total,
+          weight: total.zero? ? 0 : (remaining_total / total * 100),
+          color: "#94A3B8"
+        }
+      end
+
+      donut_segments = top_rows.map { |row|
+        pct = total.zero? ? 0 : (row[:converted_amount] / total * 100)
+        { name: row[:account]&.name || row[:name], weight: pct, color: row[:color] }
+      }
+
+      {
+        total: total,
+        rows: top_rows,
+        donut_segments: donut_segments,
+        changes: changes,
+        currency: Current.family.currency,
+        include_investment_cash: include_investment_cash
+      }
+    end
+
+    def liquidity_supported_account?(account, include_investment_cash:)
+      return true if account.balance_type == :cash
+      return include_investment_cash if account.balance_type == :investment
+
+      false
+    end
+
+    def liquidity_amount_for(account, on:)
+      case account.balance_type
+      when :cash
+        if on == Date.current
+          account.balance.to_d
+        else
+          account.end_balance_amount_on_or_before(on).to_d
+        end
+      when :investment
+        if on == Date.current
+          account.cash_balance.to_d
+        else
+          account.balances
+            .where(currency: account.currency)
+            .where("date <= ?", on)
+            .order(date: :desc)
+            .limit(1)
+            .pick(:end_cash_balance).to_d
+        end
+      else
+        0.to_d
+      end
+    end
+
+    def convert_to_family_currency(amount, currency:, on:)
+      amount = amount.to_d
+      return amount if currency == Current.family.currency
+
+      @liquidity_fx_cache ||= {}
+      cache_key = [ currency, on ]
+      rate = @liquidity_fx_cache[cache_key] ||= begin
+        ExchangeRate.find_or_fetch_rate(from: currency, to: Current.family.currency, date: on)&.rate || 1
+      end
+      amount * rate
+    end
+
+    def liquidity_include_investment_cash_preference
+      bool = ActiveModel::Type::Boolean.new
+      if params.key?(:liquidity_include_investment_cash)
+        value = bool.cast(params[:liquidity_include_investment_cash])
+        unless Current.user.dashboard_liquidity_include_investment_cash? == value
+          Current.user.update_dashboard_preferences("dashboard_liquidity_include_investment_cash" => value)
+        end
+        value
+      else
+        Current.user.dashboard_liquidity_include_investment_cash?
+      end
     end
 
     def github_provider

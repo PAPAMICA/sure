@@ -348,6 +348,10 @@ class User < ApplicationRecord
     dashboard_period_selector == "month_year"
   end
 
+  def dashboard_liquidity_include_investment_cash?
+    preferences&.dig("dashboard_liquidity_include_investment_cash") != false
+  end
+
   def update_transactions_preferences(prefs)
     transaction do
       lock!

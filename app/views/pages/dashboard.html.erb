@@ -30,6 +30,12 @@
 <% end %>
 
 
+<% if @accounts.any? && @liquidity_widget[:rows].any? %>
+  <div class="mb-6">
+    <%= render "pages/dashboard/liquidity_widget", liquidity_widget: @liquidity_widget %>
+  </div>
+<% end %>
+
 <div class="grid grid-cols-1 <%= "2xl:grid-cols-2" if Current.user.dashboard_two_column? %> gap-6 pb-6 lg:pb-12" data-controller="dashboard-sortable" data-action="dragover->dashboard-sortable#dragOver drop->dashboard-sortable#drop" role="list" aria-label="Dashboard sections">
   <% if @accounts.any? %>
     <% @dashboard_sections.each do |section| %>

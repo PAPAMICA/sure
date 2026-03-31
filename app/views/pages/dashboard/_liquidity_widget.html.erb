@@ -1,0 +1,123 @@
+<%# locals: (liquidity_widget:) %>
+<% data = liquidity_widget %>
+<% total_money = Money.new(data[:total], data[:currency]) %>
+<%
+  donut_style =
+    if data[:donut_segments].blank?
+      "background: conic-gradient(#E2E8F0 0 100%);"
+    else
+      start = 0.0
+      segments = data[:donut_segments].map do |segment|
+        stop = [ start + segment[:weight], 100.0 ].min
+        piece = "#{segment[:color]} #{start.round(2)}% #{stop.round(2)}%"
+        start = stop
+        piece
+      end
+      "background: conic-gradient(#{segments.join(', ')});"
+    end
+%>
+
+<section class="bg-container rounded-xl shadow-border-xs border border-primary p-4 lg:p-6 space-y-5">
+  <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+    <div class="space-y-3">
+      <div class="space-y-1">
+        <p class="text-xs uppercase tracking-wide text-secondary"><%= t("pages.dashboard.liquidity_widget.eyebrow") %></p>
+        <h2 class="text-2xl lg:text-3xl font-semibold text-primary privacy-sensitive"><%= format_money(total_money) %></h2>
+        <p class="text-sm text-secondary"><%= t("pages.dashboard.liquidity_widget.subtitle") %></p>
+      </div>
+
+      <div class="inline-flex rounded-lg border border-primary bg-container-inset p-1">
+        <% current_params = request.query_parameters.symbolize_keys %>
+        <% include_href = root_path(current_params.merge(liquidity_include_investment_cash: "1")) %>
+        <% exclude_href = root_path(current_params.merge(liquidity_include_investment_cash: "0")) %>
+        <%= link_to t("pages.dashboard.liquidity_widget.include_investment_cash"),
+          include_href,
+          class: class_names(
+            "px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors",
+            data[:include_investment_cash] ? "bg-container text-primary border border-primary" : "text-secondary hover:text-primary"
+          ) %>
+        <%= link_to t("pages.dashboard.liquidity_widget.exclude_investment_cash"),
+          exclude_href,
+          class: class_names(
+            "px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors",
+            data[:include_investment_cash] ? "text-secondary hover:text-primary" : "bg-container text-primary border border-primary"
+          ) %>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 lg:gap-3 w-full lg:w-auto">
+      <% data[:changes].each do |change| %>
+        <% positive = change[:delta] >= 0 %>
+        <% delta_money = Money.new(change[:delta].abs, data[:currency]) %>
+        <div class="rounded-lg border border-primary bg-container-inset px-3 py-2 min-w-[170px]">
+          <p class="text-xs text-secondary"><%= t("pages.dashboard.liquidity_widget.change_window", days: change[:days]) %></p>
+          <p class="text-sm font-medium <%= positive ? "text-success" : "text-destructive" %> privacy-sensitive">
+            <%= positive ? "+" : "-" %><%= format_money(delta_money) %>
+          </p>
+          <p class="text-xs <%= positive ? "text-success" : "text-destructive" %>">
+            <% if change[:pct].nil? %>
+              <%= t("pages.dashboard.liquidity_widget.no_reference") %>
+            <% else %>
+              <%= number_to_percentage(change[:pct], precision: 1) %>
+            <% end %>
+          </p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-[180px,1fr] gap-4 lg:gap-6">
+    <div class="flex flex-col items-center justify-center gap-3">
+      <div class="relative size-36 rounded-full transition-transform duration-300 hover:scale-[1.02]" style="<%= donut_style %>">
+        <div class="absolute inset-3 rounded-full bg-container border border-primary"></div>
+        <div class="absolute inset-0 flex items-center justify-center">
+          <p class="text-xs text-secondary"><%= t("pages.dashboard.liquidity_widget.distribution") %></p>
+        </div>
+      </div>
+      <p class="text-xs text-secondary text-center"><%= t("pages.dashboard.liquidity_widget.top_accounts_note", count: data[:rows].size) %></p>
+    </div>
+
+    <div class="space-y-3">
+    <div class="flex gap-1">
+      <% data[:rows].each do |row| %>
+        <div
+          class="h-2 rounded-full"
+          style="width: <%= row[:weight] %>%; background-color: <%= row[:color] %>;"
+          title="<%= row[:account]&.name || row[:name] %> — <%= number_to_percentage(row[:weight], precision: 1) %>">
+        </div>
+      <% end %>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+      <% data[:rows].each do |row| %>
+        <% money = Money.new(row[:converted_amount], data[:currency]) %>
+        <% content = capture do %>
+          <div class="rounded-lg border border-primary bg-container-inset px-3 py-2 flex items-center justify-between gap-3 transition-colors">
+            <div class="flex items-center gap-2 min-w-0">
+              <% if row[:account].present? %>
+                <%= render "accounts/logo", account: row[:account], size: "sm", color: row[:color] %>
+              <% else %>
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-container border border-primary text-secondary">
+                  <%= icon "ellipsis", size: "sm" %>
+                </span>
+              <% end %>
+              <p class="text-sm text-primary truncate"><%= row[:account]&.name || row[:name] %></p>
+            </div>
+            <div class="text-right shrink-0">
+              <p class="text-sm font-medium text-primary privacy-sensitive"><%= format_money(money) %></p>
+              <p class="text-xs text-secondary"><%= number_to_percentage(row[:weight], precision: 1) %></p>
+            </div>
+          </div>
+        <% end %>
+        <% if row[:account].present? %>
+          <%= link_to account_path(row[:account]), class: "block hover:opacity-90", title: t("pages.dashboard.liquidity_widget.open_account", name: row[:account].name) do %>
+            <%= content %>
+          <% end %>
+        <% else %>
+          <%= content %>
+        <% end %>
+      <% end %>
+    </div>
+    </div>
+  </div>
+</section>

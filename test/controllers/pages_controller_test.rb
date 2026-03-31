@@ -12,6 +12,9 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
   test "dashboard" do
     get root_path
     assert_response :ok
+    assert_select "p", text: I18n.t("pages.dashboard.liquidity_widget.eyebrow")
+    assert_select "a", text: I18n.t("pages.dashboard.liquidity_widget.include_investment_cash")
+    assert_select "a", text: I18n.t("pages.dashboard.liquidity_widget.exclude_investment_cash")
   end
 
   test "dashboard accepts ledger usage filter" do
@@ -22,6 +25,16 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
   test "dashboard ignores invalid usage param" do
     get root_path, params: { usage: "invalid" }
     assert_response :ok
+  end
+
+  test "dashboard persists liquidity include investment cash preference" do
+    get root_path, params: { liquidity_include_investment_cash: "0" }
+    assert_response :ok
+    assert_equal false, @user.reload.dashboard_liquidity_include_investment_cash?
+
+    get root_path, params: { liquidity_include_investment_cash: "1" }
+    assert_response :ok
+    assert_equal true, @user.reload.dashboard_liquidity_include_investment_cash?
   end
 
   test "dashboard month and year selector when preference enabled" do
