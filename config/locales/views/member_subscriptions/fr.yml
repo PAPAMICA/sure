@@ -24,3 +24,9 @@ fr:
       last_charge: Dernier prélèvement
       next_expected: Prochaine échéance
     group_total: Sous-total en %{currency}
+    donut:
+      title: Par catégorie (estim. mensuelle)
+      center_label: Total (estim. mensuelle)
+      categories_heading: Catégories
+      value: Montant
+      weight: Part

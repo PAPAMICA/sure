@@ -14,6 +14,14 @@ class MemberSubscriptionsControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", text: I18n.t("member_subscriptions.title")
   end
 
+  test "index renders category donut when recurring subscriptions exist" do
+    @family.update!(recurring_transactions_disabled: false)
+
+    get member_subscriptions_path
+    assert_response :ok
+    assert_select '[data-controller="donut-chart"]', count: 1
+  end
+
   test "index accepts usage param" do
     get member_subscriptions_path, params: { usage: "professional" }
     assert_response :ok

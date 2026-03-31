@@ -52,6 +52,12 @@
       ) %>
     </div>
   <% else %>
+    <% if @subscriptions_donut_data[:categories].present? %>
+      <div class="mb-6">
+        <%= render "subscriptions_donut", donut_data: @subscriptions_donut_data %>
+      </div>
+    <% end %>
+
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div class="bg-container rounded-xl shadow-border-xs border border-primary p-4 lg:p-5">
         <p class="text-xs font-medium uppercase tracking-wide text-secondary"><%= t("member_subscriptions.total_monthly") %></p>

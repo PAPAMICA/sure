@@ -24,3 +24,9 @@ en:
       last_charge: Last charge
       next_expected: Next expected
     group_total: Subtotal in %{currency}
+    donut:
+      title: By category (monthly est.)
+      center_label: Total (monthly est.)
+      categories_heading: Categories
+      value: Amount
+      weight: Share

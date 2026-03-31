@@ -25,6 +25,8 @@ class MemberSubscriptionsController < ApplicationController
       sorted_rows = rows.sort_by { |r| [ r.next_expected_date || Date.new(2099, 12, 31), r.display_name_for_subscription.downcase ] }
       [ category, sorted_rows ]
     }
+
+    @subscriptions_donut_data = build_subscriptions_donut_data
   end
 
   def identify
@@ -48,5 +50,40 @@ class MemberSubscriptionsController < ApplicationController
 
       redirect_to member_subscriptions_path(**ledger_usage_url_options),
         alert: t("member_subscriptions.recurring_disabled")
+    end
+
+    # Segments for donut-chart (same shape as PagesController#build_outflows_donut_data).
+    def build_subscriptions_donut_data
+      fam = Current.family
+      currency = fam.currency
+      currency_symbol = Money::Currency.new(currency).symbol
+      total = @total_monthly_converted.to_d
+
+      if total.zero?
+        return { categories: [], total: 0, currency: currency, currency_symbol: currency_symbol }
+      end
+
+      categories = @category_groups.filter_map do |category, rows|
+        amount = rows.sum { |r| r.converted_monthly_outflow_in_family_currency(fam, @rates) }
+        next if amount <= 0
+
+        {
+          id: category&.id || "uncategorized",
+          name: category&.name || I18n.t("member_subscriptions.uncategorized"),
+          amount: amount.to_f.round(2),
+          currency: currency,
+          percentage: ((amount / total) * 100).round(1),
+          color: category&.color.presence || Category::UNCATEGORIZED_COLOR,
+          icon: category&.lucide_icon,
+          clickable: false
+        }
+      end.sort_by { |c| -c[:amount] }
+
+      {
+        categories: categories,
+        total: total.to_f.round(2),
+        currency: currency,
+        currency_symbol: currency_symbol
+      }
     end
 end
