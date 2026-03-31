@@ -122,8 +122,8 @@
                         class="inline-flex shrink-0 text-secondary opacity-80 hover:opacity-100 cursor-help relative z-10"
                         aria-label="<%= t("transactions.transaction.recurring_aria") %>">
                         <%= icon "repeat", size: "xs", color: "current" %>
-                        <div role="tooltip" data-tooltip-target="tooltip" class="tooltip z-50 bg-gray-700 text-sm px-2 py-1.5 rounded-md shadow-lg max-w-xs">
-                          <div class="fg-inverse font-normal text-xs">
+                        <div role="tooltip" data-tooltip-target="tooltip" class="tooltip z-50 max-w-xs rounded-md border border-secondary bg-inverse px-2 py-1.5 text-sm shadow-border-md">
+                          <div class="fg-inverse text-xs font-normal">
                             <%= t("transactions.transaction.recurring_tooltip") %>
                           </div>
                         </div>
@@ -137,8 +137,8 @@
                         class="inline-flex shrink-0 text-secondary opacity-80 hover:opacity-100 cursor-help relative z-10"
                         aria-label="<%= t("transactions.transaction.notes_aria") %>">
                         <%= icon "info", size: "xs", color: "current" %>
-                        <div role="tooltip" data-tooltip-target="tooltip" class="tooltip z-50 bg-gray-700 text-sm p-2 rounded-md shadow-lg max-w-md max-h-48 overflow-y-auto">
-                          <div class="fg-inverse font-normal text-xs whitespace-pre-wrap break-words">
+                        <div role="tooltip" data-tooltip-target="tooltip" class="tooltip z-50 max-h-48 max-w-md overflow-y-auto rounded-md border border-secondary bg-inverse p-2 text-sm shadow-border-md">
+                          <div class="fg-inverse whitespace-pre-wrap break-words text-xs font-normal">
                             <%= h(entry.notes.to_s.truncate(4000).squish) %>
                           </div>
                         </div>
